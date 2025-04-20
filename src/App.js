@@ -22,4 +22,11 @@ function App() {
   );
 }
 
+import React from 'react';
+import ExpenseTracker from './components/expense_tracker';
+
+function App() {
+  return <ExpenseTracker />;
+}
+
 export default App;
