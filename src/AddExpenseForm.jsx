@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const add_expense_form = ({ onAddExpense }) => {
+const AddExpenseForm = ({ onAddExpense }) => {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
@@ -62,4 +62,4 @@ const add_expense_form = ({ onAddExpense }) => {
   );
 };
 
-export default add_expense_form;
+export default AddExpenseForm;

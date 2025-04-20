@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import add_expense_form from './add_expense_form';
+import AddExpenseForm from './AddExpenseForm';
 
-const expense_tracker = () => {
+const ExpenseTracker = () => {
   const [expenses, setExpenses] = useState([]);
 
   const handleAddExpense = (expense) => {
@@ -12,7 +12,7 @@ const expense_tracker = () => {
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Personal Expense Tracker</h1>
 
-      <add_expense_form onAddExpense={handleAddExpense} />
+      <AddExpenseForm onAddExpense={handleAddExpense} />
 
       <div className="mt-8 max-w-md mx-auto bg-white shadow-md rounded-md p-4">
         <h2 className="text-xl font-semibold mb-4">Expenses</h2>
@@ -36,4 +36,4 @@ const expense_tracker = () => {
   );
 };
 
-export default expense_tracker;
+export default ExpenseTracker;
