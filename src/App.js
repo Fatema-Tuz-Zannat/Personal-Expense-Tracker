@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import ExpenseTracker from './components/ExpenseTracker';
+import ExpenseTracker from './ExpenseTracker';
 function App() {
   return (
     <div className="App">
