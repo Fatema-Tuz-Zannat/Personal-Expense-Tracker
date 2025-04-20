@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
-
+import React from 'react';
+import expense_tracker from './components/expense_tracker';
 function App() {
   return (
     <div className="App">
@@ -18,15 +19,9 @@ function App() {
           Learn React
         </a>
       </header>
+      return <expense_tracker />;
     </div>
   );
-}
-
-import React from 'react';
-import expense_tracker from './components/expense_tracker';
-
-function App() {
-  return <expense_tracker />;
 }
 
 export default App;
