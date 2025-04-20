@@ -23,10 +23,10 @@ function App() {
 }
 
 import React from 'react';
-import ExpenseTracker from './components/expense_tracker';
+import expense_tracker from './components/expense_tracker';
 
 function App() {
-  return <ExpenseTracker />;
+  return <expense_tracker />;
 }
 
 export default App;
