@@ -1,9 +1,10 @@
 import React from 'react';
+import './App.css';
 import ExpenseTracker from './ExpenseTracker';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="App">
       <ExpenseTracker />
     </div>
   );
