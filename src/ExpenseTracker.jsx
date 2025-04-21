@@ -4,7 +4,6 @@ import db from './firebase';
 import {
   collection,
   addDoc,
-  getDocs,
   onSnapshot,
   query,
   orderBy
