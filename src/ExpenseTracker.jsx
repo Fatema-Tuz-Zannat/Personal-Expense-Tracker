@@ -1,11 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AddExpenseForm from './AddExpenseForm';
+import db from './firebase';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy
+} from 'firebase/firestore';
 
 const ExpenseTracker = () => {
   const [expenses, setExpenses] = useState([]);
 
-  const handleAddExpense = (expense) => {
-    setExpenses((prevExpenses) => [expense, ...prevExpenses]);
+  // Fetch expenses from Firestore
+  useEffect(() => {
+    const q = query(collection(db, "expenses"), orderBy("date", "desc"));
+
+    // Real-time updates
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedExpenses = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        date: doc.data().date.toDate()
+      }));
+      setExpenses(fetchedExpenses);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Add a new expense to Firestore
+  const handleAddExpense = async (expense) => {
+    try {
+      await addDoc(collection(db, "expenses"), expense);
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
   };
 
   return (
