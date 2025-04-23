@@ -3,139 +3,193 @@ import {
   collection,
   addDoc,
   getDocs,
-  query,
-  where,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
+  query,
+  where,
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import AddExpenseForm from './AddExpenseForm';
 
-const ExpenseTracker = ({ user }) => {
+const ExpenseTracker = () => {
   const [expenses, setExpenses] = useState([]);
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('');
   const [editingId, setEditingId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    if (user) {
-      fetchExpenses();
-    }
-  }, [user]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+      }
+    });
 
-  const fetchExpenses = async () => {
-    const q = query(collection(db, 'expenses'), where('uid', '==', user.uid));
-    const querySnapshot = await getDocs(q);
-    const data = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      date: doc.data().date?.toDate ? doc.data().date.toDate() : new Date(doc.data().date)
-    }));
-    setExpenses(data);
-  };
+    return () => unsubscribe();
+  }, []);
 
-  const handleAddOrUpdate = async (e) => {
-    e.preventDefault();
-    if (!title || !amount || !date) return alert('Please fill in all fields');
+  useEffect(() => {
+    if (!currentUser) return;
 
-    const expenseData = {
-      title,
-      amount: parseFloat(amount),
-      date: new Date(date),
-      uid: user.uid,
+    const fetchExpenses = async () => {
+      const q = query(
+        collection(db, 'expenses'),
+        where('userId', '==', currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const expensesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setExpenses(expensesData);
     };
 
-    try {
-      if (editingId) {
-        const expenseRef = doc(db, 'expenses', editingId);
-        await updateDoc(expenseRef, expenseData);
-        setEditingId(null);
-      } else {
-        await addDoc(collection(db, 'expenses'), expenseData);
-      }
+    fetchExpenses();
+  }, [currentUser]);
 
-      setTitle('');
-      setAmount('');
-      setDate('');
-      fetchExpenses();
-    } catch (error) {
-      console.error('Error adding/updating expense:', error);
-    }
-  };
-
-  const handleEdit = (expense) => {
-    setTitle(expense.title);
-    setAmount(expense.amount);
-    setDate(expense.date.toISOString().split('T')[0]);
-    setEditingId(expense.id);
+  const handleAddExpense = async (expense) => {
+    const expenseWithUser = {
+      ...expense,
+      userId: currentUser.uid,
+    };
+    const docRef = await addDoc(collection(db, 'expenses'), expenseWithUser);
+    setExpenses(prev => [{ ...expenseWithUser, id: docRef.id }, ...prev]);
   };
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, 'expenses', id));
-    fetchExpenses();
+    setExpenses(prev => prev.filter(expense => expense.id !== id));
+  };
+
+  const handleEdit = (id) => {
+    setEditingId(id);
+  };
+
+  const handleUpdate = async (id, updatedExpense) => {
+    await updateDoc(doc(db, 'expenses', id), updatedExpense);
+    setExpenses(prev =>
+      prev.map(exp =>
+        exp.id === id ? { ...exp, ...updatedExpense } : exp
+      )
+    );
+    setEditingId(null);
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Personal Expense Tracker</h1>
 
-      <form onSubmit={handleAddOrUpdate} className="max-w-md mx-auto p-4 bg-white shadow-md rounded-md space-y-4">
-        <h2 className="text-xl font-bold text-center">
-          {editingId ? 'Edit Expense' : 'Add New Expense'}
-        </h2>
-
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-
-        <input
-          type="number"
-          placeholder="Amount (TK)"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full border rounded p-2"
-        />
-
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-          {editingId ? 'Update Expense' : 'Add Expense'}
-        </button>
-      </form>
+      <AddExpenseForm onAddExpense={handleAddExpense} />
 
       <div className="mt-8 max-w-md mx-auto bg-white shadow-md rounded-md p-4">
-        <h2 className="text-xl font-semibold mb-4">Your Expenses</h2>
+        <h2 className="text-xl font-semibold mb-4">Expenses</h2>
         {expenses.length === 0 ? (
           <p className="text-gray-500 text-center">No expenses added yet.</p>
         ) : (
           <ul className="space-y-3">
             {expenses.map((expense) => (
-              <li key={expense.id} className="flex justify-between items-center border-b pb-2">
-                <div>
-                  <p className="font-medium">{expense.title}</p>
-                  <p className="text-sm text-gray-500">{expense.date.toDateString()}</p>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <p className="font-semibold">₹{expense.amount.toFixed(2)}</p>
-                  <button onClick={() => handleEdit(expense)} className="text-blue-500 text-sm">Edit</button>
-                  <button onClick={() => handleDelete(expense.id)} className="text-red-500 text-sm">Delete</button>
-                </div>
+              <li
+                key={expense.id}
+                className="flex justify-between items-center border-b pb-2"
+              >
+                {editingId === expense.id ? (
+                  <EditExpenseForm
+                    expense={expense}
+                    onSave={(updatedExpense) =>
+                      handleUpdate(expense.id, updatedExpense)
+                    }
+                    onCancel={() => setEditingId(null)}
+                  />
+                ) : (
+                  <>
+                    <div>
+                      <p className="font-medium">{expense.title}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(expense.date.seconds * 1000).toDateString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">₹{expense.amount.toFixed(2)}</p>
+                      <div className="flex gap-2 text-sm mt-1">
+                        <button
+                          onClick={() => handleEdit(expense.id)}
+                          className="text-blue-500 hover:underline"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(expense.id)}
+                          className="text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
           </ul>
         )}
       </div>
     </div>
+  );
+};
+
+const EditExpenseForm = ({ expense, onSave, onCancel }) => {
+  const [title, setTitle] = useState(expense.title);
+  const [amount, setAmount] = useState(expense.amount);
+  const [date, setDate] = useState(
+    new Date(expense.date.seconds * 1000).toISOString().split('T')[0]
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      title,
+      amount: parseFloat(amount),
+      date: new Date(date),
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2">
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <input
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-sm text-gray-600 hover:underline"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="text-sm text-green-600 font-semibold hover:underline"
+        >
+          Save
+        </button>
+      </div>
+    </form>
   );
 };
 
