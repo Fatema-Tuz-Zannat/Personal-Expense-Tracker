@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Signup from './Signup';
 import Login from './Login';
 import ExpenseTracker from './ExpenseTracker';
+import Dashboard from './Dashboard'; 
+import { auth } from './firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, loading] = useAuthState(auth);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="App">
-      {user ? (
-        <>
-          <button onClick={() => signOut(auth)}>Logout</button>
-          <ExpenseTracker user={user} />
-        </>
-      ) : (
-        <>
-          <Signup />
-          <Login onLogin={() => {}} />
-        </>
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={user ? <Dashboard /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/expenses"
+          element={user ? <ExpenseTracker /> : <Navigate to="/login" />}
+        />
+      </Routes>
+    </Router>
   );
 }
 
