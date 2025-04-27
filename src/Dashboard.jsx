@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, auth } from '../firebase';
+import { db, auth } from './firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
 const Dashboard = () => {
