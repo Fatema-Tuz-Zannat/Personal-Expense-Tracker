@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, auth } from './firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 
 const Dashboard = () => {
   const [expenses, setExpenses] = useState([]);
@@ -29,6 +30,10 @@ const Dashboard = () => {
 
   const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <h1 className="text-3xl font-bold mb-6">Welcome, {user?.email}!</h1>
@@ -42,6 +47,13 @@ const Dashboard = () => {
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           View Expenses
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-4"
+        >
+          Logout
         </button>
       </div>
     </div>
