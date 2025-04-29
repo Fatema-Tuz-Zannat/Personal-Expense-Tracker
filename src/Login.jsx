@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate(); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,18 +15,21 @@ const Login = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      navigate('/'); // ✅ redirect to dashboard after login
     } catch (error) {
       let msg = 'Login failed. Please try again.';
 
       switch (error.code) {
         case 'auth/invalid-credential':
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
           msg = 'Invalid email or password.';
           break;
         case 'auth/too-many-requests':
           msg = 'Too many attempts. Please try again later.';
           break;
         default:
-          msg = 'Login failed. Please try again.';
+          msg = error.message;
       }
 
       setErrorMessage(msg);
