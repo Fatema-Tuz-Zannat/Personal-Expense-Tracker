@@ -58,16 +58,16 @@ const Login = () => {
           required
         />
 
-        {errorMessage && (
-          <div className="text-red-600 text-sm -mt-2">{errorMessage}</div>
-        )}
-
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Login
         </button>
+
+        {errorMessage && (
+          <div className="text-red-600 text-sm -mt-2">{errorMessage}</div>
+        )}
 
         <p className="text-sm text-center">
           Don’t have an account?{' '}
