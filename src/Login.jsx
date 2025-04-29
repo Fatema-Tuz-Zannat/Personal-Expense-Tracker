@@ -17,52 +17,61 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/');
     } catch (error) {
+      let msg = '';
       switch (error.code) {
         case 'auth/user-not-found':
-          setErrorMsg('No account found with this email.');
+          msg = 'No account found with this email.';
           break;
         case 'auth/wrong-password':
-          setErrorMsg('Incorrect password.');
+          msg = 'Incorrect password.';
           break;
         case 'auth/too-many-requests':
-          setErrorMsg('Too many failed attempts. Please try again later.');
+          msg = 'Too many failed attempts. Try again later.';
           break;
-        case 'auth/invalid-credential':
-          setErrorMsg('Invalid email or password.');
+        case 'auth/invalid-email':
+          msg = 'Invalid email format.';
           break;
         default:
-          setErrorMsg('Login failed. Please try again.');
+          msg = 'Login failed. Please try again.';
       }
+      setErrorMsg(msg);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-full max-w-sm space-y-4">
-        <h2 className="text-2xl font-bold text-center">Login</h2>
-        {errorMsg && <p className="text-red-600 text-sm text-center">{errorMsg}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-full max-w-sm">
+        <h2 className="text-2xl font-bold mb-6">Login</h2>
+        {errorMsg && <p className="text-red-500 mb-4">{errorMsg}</p>}
+
         <input
           type="email"
           placeholder="Email"
+          className="w-full p-2 mb-4 border border-gray-300 rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="border p-2 w-full rounded"
         />
         <input
           type="password"
           placeholder="Password"
+          className="w-full p-2 mb-4 border border-gray-300 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="border p-2 w-full rounded"
         />
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
           Login
         </button>
-        <p className="text-center text-sm">
+
+        <p className="mt-4 text-center text-sm">
           Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-600 underline">Sign up</Link>
+          <Link to="/signup" className="text-blue-600 hover:underline">
+            Sign up
+          </Link>
         </p>
       </form>
     </div>
