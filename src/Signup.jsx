@@ -11,11 +11,11 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // clear previous errors
+    setErrorMessage(''); 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert('Signup successful!');
-      navigate('/login'); // go to login page
+      navigate('/login');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setErrorMessage('Email is already registered.');
