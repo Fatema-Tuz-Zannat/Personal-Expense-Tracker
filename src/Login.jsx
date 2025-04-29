@@ -12,16 +12,26 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/'); 
+      navigate('/');
     } catch (error) {
-      if (error.code === 'auth/user-not-found') {
-        setErrorMsg('No user found with this email.');
-      } else if (error.code === 'auth/wrong-password') {
-        setErrorMsg('Incorrect password.');
-      } else {
-        setErrorMsg(error.message);
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          setErrorMsg('Invalid email or password.');
+          break;
+        case 'auth/user-not-found':
+          setErrorMsg('No account found with this email.');
+          break;
+        case 'auth/wrong-password':
+          setErrorMsg('Incorrect password.');
+          break;
+        case 'auth/too-many-requests':
+          setErrorMsg('Too many failed attempts. Please try again later.');
+          break;
+        default:
+          setErrorMsg('Login failed. Please try again.');
       }
     }
   };
@@ -30,7 +40,7 @@ const Login = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow-md w-full max-w-sm space-y-4">
         <h2 className="text-2xl font-bold text-center">Login</h2>
-        {errorMsg && <p className="text-red-600">{errorMsg}</p>}
+        {errorMsg && <p className="text-red-600 text-sm text-center">{errorMsg}</p>}
         <input
           type="email"
           placeholder="Email"
