@@ -17,23 +17,33 @@ const Login = () => {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/');
     } catch (error) {
+      console.error('Login error:', error); 
+
       let msg = '';
-      switch (error.code) {
-        case 'auth/user-not-found':
-          msg = 'No account found with this email.';
-          break;
-        case 'auth/wrong-password':
-          msg = 'Incorrect password.';
-          break;
-        case 'auth/too-many-requests':
-          msg = 'Too many failed attempts. Try again later.';
-          break;
-        case 'auth/invalid-email':
-          msg = 'Invalid email format.';
-          break;
-        default:
-          msg = 'Login failed. Please try again.';
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/user-not-found':
+            msg = 'No account found with this email.';
+            break;
+          case 'auth/wrong-password':
+            msg = 'Incorrect password.';
+            break;
+          case 'auth/too-many-requests':
+            msg = 'Too many failed attempts. Try again later.';
+            break;
+          case 'auth/invalid-email':
+            msg = 'Invalid email format.';
+            break;
+          case 'auth/invalid-credential':
+            msg = 'Invalid email or password.';
+            break;
+          default:
+            msg = `Login failed: ${error.message || 'Unknown error.'}`;
+        }
+      } else {
+        msg = 'Unexpected error occurred.';
       }
+
       setErrorMsg(msg);
     }
   };
