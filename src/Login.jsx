@@ -18,9 +18,6 @@ const Login = () => {
       navigate('/');
     } catch (error) {
       switch (error.code) {
-        case 'auth/invalid-credential':
-          setErrorMsg('Invalid email or password.');
-          break;
         case 'auth/user-not-found':
           setErrorMsg('No account found with this email.');
           break;
@@ -29,6 +26,9 @@ const Login = () => {
           break;
         case 'auth/too-many-requests':
           setErrorMsg('Too many failed attempts. Please try again later.');
+          break;
+        case 'auth/invalid-credential':
+          setErrorMsg('Invalid email or password.');
           break;
         default:
           setErrorMsg('Login failed. Please try again.');
