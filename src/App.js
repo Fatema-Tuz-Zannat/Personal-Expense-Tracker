@@ -6,6 +6,7 @@ import AddIncome from './AddIncome';
 import Dashboard from './Dashboard';
 import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import IncomeTracker from './IncomeTracker'; 
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -20,6 +21,10 @@ function App() {
         <Route
           path="/"
           element={user ? <Dashboard /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/income"
+          element={user ? <IncomeTracker /> : <Navigate to="/login" />}
         />
         <Route
           path="/expenses"
