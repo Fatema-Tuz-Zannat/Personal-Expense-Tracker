@@ -1,65 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { db, auth } from './firebase';
+import { auth, db } from './firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [expenses, setExpenses] = useState([]);
-  const navigate = useNavigate();
   const user = auth.currentUser;
+  const navigate = useNavigate();
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
   useEffect(() => {
-    const fetchExpenses = async () => {
-      if (!user) return;
+    if (!user) return;
 
-      const expensesRef = collection(db, 'expenses');
-      const q = query(expensesRef, where('userId', '==', user.uid));
-      const querySnapshot = await getDocs(q);
-
-      const expensesData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setExpenses(expensesData);
+    const fetchIncome = async () => {
+      const q = query(collection(db, 'incomes'), where('userId', '==', user.uid));
+      const snapshot = await getDocs(q);
+      const total = snapshot.docs.reduce((sum, doc) => {
+        const data = doc.data();
+        return sum + (parseFloat(data.amount) || 0);
+      }, 0);
+      setTotalIncome(total);
     };
 
+    const fetchExpenses = async () => {
+      const q = query(collection(db, 'expenses'), where('userId', '==', user.uid));
+      const snapshot = await getDocs(q);
+      const total = snapshot.docs.reduce((sum, doc) => {
+        const data = doc.data();
+        return sum + (parseFloat(data.amount) || 0);
+      }, 0);
+      setTotalExpenses(total);
+    };
+
+    fetchIncome();
     fetchExpenses();
   }, [user]);
 
-  const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-  };
+  const remainingIncome = totalIncome - totalExpenses;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <h1 className="text-3xl font-bold mb-6">Welcome, {user?.email}!</h1>
+    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
+      <h1 className="text-3xl font-bold mb-6">Welcome, {user?.email}</h1>
 
-      <div className="bg-white shadow-md rounded p-6 w-full max-w-md space-y-4">
-        <p className="text-lg">Total Expenses: <span className="font-semibold">{expenses.length}</span></p>
-        <p className="text-lg">Total Amount Spent: <span className="font-semibold">₹{totalAmount.toFixed(2)}</span></p>
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md space-y-4">
+        <div className="text-lg">
+          <p className="mb-2">💰 <strong>Total Income:</strong> ₹{totalIncome.toFixed(2)}</p>
+          <p className="mb-2">🧾 <strong>Total Expenses:</strong> ₹{totalExpenses.toFixed(2)}</p>
+          <p className="mb-2">💼 <strong>Remaining Income:</strong> ₹{remainingIncome.toFixed(2)}</p>
+        </div>
 
-        <button
-          onClick={() => navigate('/expenses')}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          View Expenses
-        </button>
-        <button
-          onClick={() => navigate('/add-income')}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          Add Income
-        </button>
-        <button
-          onClick={handleLogout}
-          className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-4"
-        >
-          Logout
-        </button>
+        <div className="flex flex-col space-y-2">
+          <button
+            onClick={() => navigate('/income')}
+            className="bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          >
+            ➕ Add/View Income
+          </button>
+
+          <button
+            onClick={() => navigate('/expenses')}
+            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            ➕ Add/View Expenses
+          </button>
+        </div>
       </div>
     </div>
   );
