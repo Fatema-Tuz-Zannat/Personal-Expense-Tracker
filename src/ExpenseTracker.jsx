@@ -111,7 +111,7 @@ const ExpenseTracker = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">₹{expense.amount.toFixed(2)}</p>
+                      <p className="font-semibold">TK{expense.amount.toFixed(2)}</p>
                       <div className="flex gap-2 text-sm mt-1">
                         <button
                           onClick={() => handleEdit(expense.id)}
