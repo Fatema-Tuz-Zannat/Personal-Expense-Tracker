@@ -44,9 +44,9 @@ const Dashboard = () => {
 
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md space-y-4">
         <div className="text-lg">
-          <p className="mb-2">💰 <strong>Total Income:</strong> ₹{totalIncome.toFixed(2)}</p>
-          <p className="mb-2">🧾 <strong>Total Expenses:</strong> ₹{totalExpenses.toFixed(2)}</p>
-          <p className="mb-2">💼 <strong>Remaining Income:</strong> ₹{remainingIncome.toFixed(2)}</p>
+          <p className="mb-2">💰 <strong>Total Income:</strong> TK{totalIncome.toFixed(2)}</p>
+          <p className="mb-2">🧾 <strong>Total Expenses:</strong> TK{totalExpenses.toFixed(2)}</p>
+          <p className="mb-2">💼 <strong>Remaining Income:</strong> TK{remainingIncome.toFixed(2)}</p>
         </div>
 
         <div className="flex flex-col space-y-2">
