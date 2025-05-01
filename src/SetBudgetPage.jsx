@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
-import { db } from './firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+  query,
+  where,
+} from 'firebase/firestore';
+import { db, auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const SetBudgetPage = () => {
-  const [type, setType] = useState('monthly');
+  const [type, setType] = useState('monthly || yearly');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [amount, setAmount] = useState('');
-  const { currentUser } = useAuth();
+  const [currentUser, setCurrentUser] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
