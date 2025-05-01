@@ -2,11 +2,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Signup from './Signup';
 import Login from './Login';
 import ExpenseTracker from './ExpenseTracker';
-import AddIncome from './AddIncomeForm';
 import Dashboard from './Dashboard';
 import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import IncomeTracker from './IncomeTracker'; 
+import SetBudgetPage from './SetBudgetPage';
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -31,8 +31,8 @@ function App() {
           element={user ? <ExpenseTracker /> : <Navigate to="/login" />}
         />
         <Route
-          path="/add-income"
-          element={user ? <AddIncome /> : <Navigate to="/login" />}
+          path="/budgets"
+          element={user ? <SetBudgetPage /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
