@@ -55,8 +55,10 @@ const Dashboard = () => {
           <button onClick={() => navigate('/expenses')} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
             Add/View Expense
           </button>
+          <button onClick={() => navigate('/budgets')} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+            Set Budget
+          </button>
         </div>
-
         <button onClick={handleLogout} className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-2">
           Logout
         </button>
