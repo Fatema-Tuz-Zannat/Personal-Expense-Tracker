@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Signup from './Signup';
 import Login from './Login';
 import ExpenseTracker from './ExpenseTracker';
-import AddIncome from './AddIncome';
+import AddIncome from './AddIncomeForm';
 import Dashboard from './Dashboard';
 import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
