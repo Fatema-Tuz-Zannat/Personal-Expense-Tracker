@@ -1,117 +1,195 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { db, auth } from './firebase';
+import React, { useEffect, useState } from 'react';
 import {
   collection,
   addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
   query,
   where,
-  getDocs,
-  Timestamp,
 } from 'firebase/firestore';
+import { db, auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import AddIncomeForm from './AddIncomeForm';
 
 const IncomeTracker = () => {
-  const [source, setSource] = useState('');
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
   const [incomes, setIncomes] = useState([]);
-
-  const user = auth.currentUser;
-
-  const fetchIncomes = useCallback(async () => {
-    if (!user) return;
-
-    const q = query(collection(db, 'incomes'), where('userId', '==', user.uid));
-    const querySnapshot = await getDocs(q);
-
-    const incomeData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    setIncomes(incomeData);
-  }, [user]);
+  const [editingId, setEditingId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    fetchIncomes();
-  }, [fetchIncomes]);
-
-  const handleAddIncome = async (e) => {
-    e.preventDefault();
-    if (!source || !amount || !date) {
-      alert('Please fill all required fields.');
-      return;
-    }
-
-    await addDoc(collection(db, 'incomes'), {
-      userId: user.uid,
-      source,
-      amount: parseFloat(amount),
-      description,
-      date: Timestamp.fromDate(new Date(date)),
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        setCurrentUser(null);
+      }
     });
 
-    setSource('');
-    setAmount('');
-    setDescription('');
-    setDate('');
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchIncomes = async () => {
+      const q = query(
+        collection(db, 'incomes'),
+        where('userId', '==', currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const incomesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setIncomes(incomesData);
+    };
+
     fetchIncomes();
+  }, [currentUser]);
+
+  const handleAddIncome = async (income) => {
+    const incomeWithUser = {
+      ...income,
+      userId: currentUser.uid,
+    };
+    const docRef = await addDoc(collection(db, 'incomes'), incomeWithUser);
+    setIncomes(prev => [{ ...incomeWithUser, id: docRef.id }, ...prev]);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, 'incomes', id));
+    setIncomes(prev => prev.filter(income => income.id !== id));
+  };
+
+  const handleEdit = (id) => {
+    setEditingId(id);
+  };
+
+  const handleUpdate = async (id, updatedIncome) => {
+    await updateDoc(doc(db, 'incomes', id), updatedIncome);
+    setIncomes(prev =>
+      prev.map(inc =>
+        inc.id === id ? { ...inc, ...updatedIncome } : inc
+      )
+    );
+    setEditingId(null);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-6 bg-gray-100">
-      <h1 className="text-2xl font-bold mb-4">Income Tracker</h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-3xl font-bold text-center mb-6">Personal Income Tracker</h1>
 
-      <form onSubmit={handleAddIncome} className="space-y-4 mb-6 w-full max-w-md">
-        <input
-          type="text"
-          placeholder="Source *"
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          className="w-full px-3 py-2 border rounded"
-          required
-        />
-        <input
-          type="number"
-          placeholder="Amount (TK) *"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full px-3 py-2 border rounded"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full px-3 py-2 border rounded"
-        />
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full px-3 py-2 border rounded"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          Add Income
-        </button>
-      </form>
+      <AddIncomeForm onAddIncome={handleAddIncome} />
 
-      <div className="w-full max-w-md space-y-2">
-        {incomes.map((income) => (
-          <div key={income.id} className="bg-white p-4 rounded shadow">
-            <p><strong>Source:</strong> {income.source}</p>
-            <p><strong>Amount:</strong> TK {income.amount.toFixed(2)}</p>
-            {income.description && <p><strong>Description:</strong> {income.description}</p>}
-            <p><strong>Date:</strong> {income.date.toDate().toDateString()}</p>
-          </div>
-        ))}
+      <div className="mt-8 max-w-md mx-auto bg-white shadow-md rounded-md p-4">
+        <h2 className="text-xl font-semibold mb-4">Incomes</h2>
+        {incomes.length === 0 ? (
+          <p className="text-gray-500 text-center">No incomes added yet.</p>
+        ) : (
+          <ul className="space-y-3">
+            {incomes.map((income) => (
+              <li
+                key={income.id}
+                className="flex justify-between items-center border-b pb-2"
+              >
+                {editingId === income.id ? (
+                  <EditIncomeForm
+                    income={income}
+                    onSave={(updatedIncome) =>
+                      handleUpdate(income.id, updatedIncome)
+                    }
+                    onCancel={() => setEditingId(null)}
+                  />
+                ) : (
+                  <>
+                    <div>
+                      <p className="font-medium">{income.title}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(income.date.seconds * 1000).toDateString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">TK{income.amount.toFixed(2)}</p>
+                      <div className="flex gap-2 text-sm mt-1">
+                        <button
+                          onClick={() => handleEdit(income.id)}
+                          className="text-blue-500 hover:underline"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(income.id)}
+                          className="text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
+  );
+};
+
+const EditIncomeForm = ({ income, onSave, onCancel }) => {
+  const [title, setTitle] = useState(income.title);
+  const [amount, setAmount] = useState(income.amount);
+  const [date, setDate] = useState(
+    new Date(income.date.seconds * 1000).toISOString().split('T')[0]
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      title,
+      amount: parseFloat(amount),
+      date: new Date(date),
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2">
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <input
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-sm text-gray-600 hover:underline"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="text-sm text-green-600 font-semibold hover:underline"
+        >
+          Save
+        </button>
+      </div>
+    </form>
   );
 };
 
