@@ -35,7 +35,7 @@ const IncomeTracker = () => {
 
     const fetchIncomes = async () => {
       const q = query(
-        collection(db, 'incomes'),
+        collection(db, 'income'),
         where('userId', '==', currentUser.uid)
       );
       const querySnapshot = await getDocs(q);
@@ -54,12 +54,12 @@ const IncomeTracker = () => {
       ...income,
       userId: currentUser.uid,
     };
-    const docRef = await addDoc(collection(db, 'incomes'), incomeWithUser);
+    const docRef = await addDoc(collection(db, 'income'), incomeWithUser);
     setIncomes(prev => [{ ...incomeWithUser, id: docRef.id }, ...prev]);
   };
 
   const handleDelete = async (id) => {
-    await deleteDoc(doc(db, 'incomes', id));
+    await deleteDoc(doc(db, 'income', id));
     setIncomes(prev => prev.filter(income => income.id !== id));
   };
 
@@ -68,7 +68,7 @@ const IncomeTracker = () => {
   };
 
   const handleUpdate = async (id, updatedIncome) => {
-    await updateDoc(doc(db, 'incomes', id), updatedIncome);
+    await updateDoc(doc(db, 'income', id), updatedIncome);
     setIncomes(prev =>
       prev.map(inc =>
         inc.id === id ? { ...inc, ...updatedIncome } : inc
@@ -79,7 +79,7 @@ const IncomeTracker = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Personal Income Tracker</h1>
+      <h1 className="text-3xl font-bold text-center mb-6">Personal Expense Tracker</h1>
 
       <AddIncomeForm onAddIncome={handleAddIncome} />
 
