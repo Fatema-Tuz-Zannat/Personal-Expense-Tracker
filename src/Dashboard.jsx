@@ -17,7 +17,7 @@ const Dashboard = () => {
   }, [user]);
 
   const fetchIncomes = useCallback(async () => {
-    const q = query(collection(db, 'incomes'), where('userId', '==', user.uid));
+    const q = query(collection(db, 'income'), where('userId', '==', user.uid));
     const snapshot = await getDocs(q);
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setIncomes(data);
@@ -49,7 +49,7 @@ const Dashboard = () => {
         <p><strong>Remaining Income:</strong> TK {remaining.toFixed(2)}</p>
 
         <div className="flex gap-2">
-          <button onClick={() => navigate('/incomes')} className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
+          <button onClick={() => navigate('/income')} className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
             Add/View Income
           </button>
           <button onClick={() => navigate('/expenses')} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
