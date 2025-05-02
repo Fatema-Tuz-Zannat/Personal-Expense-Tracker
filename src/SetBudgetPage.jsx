@@ -9,7 +9,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { auth, db } from "./firebaseConfig";
+import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 const SetBudgetPage = () => {
@@ -63,7 +63,6 @@ const SetBudgetPage = () => {
     };
 
     if (budgetType === "yearly") {
-      // Check if total monthly budgets exceed this new yearly budget
       const totalMonthly = budgets
         .filter(
           (b) => b.type === "monthly" && b.year === parseInt(year)
