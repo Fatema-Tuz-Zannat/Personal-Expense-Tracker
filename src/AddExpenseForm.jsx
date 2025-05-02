@@ -33,10 +33,9 @@ const AddExpenseForm = () => {
 
     const expenseDate = new Date(date);
     const year = expenseDate.getFullYear().toString();
-    const month = date.slice(0, 7); // 'YYYY-MM'
+    const month = date.slice(0, 7);
 
     try {
-      // Add new expense
       await addDoc(collection(db, 'expenses'), {
         userId: currentUser.uid,
         category,
@@ -48,7 +47,6 @@ const AddExpenseForm = () => {
 
       alert('Expense added successfully.');
 
-      // Fetch expenses for that month
       const expenseQuery = query(
         collection(db, 'expenses'),
         where('userId', '==', currentUser.uid)
@@ -84,7 +82,6 @@ const AddExpenseForm = () => {
         }
       }
 
-      // Clear form
       setCategory('');
       setAmount('');
       setDate('');
