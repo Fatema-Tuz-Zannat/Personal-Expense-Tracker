@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -7,27 +7,21 @@ import {
   doc,
   updateDoc,
   query,
-  where,
-} from 'firebase/firestore';
-import { db, auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+} from "firebase/firestore";
+import { db, auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const SetBudgetPage = () => {
-  const [type, setType] = useState('monthly' || 'yearly');
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
-  const [amount, setAmount] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
+  const [amount, setAmount] = useState("");
+  const [type, setType] = useState("monthly");
   const [budgets, setBudgets] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurrentUser(user);
+        setUserId(user.uid);
         fetchBudgets(user.uid);
-      } else {
-        setCurrentUser(null);
-        setBudgets([]);
       }
     });
 
@@ -35,132 +29,91 @@ const SetBudgetPage = () => {
   }, []);
 
   const fetchBudgets = async (uid) => {
-    const q = query(
-      collection(db, 'budgets', uid, 'budgetEntries')
-    );
+    const q = query(collection(db, "budgets"));
     const querySnapshot = await getDocs(q);
-    const budgetsData = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setBudgets(budgetsData);
+    const budgetList = [];
+    querySnapshot.forEach((doc) => {
+      if (doc.data().userId === uid) {
+        budgetList.push({ id: doc.id, ...doc.data() });
+      }
+    });
+    setBudgets(budgetList);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAddBudget = async () => {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    const parsedAmount = Number(amount);
 
-    if (!amount || parseFloat(amount) <= 0) {
-      alert('Please enter a valid budget amount.');
+    if (parsedAmount <= 0) {
+      alert("Budget must be a positive number.");
       return;
     }
 
-    const period = type === 'monthly' ? month : year;
-
-    if (type === 'yearly') {
+    if (type === "yearly") {
       const monthlyBudgets = budgets.filter(
-        (b) => b.type === 'monthly' && b.period.startsWith(year)
+        (b) => b.type === "monthly" && b.year === year
       );
-      const totalMonthly = monthlyBudgets.reduce(
-        (sum, b) => sum + b.amount,
-        0
-      );
+      const totalMonthly = monthlyBudgets.reduce((sum, b) => sum + b.amount, 0);
 
-      if (parseFloat(amount) < totalMonthly) {
-        const confirm = window.confirm(
-          `You've already set monthly budgets totaling TK${totalMonthly}. Setting a yearly budget of TK${amount} will be less than the total monthly budgets. Do you still want to continue?`
+      if (parsedAmount < totalMonthly) {
+        const proceed = window.confirm(
+          `Your yearly budget is less than total monthly budgets for this year (TK ${totalMonthly}). Do you still want to continue?`
         );
-        if (!confirm) return;
+        if (!proceed) return;
       }
     }
 
-    try {
-      await addDoc(collection(db, 'budgets', currentUser.uid, 'budgetEntries'), {
-        type,
-        period,
-        amount: parseFloat(amount),
-      });
-      alert('Budget set successfully!');
-      fetchBudgets(currentUser.uid);
-    } catch (err) {
-      console.error(err);
-      alert('Error setting budget.');
-    }
+    await addDoc(collection(db, "budgets"), {
+      userId,
+      amount: parsedAmount,
+      type,
+      month: month,
+      year: year,
+    });
+
+    setAmount("");
+    fetchBudgets(userId);
   };
 
   const handleDelete = async (id) => {
-    try {
-      await deleteDoc(doc(db, 'budgets', currentUser.uid, 'budgetEntries', id));
-      alert('Budget deleted successfully!');
-      fetchBudgets(currentUser.uid);
-    } catch (err) {
-      console.error(err);
-      alert('Error deleting budget.');
-    }
+    await deleteDoc(doc(db, "budgets", id));
+    fetchBudgets(userId);
   };
 
   const handleEdit = async (id) => {
-    const newAmount = prompt('Enter new budget amount:');
-    if (newAmount && parseFloat(newAmount) > 0) {
-      try {
-        await updateDoc(doc(db, 'budgets', currentUser.uid, 'budgetEntries', id), {
-          amount: parseFloat(newAmount),
-        });
-        alert('Budget updated successfully!');
-        fetchBudgets(currentUser.uid);
-      } catch (err) {
-        console.error(err);
-        alert('Error updating budget.');
-      }
-    } else {
-      alert('Invalid amount entered.');
+    const newAmount = prompt("Enter new budget amount:");
+    if (!newAmount || isNaN(newAmount) || Number(newAmount) <= 0) {
+      alert("Invalid amount.");
+      return;
     }
+    await updateDoc(doc(db, "budgets", id), {
+      amount: Number(newAmount),
+    });
+    fetchBudgets(userId);
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <h2>Set Budget</h2>
-        <label>
-          What budget would you like to set?
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
-        </label>
-
-        {type === 'monthly' ? (
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            required
-          />
-        ) : (
-          <input
-            type="number"
-            placeholder="Enter year (e.g. 2025)"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            required
-          />
-        )}
-
-        <input
-          type="number"
-          placeholder="Amount in TK"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
-
-        <button type="submit">Save Budget</button>
-      </form>
+    <div className="budget-page">
+      <h2>Set Budget</h2>
+      <select value={type} onChange={(e) => setType(e.target.value)}>
+        <option value="monthly">Monthly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+      <input
+        type="number"
+        placeholder="Enter budget amount"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+      <button onClick={handleAddBudget}>Set Budget</button>
 
       <h3>Existing Budgets</h3>
       <ul>
         {budgets.map((budget) => (
           <li key={budget.id}>
-            {budget.type} - {budget.period}: TK{budget.amount}
+            {budget.type} - TK {budget.amount} ({budget.month}/{budget.year})
             <button onClick={() => handleEdit(budget.id)}>Edit</button>
             <button onClick={() => handleDelete(budget.id)}>Delete</button>
           </li>
