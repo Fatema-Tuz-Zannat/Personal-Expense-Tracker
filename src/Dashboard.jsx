@@ -1,105 +1,89 @@
 import React, { useEffect, useState } from "react";
-import { db } from "./firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "./firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 
 const Dashboard = () => {
-  const [monthlyBudget, setMonthlyBudget] = useState(null);
-  const [yearlyBudget, setYearlyBudget] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
-  const [budgetType, setBudgetType] = useState("");
+  const [budget, setBudget] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async (userId) => {
-      const now = new Date();
-      const currentMonth = now.getMonth() + 1;
-      const currentYear = now.getFullYear();
-
-      const incomeSnapshot = await getDocs(
-        query(
-          collection(db, "income"),
-          where("userId", "==", userId),
-          where("month", "==", currentMonth),
-          where("year", "==", currentYear)
-        )
-      );
-      let income = 0;
-      incomeSnapshot.forEach((doc) => {
-        income += Number(doc.data().amount);
-      });
-      setTotalIncome(income);
-
-      const expenseSnapshot = await getDocs(
-        query(
-          collection(db, "expenses"),
-          where("userId", "==", userId),
-          where("month", "==", currentMonth),
-          where("year", "==", currentYear)
-        )
-      );
-      let expenses = 0;
-      expenseSnapshot.forEach((doc) => {
-        expenses += Number(doc.data().amount);
-      });
-      setTotalExpenses(expenses);
-
-      const budgetSnapshot = await getDocs(
-        query(
-          collection(db, "budgets"),
-          where("userId", "==", userId)
-        )
-      );
-      budgetSnapshot.forEach((doc) => {
-        const budget = doc.data();
-        if (budget.type === "monthly" && budget.month === currentMonth && budget.year === currentYear) {
-          setMonthlyBudget(budget.amount);
-          setBudgetType("monthly");
-        } else if (budget.type === "yearly" && budget.year === currentYear) {
-          setYearlyBudget(budget.amount);
-          setBudgetType("yearly");
-        }
-      });
-    };
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        fetchData(user.uid);
+        setCurrentUser(user);
+        fetchFinancialData(user.uid);
+      } else {
+        navigate("/login");
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
-  const currentBudget = budgetType === "monthly" ? monthlyBudget : yearlyBudget;
-  const remainingIncome = totalIncome - totalExpenses;
+  const fetchFinancialData = async (uid) => {
+    const incomeSnapshot = await getDocs(query(collection(db, "income"), where("uid", "==", uid)));
+    const expenseSnapshot = await getDocs(query(collection(db, "expenses"), where("uid", "==", uid)));
+    const budgetSnapshot = await getDocs(query(collection(db, "budgets"), where("uid", "==", uid)));
+
+    let incomeTotal = 0;
+    incomeSnapshot.forEach(doc => incomeTotal += Number(doc.data().amount || 0));
+    setTotalIncome(incomeTotal);
+
+    let expenseTotal = 0;
+    expenseSnapshot.forEach(doc => expenseTotal += Number(doc.data().amount || 0));
+    setTotalExpenses(expenseTotal);
+
+    let latestBudget = 0;
+    budgetSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.type === "monthly" || data.type === "yearly") {
+        latestBudget = data.amount;
+      }
+    });
+    setBudget(latestBudget);
+  };
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
+
+  const remaining = totalIncome - totalExpenses;
 
   return (
-    <div className="dashboard">
-      <h2>Dashboard</h2>
-      <p><strong>Total Income:</strong> TK {totalIncome}</p>
-      <p><strong>Total Expenses:</strong> TK {totalExpenses}</p>
-      <p><strong>Remaining Income:</strong> TK {remainingIncome}</p>
-      <p><strong>Budget Type:</strong> {budgetType}</p>
-      <p><strong>Budget Amount:</strong> TK {currentBudget}</p>
+    <div className="dashboard-container" style={{ padding: "2rem" }}>
+      <h1>Welcome to Your Dashboard</h1>
 
-      <BudgetProgressBar
-        totalExpenses={totalExpenses}
-        budget={currentBudget}
-      />
+      {/* Navigation Buttons */}
+      <div style={{ margin: "20px 0", display: "flex", flexWrap: "wrap", gap: "12px" }}>
+        <button onClick={() => navigate("/add-income")}>Add Income</button>
+        <button onClick={() => navigate("/income")}>View Income</button>
+        <button onClick={() => navigate("/add-expense")}>Add Expense</button>
+        <button onClick={() => navigate("/expenses")}>View Expenses</button>
+        <button onClick={() => navigate("/set-budget")}>Set Budget</button>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
 
-      <IncomeExpensePieChart
-        income={totalIncome}
-        expenses={totalExpenses}
-      />
+      {/* Financial Summary */}
+      <div style={{ marginTop: "2rem" }}>
+        <h2>Financial Summary</h2>
+        <p><strong>Total Income:</strong> TK {totalIncome}</p>
+        <p><strong>Total Expenses:</strong> TK {totalExpenses}</p>
+        <p><strong>Remaining Balance:</strong> TK {remaining}</p>
+        <p><strong>Current Budget:</strong> TK {budget}</p>
+      </div>
+
+      {/* Visuals */}
+      <div style={{ marginTop: "2rem" }}>
+        <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
+        <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
+      </div>
     </div>
   );
 };
