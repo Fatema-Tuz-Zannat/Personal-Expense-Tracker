@@ -1,67 +1,116 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { db, auth } from './firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { auth, db } from './firebase';
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+
+const COLORS = ['#00C49F', '#FF8042'];
 
 const Dashboard = () => {
-  const [expenses, setExpenses] = useState([]);
-  const [incomes, setIncomes] = useState([]);
-  const navigate = useNavigate();
-  const user = auth.currentUser;
-
-  const fetchExpenses = useCallback(async () => {
-    const q = query(collection(db, 'expenses'), where('userId', '==', user.uid));
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setExpenses(data);
-  }, [user]);
-
-  const fetchIncomes = useCallback(async () => {
-    const q = query(collection(db, 'income'), where('userId', '==', user.uid));
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setIncomes(data);
-  }, [user]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [budget, setBudget] = useState(null);
+  const [budgetType, setBudgetType] = useState('');
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [totalIncome, setTotalIncome] = useState(0);
 
   useEffect(() => {
-    if (user) {
-      fetchExpenses();
-      fetchIncomes();
-    }
-  }, [fetchExpenses, fetchIncomes, user]);
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setCurrentUser(user);
+        fetchData(user.uid);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const totalExpense = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const totalIncome = incomes.reduce((sum, inc) => sum + inc.amount, 0);
-  const remaining = totalIncome - totalExpense;
+  const fetchData = async (uid) => {
+    const expenseSnapshot = await getDocs(query(collection(db, 'expenses'), where('userId', '==', uid)));
+    const incomeSnapshot = await getDocs(query(collection(db, 'incomes'), where('userId', '==', uid)));
+    const budgetSnapshot = await getDocs(query(collection(db, 'budgets'), where('userId', '==', uid)));
 
-  const handleLogout = () => {
-    auth.signOut();
-    navigate('/login');
+    let expenses = 0;
+    expenseSnapshot.forEach(doc => expenses += parseFloat(doc.data().amount));
+
+    let income = 0;
+    incomeSnapshot.forEach(doc => income += parseFloat(doc.data().amount));
+
+    let budgetData = null;
+    let type = '';
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1;
+    const currentYear = today.getFullYear();
+
+    budgetSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.type === 'monthly' && data.month === currentMonth && data.year === currentYear) {
+        budgetData = data;
+        type = 'monthly';
+      } else if (data.type === 'yearly' && data.year === currentYear && !budgetData) {
+        budgetData = data;
+        type = 'yearly';
+      }
+    });
+
+    setTotalExpenses(expenses);
+    setTotalIncome(income);
+    setBudget(budgetData ? budgetData.amount : null);
+    setBudgetType(type);
   };
 
+  const budgetUsage = budget ? ((totalExpenses / budget) * 100).toFixed(2) : 0;
+  const remainingIncome = (totalIncome - totalExpenses).toFixed(2);
+
+  const pieData = [
+    { name: 'Expenses', value: totalExpenses },
+    { name: 'Remaining Income', value: totalIncome - totalExpenses },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6">Welcome, {user?.email}!</h1>
-
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md space-y-4">
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
+      <div className="mb-6 space-y-2">
+        <p><strong>Budget ({budgetType}):</strong> TK {budget ?? 'Not Set'}</p>
         <p><strong>Total Income:</strong> TK {totalIncome.toFixed(2)}</p>
-        <p><strong>Total Expenses:</strong> TK {totalExpense.toFixed(2)}</p>
-        <p><strong>Remaining Income:</strong> TK {remaining.toFixed(2)}</p>
+        <p><strong>Total Expenses:</strong> TK {totalExpenses.toFixed(2)}</p>
+        <p><strong>Remaining Income:</strong> TK {remainingIncome}</p>
+      </div>
 
-        <div className="flex gap-2">
-          <button onClick={() => navigate('/income')} className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
-            Add/View Income
-          </button>
-          <button onClick={() => navigate('/expenses')} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-            Add/View Expense
-          </button>
-          <button onClick={() => navigate('/budgets')} className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-            Set Budget
-          </button>
+      {budget && (
+        <div className="mb-6">
+          <p className="mb-1 font-medium">Budget Usage:</p>
+          <div className="w-full bg-gray-200 rounded-full h-4">
+            <div
+              className="bg-green-500 h-4 rounded-full transition-all"
+              style={{ width: `${budgetUsage > 100 ? 100 : budgetUsage}%` }}
+            />
+          </div>
+          <p className="text-sm mt-1">{budgetUsage}% used</p>
         </div>
-        <button onClick={handleLogout} className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 mt-2">
-          Logout
-        </button>
+      )}
+
+      <div className="h-64">
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              dataKey="value"
+              label
+            >
+              {pieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
