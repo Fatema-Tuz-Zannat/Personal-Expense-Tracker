@@ -7,7 +7,6 @@ import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 
 const Dashboard = () => {
-  const [currentUser, setCurrentUser] = useState(null);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [budget, setBudget] = useState(0);
@@ -16,15 +15,14 @@ const Dashboard = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser(user);
         fetchFinancialData(user.uid);
       } else {
         navigate("/login");
       }
     });
-
+  
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate]);  
 
   const fetchFinancialData = async (uid) => {
     const incomeSnapshot = await getDocs(query(collection(db, "income"), where("uid", "==", uid)));
@@ -60,17 +58,13 @@ const Dashboard = () => {
     <div className="dashboard-container" style={{ padding: "2rem" }}>
       <h1>Welcome to Your Dashboard</h1>
 
-      {/* Navigation Buttons */}
       <div style={{ margin: "20px 0", display: "flex", flexWrap: "wrap", gap: "12px" }}>
-        <button onClick={() => navigate("/add-income")}>Add Income</button>
         <button onClick={() => navigate("/income")}>View Income</button>
-        <button onClick={() => navigate("/add-expense")}>Add Expense</button>
         <button onClick={() => navigate("/expenses")}>View Expenses</button>
-        <button onClick={() => navigate("/set-budget")}>Set Budget</button>
+        <button onClick={() => navigate("/budgets")}>Set Budget</button>
         <button onClick={handleLogout}>Logout</button>
       </div>
 
-      {/* Financial Summary */}
       <div style={{ marginTop: "2rem" }}>
         <h2>Financial Summary</h2>
         <p><strong>Total Income:</strong> TK {totalIncome}</p>
@@ -79,7 +73,6 @@ const Dashboard = () => {
         <p><strong>Current Budget:</strong> TK {budget}</p>
       </div>
 
-      {/* Visuals */}
       <div style={{ marginTop: "2rem" }}>
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
