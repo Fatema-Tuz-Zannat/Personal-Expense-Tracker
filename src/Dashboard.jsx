@@ -25,18 +25,18 @@ const Dashboard = () => {
   }, [navigate]);  
 
   const fetchFinancialData = async (uid) => {
-    const incomeSnapshot = await getDocs(query(collection(db, "income"), where("uid", "==", uid)));
-    const expenseSnapshot = await getDocs(query(collection(db, "expenses"), where("uid", "==", uid)));
-    const budgetSnapshot = await getDocs(query(collection(db, "budgets"), where("uid", "==", uid)));
-
+    const incomeSnapshot = await getDocs(query(collection(db, "income"), where("userId", "==", uid)));
+    const expenseSnapshot = await getDocs(query(collection(db, "expenses"), where("userId", "==", uid)));
+    const budgetSnapshot = await getDocs(query(collection(db, "budgets"), where("userId", "==", uid)));
+  
     let incomeTotal = 0;
     incomeSnapshot.forEach(doc => incomeTotal += Number(doc.data().amount || 0));
     setTotalIncome(incomeTotal);
-
+  
     let expenseTotal = 0;
     expenseSnapshot.forEach(doc => expenseTotal += Number(doc.data().amount || 0));
     setTotalExpenses(expenseTotal);
-
+  
     let latestBudget = 0;
     budgetSnapshot.forEach(doc => {
       const data = doc.data();
