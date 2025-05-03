@@ -79,13 +79,13 @@ const AddExpenseForm = () => {
         if (percentUsed > 70 && percentUsed <= 100) {
           alert(
             `Warning: You've used ${percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${
-              activeBudget.type === 'monthly' ? month : year
+              activeBudget.type === 'monthly' ? monthName : year
             }.`
           );
         } else if (percentUsed > 100) {
           alert(
             `Warning: You've exceeded your ${activeBudget.type} budget for ${
-              activeBudget.type === 'monthly' ? month : year
+              activeBudget.type === 'monthly' ? monthName : year
             } by ${(percentUsed - 100).toFixed(2)}%.`
           );
         }
