@@ -72,15 +72,18 @@ const AddExpenseForm = () => {
         const percentUsed = (totalExpenses / activeBudget.amount) * 100;
         if (percentUsed > 70 && percentUsed <= 100) {
           alert(
-            `Warning: You've used ${percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${activeBudget.type === 'monthly' ? month : year}.`
+            `Warning: You've used ${percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${
+              activeBudget.type === 'monthly' ? month : year
+            }.`
           );
-        }
-        else if (percentUsed > 100) {
+        } else if (percentUsed > 100) {
           alert(
-            `Warning: You've overused ${100 - percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${activeBudget.type === 'monthly' ? month : year}.`
+            `Warning: You've exceeded your ${activeBudget.type} budget for ${
+              activeBudget.type === 'monthly' ? month : year
+            } by ${(percentUsed - 100).toFixed(2)}%.`
           );
         }
-      }
+      }      
 
       setCategory('');
       setAmount('');
