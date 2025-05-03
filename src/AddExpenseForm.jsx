@@ -1,157 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { getCurrentMonthYear } from './dateHelpers';
 
-const AddExpenseForm = () => {
-  const [category, setCategory] = useState('');
+const AddExpenseForm = ({ onExpenseAdded }) => {
+  const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
-  const [description, setDescription] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
- 
-   useEffect(() => {
-     const unsubscribe = onAuthStateChanged(auth, (user) => {
-       if (user) setCurrentUser(user);
-     });
-     return () => unsubscribe();
-   }, []);
+  const [budget, setBudget] = useState(null);
+
+  const currentUser = auth.currentUser;
+  const { currentMonth, currentYear } = getCurrentMonthYear();
+
+  useEffect(() => {
+    const fetchBudget = async () => {
+      const budgetRef = collection(db, 'budgets');
+      const q = query(budgetRef, where('userId', '==', currentUser.uid));
+      const querySnapshot = await getDocs(q);
+
+      let monthlyBudget = null;
+      let yearlyBudget = null;
+
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.type === 'monthly' && data.month === currentMonth && data.year === currentYear) {
+          monthlyBudget = data.amount;
+        } else if (data.type === 'yearly' && data.year === currentYear) {
+          yearlyBudget = data.amount;
+        }
+      });
+
+      setBudget(monthlyBudget || yearlyBudget || null);
+    };
+
+    fetchBudget();
+  }, [currentUser.uid, currentMonth, currentYear]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!category || !amount || !date) {
-      alert('Category, Amount, and Date are required.');
-      return;
-    }
 
-    const parsedAmount = parseFloat(amount);
-    if (parsedAmount <= 0) {
-      alert('Please enter a valid positive amount.');
+    if (!title || !amount || !date) {
+      alert('Please fill in all fields.');
       return;
     }
 
     const expenseDate = new Date(date);
-    const year = expenseDate.getFullYear().toString();
-    const monthName = expenseDate.toLocaleString('default', { month: 'long' }); 
+    const month = expenseDate.getMonth() + 1;
+    const year = expenseDate.getFullYear();
 
-    try {
-      await addDoc(collection(db, 'expenses'), {
-        userId: currentUser.uid,
-        category,
-        amount: parsedAmount,
-        date,
-        description: description || '',
-        paymentMethod: paymentMethod || '',
-      });
+    const expensesRef = collection(db, 'expenses');
+    const q = query(expensesRef, where('userId', '==', currentUser.uid));
+    const querySnapshot = await getDocs(q);
 
-      const expenseQuery = query(
-        collection(db, 'expenses'),
-        where('userId', '==', currentUser.uid)
+    let totalMonthlyExpenses = 0;
+
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      const docDate = new Date(data.date);
+      if (
+        docDate.getMonth() + 1 === month &&
+        docDate.getFullYear() === year
+      ) {
+        totalMonthlyExpenses += parseFloat(data.amount);
+      }
+    });
+
+    const newTotal = totalMonthlyExpenses + parseFloat(amount);
+    const budgetLimit = budget || 0;
+    const usagePercentage = ((newTotal / budgetLimit) * 100).toFixed(2);
+
+    if (budgetLimit > 0 && newTotal > 0.7 * budgetLimit) {
+      const confirmAdd = window.confirm(
+        `Warning: Adding this expense will exceed 70% of your monthly budget (${usagePercentage}%). Continue?`
       );
-      const expenseSnapshot = await getDocs(expenseQuery);
-      const expenses = expenseSnapshot.docs
-        .map(doc => doc.data())
-        .filter(exp => {
-          const expDate = new Date(exp.date);
-          return (
-            expDate.getMonth() === expenseDate.getMonth() &&
-            expDate.getFullYear() === expenseDate.getFullYear()
-          );
-        });
-
-      const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-      const budgetQuery = query(
-        collection(db, 'budgets'),
-        where('userId', '==', currentUser.uid)
-      );
-      const budgetSnapshot = await getDocs(budgetQuery);
-      const budgets = budgetSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
-      const monthlyBudget = budgets.find(b => b.type === 'monthly' && b.month === monthName && b.year.toString() === year);
-      const yearlyBudget = budgets.find(b => b.type === 'yearly' && b.year?.toString() === year);
-      
-      const activeBudget = monthlyBudget || yearlyBudget;      
-
-      if (activeBudget && activeBudget.amount > 0) {
-        const percentUsed = (totalExpenses / activeBudget.amount) * 100;
-        if (percentUsed > 70 && percentUsed <= 100) {
-          alert(
-            `Warning: You've used ${percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${
-              activeBudget.type === 'monthly' ? monthName : year
-            }.`
-          );
-        } else if (percentUsed > 100) {
-          alert(
-            `Warning: You've exceeded your ${activeBudget.type} budget for ${
-              activeBudget.type === 'monthly' ? monthName : year
-            } by ${(percentUsed - 100).toFixed(2)}%.`
-          );
-        }
-      }      
-
-      setCategory('');
-      setAmount('');
-      setDate('');
-      setDescription('');
-      setPaymentMethod('');
-      alert('Expense added successfully.');
-    } catch (err) {
-      console.error(err);
-      alert('Failed to add expense.');
+      if (!confirmAdd) return;
     }
+
+    await addDoc(expensesRef, {
+      title,
+      amount: parseFloat(amount),
+      date,
+      userId: currentUser.uid
+    });
+
+    setTitle('');
+    setAmount('');
+    setDate('');
+    onExpenseAdded();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="expense-form">
-      <h2>Add Expense</h2>
-      <label>Category *</label>
-       <select value={category} onChange={(e) => setCategory(e.target.value)} required>
-         <option value="">-- Select Category --</option>
-         <option value="Food">Food</option>
-         <option value="Rent">Rent</option>
-         <option value="Transportation">Transportation</option>
-         <option value="Clothing">Clothing</option>
-         <option value="Medical">Medical</option>
-         <option value="Other">Other</option>
-       </select>
- 
-      <label>Amount (TK) *</label>
-      <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        required
-      />
-      <label>Date *</label>
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        required
-      />
-      <label>Description (Optional)</label>
-      <input
-        type="text"
-        placeholder="Description (optional)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <label>Payment Method (Optional)</label>
-      <select
-        value={paymentMethod}
-        onChange={(e) => setPaymentMethod(e.target.value)}
-      >
-        <option value="">-- Select Method --</option>
-        <option value="Cash">Cash</option>
-        <option value="Credit Card">Credit Card</option>
-        <option value="Debit Card">Debit Card</option>
-        <option value="Bkash">Bkash</option>
-        <option value="Nagad">Nagad</option>
-        <option value="Other">Other</option>
-      </select>
+    <form onSubmit={handleSubmit}>
+      <h3>Add Expense</h3>
+      <input type="text" placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} />
+      <input type="number" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} />
+      <input type="date" value={date} onChange={e => setDate(e.target.value)} />
       <button type="submit">Add Expense</button>
     </form>
   );
