@@ -33,7 +33,7 @@ const AddExpenseForm = () => {
 
     const expenseDate = new Date(date);
     const year = expenseDate.getFullYear().toString();
-    const month = date.slice(0, 7);
+    const monthName = expenseDate.toLocaleString('default', { month: 'long' }); 
 
     try {
       await addDoc(collection(db, 'expenses'), {
@@ -52,7 +52,13 @@ const AddExpenseForm = () => {
       const expenseSnapshot = await getDocs(expenseQuery);
       const expenses = expenseSnapshot.docs
         .map(doc => doc.data())
-        .filter(exp => exp.date.startsWith(month));
+        .filter(exp => {
+          const expDate = new Date(exp.date);
+          return (
+            expDate.getMonth() === expenseDate.getMonth() &&
+            expDate.getFullYear() === expenseDate.getFullYear()
+          );
+        });
 
       const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
@@ -63,16 +69,8 @@ const AddExpenseForm = () => {
       const budgetSnapshot = await getDocs(budgetQuery);
       const budgets = budgetSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       
-      const monthlyBudget = budgets.find(b => 
-        b.type === 'monthly' &&
-        b.month === month &&
-        b.year?.toString() === year
-      );
-      
-      const yearlyBudget = budgets.find(b => 
-        b.type === 'yearly' &&
-        b.year?.toString() === year
-      );
+      const monthlyBudget = budgets.find(b => b.type === 'monthly' && b.month === monthName && b.year.toString() === year);
+      const yearlyBudget = budgets.find(b => b.type === 'yearly' && b.year?.toString() === year);
       
       const activeBudget = monthlyBudget || yearlyBudget;      
 
