@@ -36,28 +36,32 @@ const Dashboard = () => {
   };
 
   const fetchFinancialData = async (uid, viewType, selectedDate) => {
-    const monthName = selectedDate.toLocaleString("default", { month: "long" });
     const year = selectedDate.getFullYear();
-
+    const month = (selectedDate.getMonth() + 1).toString().padStart(2, "0");
+    const monthName = selectedDate.toLocaleString("default", { month: "long" });
+  
     let incomeQuery = collection(db, "income");
     let expenseQuery = collection(db, "expenses");
     let budgetQuery = collection(db, "budgets");
-
+  
     if (viewType === "monthly") {
+      const startDate = `${year}-${month}-01`;
+      const endDate = `${year}-${month}-31`;
+  
       incomeQuery = query(
         incomeQuery,
         where("userId", "==", uid),
-        where("date", ">=", new Date(year, selectedDate.getMonth(), 1)),
-        where("date", "<=", new Date(year, selectedDate.getMonth() + 1, 0))
+        where("date", ">=", startDate),
+        where("date", "<=", endDate)
       );
-
+  
       expenseQuery = query(
         expenseQuery,
         where("userId", "==", uid),
-        where("date", ">=", `${year}-${(selectedDate.getMonth() + 1).toString().padStart(2, "0")}-01`),
-        where("date", "<=", `${year}-${(selectedDate.getMonth() + 1).toString().padStart(2, "0")}-31`)
+        where("date", ">=", startDate),
+        where("date", "<=", endDate)
       );
-
+  
       budgetQuery = query(
         budgetQuery,
         where("userId", "==", uid),
@@ -65,52 +69,58 @@ const Dashboard = () => {
         where("month", "==", monthName),
         where("year", "==", year)
       );
+  
     } else if (viewType === "yearly") {
+      const startDate = `${year}-01-01`;
+      const endDate = `${year}-12-31`;
+  
       incomeQuery = query(
         incomeQuery,
         where("userId", "==", uid),
-        where("date", ">=", new Date(year, 0, 1)),
-        where("date", "<=", new Date(year, 11, 31))
+        where("date", ">=", startDate),
+        where("date", "<=", endDate)
       );
-
+  
       expenseQuery = query(
         expenseQuery,
         where("userId", "==", uid),
-        where("date", ">=", `${year}-01-01`),
-        where("date", "<=", `${year}-12-31`)
+        where("date", ">=", startDate),
+        where("date", "<=", endDate)
       );
-
+  
       budgetQuery = query(
         budgetQuery,
         where("userId", "==", uid),
         where("type", "==", "yearly"),
         where("year", "==", year)
       );
+  
     } else {
+      // Total view
       incomeQuery = query(incomeQuery, where("userId", "==", uid));
       expenseQuery = query(expenseQuery, where("userId", "==", uid));
       budgetQuery = query(budgetQuery, where("userId", "==", uid));
     }
-
+  
     const incomeSnapshot = await getDocs(incomeQuery);
     const expenseSnapshot = await getDocs(expenseQuery);
     const budgetSnapshot = await getDocs(budgetQuery);
-
+  
     let incomeTotal = 0;
     incomeSnapshot.forEach(doc => incomeTotal += Number(doc.data().amount || 0));
     setTotalIncome(incomeTotal);
-
+  
     let expenseTotal = 0;
     expenseSnapshot.forEach(doc => expenseTotal += Number(doc.data().amount || 0));
     setTotalExpenses(expenseTotal);
-
+  
     let budgetAmount = 0;
     budgetSnapshot.forEach(doc => {
       const data = doc.data();
-      budgetAmount = data.amount; // override with latest found
+      budgetAmount = data.amount;
     });
     setBudget(budgetAmount);
-  };
+  };  
 
   const handleLogout = async () => {
     await signOut(auth);

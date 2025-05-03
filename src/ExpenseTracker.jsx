@@ -76,19 +76,7 @@ const ExpenseTracker = () => {
     );
     setEditingId(null);
   };
-  const formatDate = (dateValue) => {
-    let dateObj;
-  
-    if (dateValue && typeof dateValue.toDate === 'function') {
-      dateObj = dateValue.toDate();
-    } else {
-      dateObj = new Date(dateValue);
-    }
-  
-    const options = { day: '2-digit', month: 'long', year: 'numeric' };
-    return dateObj.toLocaleDateString('en-GB', options); 
-  };
-  
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Personal Expense Tracker</h1>
@@ -122,7 +110,7 @@ const ExpenseTracker = () => {
                         {expense.category} | {expense.paymentMethod || ''}
                       </p>
                       <p className="text-sm text-gray-400">
-                        {formatDate(expense.date)}
+                        {new Date(expense.date).toDateString()}
                       </p>
                     </div>
                     <div className="text-right">
@@ -227,7 +215,3 @@ const EditExpenseForm = ({ expense, onSave, onCancel }) => {
 };
 
 export default ExpenseTracker;
-
-
-
-
