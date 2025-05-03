@@ -57,8 +57,6 @@ const AddExpenseForm = () => {
         .filter(exp => exp.date.startsWith(month));
 
       const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-      // Fetch budget
       const budgetQuery = query(
         collection(db, 'budgets', currentUser.uid, 'budgetEntries'),
         where('period', 'in', [month, year])
