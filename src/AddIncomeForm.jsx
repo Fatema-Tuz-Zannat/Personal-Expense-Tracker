@@ -32,7 +32,7 @@ const AddIncomeForm = ({ onAddIncome }) => {
 
       <input
         type="text"
-        placeholder="Title"
+        placeholder="Source"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="w-full border rounded p-2"
