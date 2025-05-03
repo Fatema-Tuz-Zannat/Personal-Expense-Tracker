@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
-import { db, auth } from './firebase';
+import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { db, auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const AddExpenseForm = () => {
-  const { currentUser } = auth();
   const [category, setCategory] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+ 
+   useEffect(() => {
+     const unsubscribe = onAuthStateChanged(auth, (user) => {
+       if (user) setCurrentUser(user);
+     });
+     return () => unsubscribe();
+   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,13 +97,18 @@ const AddExpenseForm = () => {
   return (
     <form onSubmit={handleSubmit} className="expense-form">
       <h2>Add Expense</h2>
-      <input
-        type="text"
-        placeholder="Category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        required
-      />
+      <label>Category *</label>
+       <select value={category} onChange={(e) => setCategory(e.target.value)} required>
+         <option value="">-- Select Category --</option>
+         <option value="Food">Food</option>
+         <option value="Rent">Rent</option>
+         <option value="Transportation">Transportation</option>
+         <option value="Clothing">Clothing</option>
+         <option value="Medical">Medical</option>
+         <option value="Other">Other</option>
+       </select>
+ 
+      <label>Amount (TK) *</label>
       <input
         type="number"
         placeholder="Amount"
@@ -103,24 +116,33 @@ const AddExpenseForm = () => {
         onChange={(e) => setAmount(e.target.value)}
         required
       />
+      <label>Date *</label>
       <input
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
         required
       />
+      <label>Description (Optional)</label>
       <input
         type="text"
         placeholder="Description (optional)"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <input
-        type="text"
-        placeholder="Payment Method (optional)"
+      <label>Payment Method (Optional)</label>
+      <select
         value={paymentMethod}
         onChange={(e) => setPaymentMethod(e.target.value)}
-      />
+      >
+        <option value="">-- Select Method --</option>
+        <option value="Cash">Cash</option>
+        <option value="Credit Card">Credit Card</option>
+        <option value="Debit Card">Debit Card</option>
+        <option value="Bkash">Bkash</option>
+        <option value="Nagad">Nagad</option>
+        <option value="Other">Other</option>
+      </select>
       <button type="submit">Add Expense</button>
     </form>
   );
