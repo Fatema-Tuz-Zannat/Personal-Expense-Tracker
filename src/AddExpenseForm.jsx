@@ -61,12 +61,20 @@ const AddExpenseForm = () => {
         where('userId', '==', currentUser.uid)
       );
       const budgetSnapshot = await getDocs(budgetQuery);
-      const budgets = budgetSnapshot.docs.map(doc => doc.data());
-
-      const monthlyBudget = budgets.find(b => b.type === 'monthly' && b.month === month && b.year.toString() === year);
-      const yearlyBudget = budgets.find(b => b.type === 'yearly' && b.year.toString() === year);
-
-      const activeBudget = monthlyBudget || yearlyBudget;
+      const budgets = budgetSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const monthlyBudget = budgets.find(b => 
+        b.type === 'monthly' &&
+        b.month === month &&
+        b.year?.toString() === year
+      );
+      
+      const yearlyBudget = budgets.find(b => 
+        b.type === 'yearly' &&
+        b.year?.toString() === year
+      );
+      
+      const activeBudget = monthlyBudget || yearlyBudget;      
 
       if (activeBudget && activeBudget.amount > 0) {
         const percentUsed = (totalExpenses / activeBudget.amount) * 100;
