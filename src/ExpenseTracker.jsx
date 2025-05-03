@@ -107,7 +107,7 @@ const ExpenseTracker = () => {
                     <div>
                       <p className="font-medium">{expense.description}</p>
                       <p className="text-sm text-gray-500">
-                        {expense.category} | {expense.paymentMethod || 'N/A'}
+                        {expense.category} | {expense.paymentMethod || ''}
                       </p>
                       <p className="text-sm text-gray-400">
                         {new Date(expense.date).toDateString()}
