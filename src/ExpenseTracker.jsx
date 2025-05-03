@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { db, auth } from './firebase';
 import {
   collection, getDocs, deleteDoc, doc, updateDoc, query, where
@@ -14,15 +14,15 @@ const ExpenseTracker = () => {
   const currentUser = auth.currentUser;
   const { currentMonth, currentYear } = getCurrentMonthYear();
 
-  const fetchExpenses = async () => {
+  const fetchExpenses = useCallback(async () => {
     const expensesRef = collection(db, 'expenses');
     const q = query(expensesRef, where('userId', '==', currentUser.uid));
     const querySnapshot = await getDocs(q);
     const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setExpenses(data);
-  };
+  }, [currentUser.uid]);
 
-  const fetchBudget = async () => {
+  const fetchBudget = useCallback(async () => {
     const budgetRef = collection(db, 'budgets');
     const q = query(budgetRef, where('userId', '==', currentUser.uid));
     const querySnapshot = await getDocs(q);
@@ -40,12 +40,12 @@ const ExpenseTracker = () => {
     });
 
     setBudget(monthlyBudget || yearlyBudget || null);
-  };
+  }, [currentUser.uid, currentMonth, currentYear]);
 
   useEffect(() => {
     fetchExpenses();
     fetchBudget();
-  }, []);
+  }, [fetchExpenses, fetchBudget]);
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, 'expenses', id));
