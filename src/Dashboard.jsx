@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
+import { Timestamp } from "firebase/firestore";
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
@@ -37,7 +38,7 @@ const Dashboard = () => {
 
   const fetchFinancialData = async (uid, viewType, selectedDate) => {
     const year = selectedDate.getFullYear();
-    const month = (selectedDate.getMonth() + 1).toString().padStart(2, "0");
+    const month = selectedDate.getMonth(); 
     const monthName = selectedDate.toLocaleString("default", { month: "long" });
   
     let incomeQuery = collection(db, "income");
@@ -45,21 +46,21 @@ const Dashboard = () => {
     let budgetQuery = collection(db, "budgets");
   
     if (viewType === "monthly") {
-      const startDate = `${year}-${month}-01`;
-      const endDate = `${year}-${month}-31`;
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0, 23, 59, 59); 
   
       incomeQuery = query(
         incomeQuery,
         where("userId", "==", uid),
-        where("date", ">=", startDate),
-        where("date", "<=", endDate)
+        where("date", ">=", Timestamp.fromDate(startDate)),
+        where("date", "<=", Timestamp.fromDate(endDate))
       );
   
       expenseQuery = query(
         expenseQuery,
         where("userId", "==", uid),
-        where("date", ">=", startDate),
-        where("date", "<=", endDate)
+        where("date", ">=", Timestamp.fromDate(startDate)),
+        where("date", "<=", Timestamp.fromDate(endDate))
       );
   
       budgetQuery = query(
@@ -71,21 +72,21 @@ const Dashboard = () => {
       );
   
     } else if (viewType === "yearly") {
-      const startDate = `${year}-01-01`;
-      const endDate = `${year}-12-31`;
+      const startDate = new Date(year, 0, 1);
+      const endDate = new Date(year, 11, 31, 23, 59, 59);
   
       incomeQuery = query(
         incomeQuery,
         where("userId", "==", uid),
-        where("date", ">=", startDate),
-        where("date", "<=", endDate)
+        where("date", ">=", Timestamp.fromDate(startDate)),
+        where("date", "<=", Timestamp.fromDate(endDate))
       );
   
       expenseQuery = query(
         expenseQuery,
         where("userId", "==", uid),
-        where("date", ">=", startDate),
-        where("date", "<=", endDate)
+        where("date", ">=", Timestamp.fromDate(startDate)),
+        where("date", "<=", Timestamp.fromDate(endDate))
       );
   
       budgetQuery = query(
@@ -96,7 +97,7 @@ const Dashboard = () => {
       );
   
     } else {
-      // Total view
+      
       incomeQuery = query(incomeQuery, where("userId", "==", uid));
       expenseQuery = query(expenseQuery, where("userId", "==", uid));
       budgetQuery = query(budgetQuery, where("userId", "==", uid));
