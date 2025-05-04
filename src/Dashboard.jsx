@@ -38,97 +38,65 @@ const Dashboard = () => {
 
   const fetchFinancialData = async (uid, viewType, selectedDate) => {
     const year = selectedDate.getFullYear();
-    const month = selectedDate.getMonth(); // 0-indexed
+    const month = selectedDate.getMonth(); 
     const monthName = selectedDate.toLocaleString("default", { month: "long" });
-  
-    let incomeQuery = collection(db, "income");
-    let expenseQuery = collection(db, "expenses");
-    let budgetQuery = collection(db, "budgets");
-  
-    if (viewType === "monthly") {
-      const startDate = new Date(year, month, 1);
-      const endDate = new Date(year, month + 1, 0, 23, 59, 59);
-  
-      const startDateStr = startDate.toISOString().split("T")[0];
-      const endDateStr = endDate.toISOString().split("T")[0];
-  
-      incomeQuery = query(
-        incomeQuery,
-        where("userId", "==", uid),
-        where("date", ">=", Timestamp.fromDate(startDate)),
-        where("date", "<=", Timestamp.fromDate(endDate))
-      );
-  
-      expenseQuery = query(
-        expenseQuery,
-        where("userId", "==", uid),
-        where("date", ">=", startDateStr),
-        where("date", "<=", endDateStr)
-      );
-  
-      budgetQuery = query(
-        budgetQuery,
-        where("userId", "==", uid),
-        where("type", "==", "monthly"),
-        where("month", "==", monthName),
-        where("year", "==", year)
-      );
-  
-    } else if (viewType === "yearly") {
-      const startDate = new Date(year, 0, 1);
-      const endDate = new Date(year, 11, 31, 23, 59, 59);
-  
-      const startDateStr = startDate.toISOString().split("T")[0];
-      const endDateStr = endDate.toISOString().split("T")[0];
-  
-      incomeQuery = query(
-        incomeQuery,
-        where("userId", "==", uid),
-        where("date", ">=", Timestamp.fromDate(startDate)),
-        where("date", "<=", Timestamp.fromDate(endDate))
-      );
-  
-      expenseQuery = query(
-        expenseQuery,
-        where("userId", "==", uid),
-        where("date", ">=", startDateStr),
-        where("date", "<=", endDateStr)
-      );
-  
-      budgetQuery = query(
-        budgetQuery,
-        where("userId", "==", uid),
-        where("type", "==", "yearly"),
-        where("year", "==", year)
-      );
-  
-    } else {
-      // Total view
-      incomeQuery = query(incomeQuery, where("userId", "==", uid));
-      expenseQuery = query(expenseQuery, where("userId", "==", uid));
-      budgetQuery = query(budgetQuery, where("userId", "==", uid));
-    }
-  
-    const incomeSnapshot = await getDocs(incomeQuery);
-    const expenseSnapshot = await getDocs(expenseQuery);
-    const budgetSnapshot = await getDocs(budgetQuery);
-  
-    let incomeTotal = 0;
-    incomeSnapshot.forEach(doc => incomeTotal += Number(doc.data().amount || 0));
-    setTotalIncome(incomeTotal);
-  
-    let expenseTotal = 0;
-    expenseSnapshot.forEach(doc => expenseTotal += Number(doc.data().amount || 0));
-    setTotalExpenses(expenseTotal);
-  
-    let budgetAmount = 0;
-    budgetSnapshot.forEach(doc => {
-      const data = doc.data();
-      budgetAmount = data.amount;
-    });
-    setBudget(budgetAmount);
-  };  
 
+    const incomeSnapshot = await getDocs(query(collection(db, "income"), where("userId", "==", uid)));
+    const expenseSnapshot = await getDocs(query(collection(db, "expenses"), where("userId", "==", uid)));
+    const budgetSnapshot = await getDocs(query(collection(db, "budgets"), where("userId", "==", uid)));
+
+    const startDate = new Date(year, viewType === "yearly" ? 0 : month, 1);
+    const endDate = viewType === "yearly"
+      ? new Date(year, 11, 31, 23, 59, 59)
+      : new Date(year, month + 1, 0, 23, 59, 59);
+
+    let incomeTotal = 0;
+    incomeSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const date = data.date?.toDate?.(); 
+  
+      if (
+        viewType === "total" ||
+        (date && date >= startDate && date <= endDate)
+      ) {
+        incomeTotal += Number(data.amount || 0);
+      }
+    });
+
+    let expenseTotal = 0;
+    expenseSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const dateStr = data.date;
+      const date = dateStr ? new Date(dateStr) : null;
+  
+      if (
+        viewType === "total" ||
+        (date && date >= startDate && date <= endDate)
+      ) {
+        expenseTotal += Number(data.amount || 0);
+      }
+    });
+
+    let budgetAmount = 0;
+    budgetSnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (
+        (viewType === "monthly" &&
+          data.type === "monthly" &&
+          data.month === monthName &&
+          data.year === year) ||
+        (viewType === "yearly" && data.type === "yearly" && data.year === year) ||
+        viewType === "total"
+      ) {
+        budgetAmount = data.amount;
+      }
+    });
+  
+    setTotalIncome(incomeTotal);
+    setTotalExpenses(expenseTotal);
+    setBudget(budgetAmount);
+  };
+  
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/login");
