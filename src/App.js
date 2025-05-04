@@ -7,6 +7,7 @@ import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import IncomeTracker from './IncomeTracker'; 
 import SetBudgetPage from './SetBudgetPage';
+import AddExpenseForm from "./AddExpenseForm";
 
 function App() {
   const [user, loading] = useAuthState(auth);
