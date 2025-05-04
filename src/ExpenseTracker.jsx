@@ -1,217 +1,209 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  updateDoc,
   query,
   where,
-} from 'firebase/firestore';
-import { db, auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import AddExpenseForm from './AddExpenseForm';
+  onSnapshot,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { db, auth } from "./firebase";
+import { format } from "date-fns";
 
-const ExpenseTracker = () => {
+function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedAmount, setEditedAmount] = useState("");
+  const [editedDate, setEditedDate] = useState("");
+  const [editedCategory, setEditedCategory] = useState("");
+  const [filterType, setFilterType] = useState("monthly");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [categoryFilter, setCategoryFilter] = useState("all"); 
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-      }
+    const q = query(
+      collection(db, "expenses"),
+      where("userId", "==", auth.currentUser.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const expenseData = [];
+      querySnapshot.forEach((doc) => {
+        expenseData.push({ ...doc.data(), id: doc.id });
+      });
+      setExpenses(expenseData);
     });
 
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!currentUser) return;
-
-    const fetchExpenses = async () => {
-      const q = query(
-        collection(db, 'expenses'),
-        where('userId', '==', currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const expensesData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setExpenses(expensesData);
-    };
-
-    fetchExpenses();
-  }, [currentUser]);
-
-  const handleAddExpense = async (expense) => {
-    const expenseWithUser = {
-      ...expense,
-      userId: currentUser.uid,
-    };
-    const docRef = await addDoc(collection(db, 'expenses'), expenseWithUser);
-    setExpenses(prev => [{ ...expenseWithUser, id: docRef.id }, ...prev]);
-  };
-
   const handleDelete = async (id) => {
-    await deleteDoc(doc(db, 'expenses', id));
-    setExpenses(prev => prev.filter(expense => expense.id !== id));
+    await deleteDoc(doc(db, "expenses", id));
   };
 
-  const handleEdit = (id) => {
-    setEditingId(id);
+  const handleEdit = (expense) => {
+    setEditingExpense(expense.id);
+    setEditedTitle(expense.title);
+    setEditedAmount(expense.amount);
+    setEditedDate(expense.date);
+    setEditedCategory(expense.category || "Other");
   };
 
-  const handleUpdate = async (id, updatedExpense) => {
-    await updateDoc(doc(db, 'expenses', id), updatedExpense);
-    setExpenses(prev =>
-      prev.map(exp =>
-        exp.id === id ? { ...exp, ...updatedExpense } : exp
-      )
-    );
-    setEditingId(null);
+  const handleSave = async (id) => {
+    const updatedExpense = {
+      title: editedTitle,
+      amount: parseFloat(editedAmount),
+      date: editedDate,
+      category: editedCategory,
+    };
+    await updateDoc(doc(db, "expenses", id), updatedExpense);
+    setEditingExpense(null);
   };
+
+  const handleCancel = () => {
+    setEditingExpense(null);
+  };
+
+  const handlePrev = () => {
+    if (filterType === "monthly") {
+      const newDate = new Date(selectedDate);
+      newDate.setMonth(newDate.getMonth() - 1);
+      setSelectedDate(newDate);
+    } else if (filterType === "yearly") {
+      const newDate = new Date(selectedDate);
+      newDate.setFullYear(newDate.getFullYear() - 1);
+      setSelectedDate(newDate);
+    }
+  };
+
+  const handleNext = () => {
+    if (filterType === "monthly") {
+      const newDate = new Date(selectedDate);
+      newDate.setMonth(newDate.getMonth() + 1);
+      setSelectedDate(newDate);
+    } else if (filterType === "yearly") {
+      const newDate = new Date(selectedDate);
+      newDate.setFullYear(newDate.getFullYear() + 1);
+      setSelectedDate(newDate);
+    }
+  };
+
+  const filteredExpenses = expenses.filter((expense) => {
+    const expenseDate = new Date(expense.date);
+    const matchesDate =
+      filterType === "monthly"
+        ? expenseDate.getMonth() === selectedDate.getMonth() &&
+          expenseDate.getFullYear() === selectedDate.getFullYear()
+        : filterType === "yearly"
+        ? expenseDate.getFullYear() === selectedDate.getFullYear()
+        : true;
+
+    const matchesCategory =
+      categoryFilter === "all" ? true : expense.category === categoryFilter;
+
+    return matchesDate && matchesCategory;
+  });
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Personal Expense Tracker</h1>
+    <div>
+      <h2>Expenses</h2>
 
-      <AddExpenseForm onAddExpense={handleAddExpense} />
+      <div style={{ marginBottom: "1rem" }}>
+        <label>View: </label>
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+          <option value="all">All</option>
+        </select>
 
-      <div className="mt-8 max-w-md mx-auto bg-white shadow-md rounded-md p-4">
-        <h2 className="text-xl font-semibold mb-4">Expenses</h2>
-        {expenses.length === 0 ? (
-          <p className="text-gray-500 text-center">No expenses added yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {expenses.map((expense) => (
-              <li
-                key={expense.id}
-                className="flex justify-between items-start border-b pb-3"
-              >
-                {editingId === expense.id ? (
-                  <EditExpenseForm
-                    expense={expense}
-                    onSave={(updatedExpense) =>
-                      handleUpdate(expense.id, updatedExpense)
-                    }
-                    onCancel={() => setEditingId(null)}
-                  />
-                ) : (
-                  <>
-                    <div>
-                      <p className="font-medium">{expense.description}</p>
-                      <p className="text-sm text-gray-500">
-                        {expense.category} | {expense.paymentMethod || ''}
-                      </p>
-                      <p className="text-sm text-gray-400">
-                        {new Date(expense.date).toDateString()}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">TK{expense.amount.toFixed(2)}</p>
-                      <div className="flex gap-2 text-sm mt-1">
-                        <button
-                          onClick={() => handleEdit(expense.id)}
-                          className="text-blue-500 hover:underline"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(expense.id)}
-                          className="text-red-500 hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+        {filterType !== "all" && (
+          <>
+            <button onClick={handlePrev}>◀</button>
+            <span style={{ margin: "0 10px" }}>
+              {filterType === "monthly"
+                ? format(selectedDate, "MMMM yyyy")
+                : selectedDate.getFullYear()}
+            </span>
+            <button onClick={handleNext}>▶</button>
+          </>
         )}
       </div>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <label>Filter by Category: </label>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value="Food">Food</option>
+          <option value="Rent">Rent</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Education">Education</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <ul>
+        {filteredExpenses.map((expense) => (
+          <li key={expense.id}>
+            {editingExpense === expense.id ? (
+              <div>
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                />
+                <input
+                  type="number"
+                  value={editedAmount}
+                  onChange={(e) => setEditedAmount(e.target.value)}
+                />
+                <input
+                  type="date"
+                  value={editedDate}
+                  onChange={(e) => setEditedDate(e.target.value)}
+                />
+                <select
+                  value={editedCategory}
+                  onChange={(e) => setEditedCategory(e.target.value)}
+                >
+                  <option value="Food">Food</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Transportation">Transportation</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Education">Education</option>
+                  <option value="Other">Other</option>
+                </select>
+                <button onClick={() => handleSave(expense.id)}>Save</button>
+                <button onClick={handleCancel}>Cancel</button>
+              </div>
+            ) : (
+              <div>
+                <strong>{expense.title}</strong> — TK {expense.amount} on{" "}
+                {format(new Date(expense.date), "dd MMM yyyy")} (
+                {expense.category || "Other"})
+                <button onClick={() => handleEdit(expense)}>Edit</button>
+                <button onClick={() => handleDelete(expense.id)}>Delete</button>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
-};
-
-const EditExpenseForm = ({ expense, onSave, onCancel }) => {
-  const [amount, setAmount] = useState(expense.amount);
-  const [category, setCategory] = useState(expense.category);
-  const [date, setDate] = useState(expense.date);
-  const [description, setDescription] = useState(expense.description);
-  const [paymentMethod, setPaymentMethod] = useState(expense.paymentMethod || '');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave({
-      amount: parseFloat(amount),
-      category,
-      date,
-      description,
-      paymentMethod,
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2">
-      <input
-        type="text"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full border rounded p-1"
-        placeholder="Description"
-      />
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full border rounded p-1"
-        placeholder="Amount"
-      />
-      <input
-        type="text"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="w-full border rounded p-1"
-        placeholder="Category"
-      />
-      <input
-        type="text"
-        value={paymentMethod}
-        onChange={(e) => setPaymentMethod(e.target.value)}
-        className="w-full border rounded p-1"
-        placeholder="Payment Method"
-      />
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        className="w-full border rounded p-1"
-      />
-      <div className="flex justify-end gap-2 mt-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="text-sm text-gray-600 hover:underline"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="text-sm text-green-600 font-semibold hover:underline"
-        >
-          Save
-        </button>
-      </div>
-    </form>
-  );
-};
+}
 
 export default ExpenseTracker;

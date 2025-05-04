@@ -108,13 +108,16 @@ const AddExpenseForm = () => {
       <h2>Add Expense</h2>
       <label>Category *</label>
        <select value={category} onChange={(e) => setCategory(e.target.value)} required>
-         <option value="">-- Select Category --</option>
-         <option value="Food">Food</option>
-         <option value="Rent">Rent</option>
-         <option value="Transportation">Transportation</option>
-         <option value="Clothing">Clothing</option>
-         <option value="Medical">Medical</option>
-         <option value="Other">Other</option>
+          <option value="">-- Select Category --</option>
+          <option value="Food">Food</option>
+          <option value="Rent">Rent</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Education">Education</option>
+          <option value="Other">Other</option>
        </select>
  
       <label>Amount (TK) *</label>
