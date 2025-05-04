@@ -38,7 +38,7 @@ const Dashboard = () => {
 
   const fetchFinancialData = async (uid, viewType, selectedDate) => {
     const year = selectedDate.getFullYear();
-    const month = selectedDate.getMonth(); 
+    const month = selectedDate.getMonth(); // 0-indexed
     const monthName = selectedDate.toLocaleString("default", { month: "long" });
   
     let incomeQuery = collection(db, "income");
@@ -47,7 +47,10 @@ const Dashboard = () => {
   
     if (viewType === "monthly") {
       const startDate = new Date(year, month, 1);
-      const endDate = new Date(year, month + 1, 0, 23, 59, 59); 
+      const endDate = new Date(year, month + 1, 0, 23, 59, 59);
+  
+      const startDateStr = startDate.toISOString().split("T")[0];
+      const endDateStr = endDate.toISOString().split("T")[0];
   
       incomeQuery = query(
         incomeQuery,
@@ -59,8 +62,8 @@ const Dashboard = () => {
       expenseQuery = query(
         expenseQuery,
         where("userId", "==", uid),
-        where("date", ">=", Timestamp.fromDate(startDate)),
-        where("date", "<=", Timestamp.fromDate(endDate))
+        where("date", ">=", startDateStr),
+        where("date", "<=", endDateStr)
       );
   
       budgetQuery = query(
@@ -75,6 +78,9 @@ const Dashboard = () => {
       const startDate = new Date(year, 0, 1);
       const endDate = new Date(year, 11, 31, 23, 59, 59);
   
+      const startDateStr = startDate.toISOString().split("T")[0];
+      const endDateStr = endDate.toISOString().split("T")[0];
+  
       incomeQuery = query(
         incomeQuery,
         where("userId", "==", uid),
@@ -85,8 +91,8 @@ const Dashboard = () => {
       expenseQuery = query(
         expenseQuery,
         where("userId", "==", uid),
-        where("date", ">=", Timestamp.fromDate(startDate)),
-        where("date", "<=", Timestamp.fromDate(endDate))
+        where("date", ">=", startDateStr),
+        where("date", "<=", endDateStr)
       );
   
       budgetQuery = query(
@@ -97,7 +103,7 @@ const Dashboard = () => {
       );
   
     } else {
-      
+      // Total view
       incomeQuery = query(incomeQuery, where("userId", "==", uid));
       expenseQuery = query(expenseQuery, where("userId", "==", uid));
       budgetQuery = query(budgetQuery, where("userId", "==", uid));
