@@ -9,6 +9,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
+import { useNavigate } from "react-router-dom";
 
 function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
@@ -20,6 +21,8 @@ function ExpenseTracker() {
   const [filterType, setFilterType] = useState("monthly");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [categoryFilter, setCategoryFilter] = useState("all");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const q = query(
@@ -67,26 +70,23 @@ function ExpenseTracker() {
 
   const handlePrev = () => {
     const newDate = new Date(selectedDate);
-    if (filterType === "monthly") {
-      newDate.setMonth(newDate.getMonth() - 1);
-    } else if (filterType === "yearly") {
-      newDate.setFullYear(newDate.getFullYear() - 1);
-    }
+    filterType === "monthly"
+      ? newDate.setMonth(newDate.getMonth() - 1)
+      : newDate.setFullYear(newDate.getFullYear() - 1);
     setSelectedDate(newDate);
   };
 
   const handleNext = () => {
     const newDate = new Date(selectedDate);
-    if (filterType === "monthly") {
-      newDate.setMonth(newDate.getMonth() + 1);
-    } else if (filterType === "yearly") {
-      newDate.setFullYear(newDate.getFullYear() + 1);
-    }
+    filterType === "monthly"
+      ? newDate.setMonth(newDate.getMonth() + 1)
+      : newDate.setFullYear(newDate.getFullYear() + 1);
     setSelectedDate(newDate);
   };
 
   const filteredExpenses = expenses.filter((expense) => {
     const expenseDate = new Date(expense.date);
+
     const matchesDate =
       filterType === "monthly"
         ? expenseDate.getMonth() === selectedDate.getMonth() &&
@@ -151,6 +151,10 @@ function ExpenseTracker() {
         </select>
       </div>
 
+      <div style={{ marginBottom: "1rem" }}>
+        <button onClick={() => navigate("/add-expense")}>+ Add Expense</button>
+      </div>
+
       <ul>
         {filteredExpenses.map((expense) => (
           <li key={expense.id}>
@@ -192,12 +196,15 @@ function ExpenseTracker() {
               <div>
                 <strong>{expense.title}</strong> — TK {expense.amount} on{" "}
                 {new Date(expense.date).toLocaleDateString("en-GB", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",})}
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}{" "}
                 ({expense.category || "Other"})
                 <button onClick={() => handleEdit(expense)}>Edit</button>
-                <button onClick={() => handleDelete(expense.id)}>Delete</button>
+                <button onClick={() => handleDelete(expense.id)}>
+                  Delete
+                </button>
               </div>
             )}
           </li>
