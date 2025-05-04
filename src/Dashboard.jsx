@@ -5,7 +5,6 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
-import { Timestamp } from "firebase/firestore";
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
