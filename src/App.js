@@ -30,6 +30,7 @@ function App() {
           path="/expenses"
           element={user ? <ExpenseTracker /> : <Navigate to="/login" />}
         />
+        <Route path="/add-expense" element={<AddExpenseForm />} />
         <Route
           path="/budgets"
           element={user ? <SetBudgetPage /> : <Navigate to="/login" />}
