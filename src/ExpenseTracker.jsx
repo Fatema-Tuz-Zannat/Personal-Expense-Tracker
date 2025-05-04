@@ -9,7 +9,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
-import { format } from "date-fns";
 
 function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
@@ -20,7 +19,7 @@ function ExpenseTracker() {
   const [editedCategory, setEditedCategory] = useState("");
   const [filterType, setFilterType] = useState("monthly");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [categoryFilter, setCategoryFilter] = useState("all"); 
+  const [categoryFilter, setCategoryFilter] = useState("all");
 
   useEffect(() => {
     const q = query(
@@ -67,27 +66,23 @@ function ExpenseTracker() {
   };
 
   const handlePrev = () => {
+    const newDate = new Date(selectedDate);
     if (filterType === "monthly") {
-      const newDate = new Date(selectedDate);
       newDate.setMonth(newDate.getMonth() - 1);
-      setSelectedDate(newDate);
     } else if (filterType === "yearly") {
-      const newDate = new Date(selectedDate);
       newDate.setFullYear(newDate.getFullYear() - 1);
-      setSelectedDate(newDate);
     }
+    setSelectedDate(newDate);
   };
 
   const handleNext = () => {
+    const newDate = new Date(selectedDate);
     if (filterType === "monthly") {
-      const newDate = new Date(selectedDate);
       newDate.setMonth(newDate.getMonth() + 1);
-      setSelectedDate(newDate);
     } else if (filterType === "yearly") {
-      const newDate = new Date(selectedDate);
       newDate.setFullYear(newDate.getFullYear() + 1);
-      setSelectedDate(newDate);
     }
+    setSelectedDate(newDate);
   };
 
   const filteredExpenses = expenses.filter((expense) => {
@@ -126,7 +121,10 @@ function ExpenseTracker() {
             <button onClick={handlePrev}>◀</button>
             <span style={{ margin: "0 10px" }}>
               {filterType === "monthly"
-                ? format(selectedDate, "MMMM yyyy")
+                ? selectedDate.toLocaleString("default", {
+                    month: "long",
+                    year: "numeric",
+                  })
                 : selectedDate.getFullYear()}
             </span>
             <button onClick={handleNext}>▶</button>
@@ -193,8 +191,11 @@ function ExpenseTracker() {
             ) : (
               <div>
                 <strong>{expense.title}</strong> — TK {expense.amount} on{" "}
-                {format(new Date(expense.date), "dd MMM yyyy")} (
-                {expense.category || "Other"})
+                {new Date(expense.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",})}
+                ({expense.category || "Other"})
                 <button onClick={() => handleEdit(expense)}>Edit</button>
                 <button onClick={() => handleDelete(expense.id)}>Delete</button>
               </div>
