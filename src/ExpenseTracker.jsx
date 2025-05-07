@@ -14,13 +14,14 @@ import { useNavigate } from "react-router-dom";
 function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
   const [editingExpense, setEditingExpense] = useState(null);
-  const [editedTitle, setEditedTitle] = useState("");
   const [editedAmount, setEditedAmount] = useState("");
   const [editedDate, setEditedDate] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
   const [filterType, setFilterType] = useState("monthly");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [editedDescription, setEditedDescription] = useState("");
+  const [editedPaymentMethod, setEditedPaymentMethod] = useState("");
 
   const navigate = useNavigate();
 
@@ -51,8 +52,8 @@ function ExpenseTracker() {
   const handleEdit = (expense) => {
     setEditingExpense(expense.id);
     setEditedAmount(expense.amount);
-    setEditeddescription(expense.description);
-    setEditedpaymentMethod(expense.paymentMethod);
+    setEditedDescription(expense.description);
+    setEditedPaymentMethod(expense.paymentMethod);
     const parsedDate = new Date(expense.date);
     const isoDate = parsedDate.toISOString().split("T")[0];
     setEditedDate(isoDate);
@@ -67,8 +68,10 @@ function ExpenseTracker() {
   
     const updatedExpense = {
       amount: parseFloat(editedAmount),
-      date: editedDate, 
+      date: editedDate,
       category: editedCategory || "Other",
+      description: editedDescription || "",
+      paymentMethod: editedPaymentMethod || "Other",
     };
   
     try {
@@ -78,8 +81,7 @@ function ExpenseTracker() {
       console.error("Error updating expense:", error);
       alert("Failed to update expense. Please try again.");
     }
-  };
-  
+  };  
 
   const handleCancel = () => {
     setEditingExpense(null);
@@ -221,14 +223,14 @@ function ExpenseTracker() {
             <td>
               <input
                 type="text"
-                value={editeddesceiption}
-                onChange={(e) => setEditeddescription(e.target.value)}
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
               />
             </td>
             <td>
               <select
-                value={editedpaymentMethod}
-                onChange={(e) => setEditedpaymentMethod(e.target.value)}
+                value={editedPaymentMethod}
+                onChange={(e) => setEditedPaymentMethod(e.target.value)}
               >
               <option value="Cash">Cash</option>
               <option value="Credit Card">Credit Card</option>
