@@ -29,17 +29,20 @@ function ExpenseTracker() {
       collection(db, "expenses"),
       where("userId", "==", auth.currentUser.uid)
     );
-
+  
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const expenseData = [];
       querySnapshot.forEach((doc) => {
         expenseData.push({ ...doc.data(), id: doc.id });
       });
+
+      expenseData.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
       setExpenses(expenseData);
     });
-
+  
     return () => unsubscribe();
-  }, []);
+  }, []);  
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, "expenses", id));
@@ -47,15 +50,14 @@ function ExpenseTracker() {
 
   const handleEdit = (expense) => {
     setEditingExpense(expense.id);
-    setEditedTitle(expense.title);
     setEditedAmount(expense.amount);
-  
+    setEditeddescription(expense.description);
+    setEditedpaymentMethod(expense.paymentMethod);
     const parsedDate = new Date(expense.date);
     const isoDate = parsedDate.toISOString().split("T")[0];
     setEditedDate(isoDate);
-  
     setEditedCategory(expense.category || "Other");
-  };
+  };  
   
   const handleSave = async (id) => {
     if (!editedTitle.trim() || !editedAmount || !editedDate) {
@@ -64,7 +66,6 @@ function ExpenseTracker() {
     }
   
     const updatedExpense = {
-      title: editedTitle.trim(),
       amount: parseFloat(editedAmount),
       date: editedDate, 
       category: editedCategory || "Other",
@@ -171,61 +172,101 @@ function ExpenseTracker() {
         <button onClick={() => navigate("/add-expense")}>+ Add Expense</button>
       </div>
 
-      <ul>
-        {filteredExpenses.map((expense) => (
-          <li key={expense.id}>
-            {editingExpense === expense.id ? (
-              <div>
-                <input
-                  type="text"
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                />
-                <input
-                  type="number"
-                  value={editedAmount}
-                  onChange={(e) => setEditedAmount(e.target.value)}
-                />
-                <input
-                  type="date"
-                  value={editedDate}
-                  onChange={(e) => setEditedDate(e.target.value)}
-                />
-                <select
-                  value={editedCategory}
-                  onChange={(e) => setEditedCategory(e.target.value)}
-                >
-                  <option value="Food">Food</option>
-                  <option value="Rent">Rent</option>
-                  <option value="Transportation">Transportation</option>
-                  <option value="Utilities">Utilities</option>
-                  <option value="Entertainment">Entertainment</option>
-                  <option value="Shopping">Shopping</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Education">Education</option>
-                  <option value="Other">Other</option>
-                </select>
-                <button onClick={() => handleSave(expenses.id)}>Save</button>
-                <button onClick={handleCancel}>Cancel</button>
-              </div>
-            ) : (
-              <div>
-                <strong>{expense.title}</strong> — TK {expense.amount} on{" "}
-                {new Date(expense.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })}{" "}
-                ({expense.category || "Other"})
-                <button onClick={() => handleEdit(expense)}>Edit</button>
-                <button onClick={() => handleDelete(expense.id)}>
-                  Delete
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Amount</th>
+      <th>Category</th>
+      <th>Description</th>
+      <th>Payment Method</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {filteredExpenses.map((expense) => (
+      <tr key={expense.id}>
+        {editingExpense === expense.id ? (
+          <>
+            <td>
+              <input
+                type="date"
+                value={editedDate}
+                onChange={(e) => setEditedDate(e.target.value)}
+              />
+            </td>
+            <td>
+              <input
+                type="number"
+                value={editedAmount}
+                onChange={(e) => setEditedAmount(e.target.value)}
+              />
+            </td>
+            <td>
+              <select
+                value={editedCategory}
+                onChange={(e) => setEditedCategory(e.target.value)}
+              >
+                <option value="Food">Food</option>
+                <option value="Rent">Rent</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Other">Other</option>
+              </select>
+            </td>
+            <td>
+              <input
+                type="text"
+                value={editeddesceiption}
+                onChange={(e) => setEditeddescription(e.target.value)}
+              />
+            </td>
+            <td>
+              <select
+                value={editedpaymentMethod}
+                onChange={(e) => setEditedpaymentMethod(e.target.value)}
+              >
+              <option value="Cash">Cash</option>
+              <option value="Credit Card">Credit Card</option>
+              <option value="Debit Card">Debit Card</option>
+              <option value="Bkash">Bkash</option>
+              <option value="Nagad">Nagad</option>
+              <option value="Other">Other</option>
+              </select>
+            </td>
+            <td colSpan="2">
+              <button onClick={() => handleSave(expense.id)}>Save</button>
+              <button onClick={handleCancel}>Cancel</button>
+            </td>
+          </>
+        ) : (
+          <>
+            <td>
+              {new Date(expense.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </td>
+            <td>TK {expense.amount}</td>
+            <td>{expense.category || "Other"}</td>
+            <td>{expense.description || "-"}</td>
+            <td>{expense.paymentMethod || "-"}</td>
+            <td>
+              <button onClick={() => handleEdit(expense)}>Edit</button>
+              <button onClick={() => handleDelete(expense.id)}>Delete</button>
+            </td>
+          </>
+        )}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
     </div>
   );
 }
