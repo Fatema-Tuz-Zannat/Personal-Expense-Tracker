@@ -49,20 +49,36 @@ function ExpenseTracker() {
     setEditingExpense(expense.id);
     setEditedTitle(expense.title);
     setEditedAmount(expense.amount);
-    setEditedDate(expense.date);
+  
+    const parsedDate = new Date(expense.date);
+    const isoDate = parsedDate.toISOString().split("T")[0];
+    setEditedDate(isoDate);
+  
     setEditedCategory(expense.category || "Other");
   };
-
+  
   const handleSave = async (id) => {
+    if (!editedTitle.trim() || !editedAmount || !editedDate) {
+      alert("Please fill in all fields.");
+      return;
+    }
+  
     const updatedExpense = {
-      title: editedTitle,
+      title: editedTitle.trim(),
       amount: parseFloat(editedAmount),
-      date: editedDate,
-      category: editedCategory,
+      date: editedDate, 
+      category: editedCategory || "Other",
     };
-    await updateDoc(doc(db, "expenses", id), updatedExpense);
-    setEditingExpense(null);
+  
+    try {
+      await updateDoc(doc(db, "expenses", id), updatedExpense);
+      setEditingExpense(null);
+    } catch (error) {
+      console.error("Error updating expense:", error);
+      alert("Failed to update expense. Please try again.");
+    }
   };
+  
 
   const handleCancel = () => {
     setEditingExpense(null);
