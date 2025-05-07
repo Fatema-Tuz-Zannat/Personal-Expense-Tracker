@@ -205,7 +205,7 @@ function ExpenseTracker() {
                   <option value="Education">Education</option>
                   <option value="Other">Other</option>
                 </select>
-                <button onClick={() => handleSave(expense.id)}>Save</button>
+                <button onClick={() => handleSave(expenses.id)}>Save</button>
                 <button onClick={handleCancel}>Cancel</button>
               </div>
             ) : (
