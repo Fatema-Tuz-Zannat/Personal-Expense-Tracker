@@ -61,11 +61,6 @@ function ExpenseTracker() {
   };  
   
   const handleSave = async (id) => {
-    if (!editedTitle.trim() || !editedAmount || !editedDate) {
-      alert("Please fill in all fields.");
-      return;
-    }
-  
     const updatedExpense = {
       amount: parseFloat(editedAmount),
       date: editedDate,
