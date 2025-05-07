@@ -84,8 +84,7 @@ const Dashboard = () => {
           data.type === "monthly" &&
           data.month === monthName &&
           data.year === year) ||
-        (viewType === "yearly" && data.type === "yearly" && data.year === year) ||
-        viewType === "total"
+        (viewType === "yearly" && data.type === "yearly" && data.year === year)
       ) {
         budgetAmount = data.amount;
       }
