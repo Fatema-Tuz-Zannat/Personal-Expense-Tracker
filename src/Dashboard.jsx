@@ -169,32 +169,25 @@ const Dashboard = () => {
       </div>
 
       {showTodayReport && (
-        <div className="today-report-modal">
-          <div className="today-report-content">
-            <h3>Today's Report</h3>
-            <button className="close-btn" onClick={() => setShowTodayReport(false)}>X</button>
-            <div>
-              <h4>Today's Income</h4>
-              <ul>
-                {todayIncome.length > 0 ? todayIncome.map((item, i) => (
-                  <li key={i}>{item.title} - TK {item.amount}</li>
-                )) : <li>No income added today.</li>}
-              </ul>
-            </div>
-            <div>
-              <h4>Today's Expenses</h4>
-              <ul>
-                {todayExpenses.length > 0 ? todayExpenses.map((item, i) => (
-                  <li key={i}>{item.title} - TK {item.amount}</li>
-                )) : <li>No expense added today.</li>}
-              </ul>
-            </div>
-            <div>
-              <h4>Remaining Monthly Balance: TK {remaining}</h4>
-              <h4>Budget: TK {budget}</h4>
-              <h4>Budget Remaining: TK {budgetRemaining}</h4>
-            </div>
-          </div>
+        <div className="modal-overlay">
+        <div className="modal-content">
+        <h3>Today's Report</h3>
+        <h4>Income</h4>
+        <ul>
+          {todayIncome.map((item) => (
+            <li key={item.id}>{item.title}: TK {item.amount}</li>
+          ))}
+        </ul>
+        <h4>Expenses</h4>
+        <ul>
+          {todayExpenses.map((item) => (
+            <li key={item.id}>{item.title}: TK {item.amount}</li>
+          ))}
+        </ul>
+        <p>Monthly Budget: TK {budgetAmount}</p>
+        <p>Remaining: TK {budgetAmount - totalExpensesThisMonth}</p>
+        <button onClick={() => setShowTodayReport(false)}>Close</button>
+        </div>
         </div>
       )}
     </div>
