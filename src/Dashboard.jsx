@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
+import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -18,9 +14,11 @@ const Dashboard = () => {
   const [budget, setBudget] = useState(0);
   const [viewType, setViewType] = useState("monthly");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [todayReportVisible, setTodayReportVisible] = useState(false);
-  const [todayIncomeList, setTodayIncomeList] = useState([]);
-  const [todayExpenseList, setTodayExpenseList] = useState([]);
+  const [todayIncome, setTodayIncome] = useState([]);
+  const [todayExpenses, setTodayExpenses] = useState([]);
+  const [showTodayReport, setShowTodayReport] = useState(false);
+  const [expenseData, setExpenseData] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,38 +56,37 @@ const Dashboard = () => {
       ? new Date(year, 11, 31, 23, 59, 59)
       : new Date(year, month + 1, 0, 23, 59, 59);
 
-    let incomeTotal = 0;
     const today = new Date().toDateString();
-    const todayIncome = [];
+
+    let incomeTotal = 0;
+    let todayIncomeList = [];
+
     incomeSnapshot.forEach((doc) => {
       const data = doc.data();
       const date = data.date?.toDate?.();
-      if (
-        viewType === "total" ||
-        (date && date >= startDate && date <= endDate)
-      ) {
+      if (viewType === "total" || (date && date >= startDate && date <= endDate)) {
         incomeTotal += Number(data.amount || 0);
       }
       if (date && date.toDateString() === today) {
-        todayIncome.push({ title: data.title, amount: data.amount });
+        todayIncomeList.push({ title: data.title, amount: data.amount });
       }
     });
 
     let expenseTotal = 0;
-    const todayExpenses = [];
+    let todayExpenseList = [];
+    let filteredExpenses = [];
+
     expenseSnapshot.forEach((doc) => {
       const data = doc.data();
       const dateStr = data.date;
       const date = dateStr ? new Date(dateStr) : null;
 
-      if (
-        viewType === "total" ||
-        (date && date >= startDate && date <= endDate)
-      ) {
+      if (viewType === "total" || (date && date >= startDate && date <= endDate)) {
         expenseTotal += Number(data.amount || 0);
+        filteredExpenses.push(data);
       }
       if (date && date.toDateString() === today) {
-        todayExpenses.push({ title: data.title, amount: data.amount });
+        todayExpenseList.push({ title: data.title, amount: data.amount });
       }
     });
 
@@ -97,10 +94,7 @@ const Dashboard = () => {
     budgetSnapshot.forEach((doc) => {
       const data = doc.data();
       if (
-        (viewType === "monthly" &&
-          data.type === "monthly" &&
-          data.month === monthName &&
-          data.year === year) ||
+        (viewType === "monthly" && data.type === "monthly" && data.month === monthName && data.year === year) ||
         (viewType === "yearly" && data.type === "yearly" && data.year === year)
       ) {
         budgetAmount = data.amount;
@@ -110,8 +104,9 @@ const Dashboard = () => {
     setTotalIncome(incomeTotal);
     setTotalExpenses(expenseTotal);
     setBudget(budgetAmount);
-    setTodayIncomeList(todayIncome);
-    setTodayExpenseList(todayExpenses);
+    setTodayIncome(todayIncomeList);
+    setTodayExpenses(todayExpenseList);
+    setExpenseData(filteredExpenses);
   };
 
   const handleLogout = async () => {
@@ -126,15 +121,15 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <h1>Welcome to Your Dashboard</h1>
 
-      <div className="dashboard-buttons">
+      <div className="top-buttons">
         <button onClick={() => navigate("/income")}>View Income</button>
         <button onClick={() => navigate("/expenses")}>View Expenses</button>
         <button onClick={() => navigate("/budgets")}>Set Budget</button>
         <button onClick={handleLogout}>Logout</button>
-        <button onClick={() => setTodayReportVisible(true)}>Today's Report</button>
+        <button onClick={() => setShowTodayReport(true)}>Today's Report</button>
       </div>
 
-      <div className="view-select">
+      <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
         <select
           id="viewType"
@@ -151,10 +146,7 @@ const Dashboard = () => {
             <button onClick={() => adjustDate(-1)}>{"<"}</button>
             <span>
               {viewType === "monthly"
-                ? selectedDate.toLocaleString("default", {
-                    month: "long",
-                    year: "numeric",
-                  })
+                ? selectedDate.toLocaleString("default", { month: "long", year: "numeric" })
                 : selectedDate.getFullYear()}
             </span>
             <button onClick={() => adjustDate(1)}>{">"}</button>
@@ -162,7 +154,7 @@ const Dashboard = () => {
         )}
       </div>
 
-      <div className="summary-section">
+      <div className="summary">
         <h2>Financial Summary</h2>
         <p><strong>Total Income:</strong> TK {totalIncome}</p>
         <p><strong>Total Expenses:</strong> TK {totalExpenses}</p>
@@ -173,32 +165,35 @@ const Dashboard = () => {
       <div className="charts-section">
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
+        <CategorizedExpenseBarChart expenseData={expenseData} />
       </div>
 
-      {todayReportVisible && (
-        <div className="report-modal">
-          <div className="report-content">
-            <h2>Today's Report</h2>
-            <h4>Income</h4>
-            {todayIncomeList.length === 0 ? <p>No income today</p> :
-              <ul>{todayIncomeList.map((item, index) => (
-                <li key={index}>{item.title}: TK {item.amount}</li>
-              ))}</ul>
-            }
-
-            <h4>Expenses</h4>
-            {todayExpenseList.length === 0 ? <p>No expenses today</p> :
-              <ul>{todayExpenseList.map((item, index) => (
-                <li key={index}>{item.title}: TK {item.amount}</li>
-              ))}</ul>
-            }
-
-            <h4>Budget Overview</h4>
-            <p><strong>Monthly Remaining Balance:</strong> TK {remaining}</p>
-            <p><strong>Budget Amount:</strong> TK {budget}</p>
-            <p><strong>Budget Remaining:</strong> TK {budgetRemaining}</p>
-
-            <button className="close-btn" onClick={() => setTodayReportVisible(false)}>Close</button>
+      {showTodayReport && (
+        <div className="today-report-modal">
+          <div className="today-report-content">
+            <h3>Today's Report</h3>
+            <button className="close-btn" onClick={() => setShowTodayReport(false)}>X</button>
+            <div>
+              <h4>Today's Income</h4>
+              <ul>
+                {todayIncome.length > 0 ? todayIncome.map((item, i) => (
+                  <li key={i}>{item.title} - TK {item.amount}</li>
+                )) : <li>No income added today.</li>}
+              </ul>
+            </div>
+            <div>
+              <h4>Today's Expenses</h4>
+              <ul>
+                {todayExpenses.length > 0 ? todayExpenses.map((item, i) => (
+                  <li key={i}>{item.title} - TK {item.amount}</li>
+                )) : <li>No expense added today.</li>}
+              </ul>
+            </div>
+            <div>
+              <h4>Remaining Monthly Balance: TK {remaining}</h4>
+              <h4>Budget: TK {budget}</h4>
+              <h4>Budget Remaining: TK {budgetRemaining}</h4>
+            </div>
           </div>
         </div>
       )}
