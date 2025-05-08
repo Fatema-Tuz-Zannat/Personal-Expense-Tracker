@@ -185,7 +185,7 @@ const Dashboard = () => {
           ))}
         </ul>
         <p>Monthly Budget: TK {budget}</p>
-        <p>Remaining: TK {budget - totalExpenses}</p>
+        <p>Remaining Budget: TK {budgetRemaining}</p>
         <button onClick={() => setShowTodayReport(false)}>Close</button>
         </div>
         </div>
