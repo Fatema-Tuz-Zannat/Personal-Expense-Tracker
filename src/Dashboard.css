@@ -1,31 +1,18 @@
 .dashboard-container {
     padding: 2rem;
-    font-family: Arial, sans-serif;
+    max-width: 1000px;
+    margin: auto;
   }
   
-  .dashboard-buttons {
+  .top-buttons {
+    margin: 20px 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 1.5rem;
+    gap: 12px;
   }
   
-  .dashboard-buttons button {
-    padding: 10px 14px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    flex-grow: 1;
-  }
-  
-  .dashboard-buttons button:hover {
-    background-color: #45a049;
-  }
-  
-  .view-select {
-    margin-bottom: 20px;
+  .summary-controls {
+    margin-bottom: 1rem;
   }
   
   .date-navigation {
@@ -35,15 +22,24 @@
     gap: 10px;
   }
   
-  .summary-section p {
-    margin: 4px 0;
-  }
-  
-  .charts-section {
+  .summary {
     margin-top: 2rem;
   }
   
-  .report-modal {
+  .charts-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 2rem;
+    justify-content: center;
+  }
+  
+  .charts-section > div {
+    flex: 1 1 300px;
+    min-width: 300px;
+  }
+  
+  .today-report-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -56,45 +52,37 @@
     z-index: 1000;
   }
   
-  .report-content {
-    background-color: #fff;
+  .today-report-content {
+    background: white;
     padding: 2rem;
-    border-radius: 8px;
+    max-width: 400px;
     width: 90%;
-    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
     overflow-y: auto;
-    max-height: 80%;
-  }
-  
-  .report-content h4 {
-    margin-top: 1rem;
-  }
-  
-  .report-content ul {
-    padding-left: 20px;
+    max-height: 90vh;
   }
   
   .close-btn {
-    margin-top: 20px;
-    background-color: #f44336;
-    border: none;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: red;
     color: white;
-    padding: 10px 14px;
-    border-radius: 4px;
+    border: none;
+    padding: 6px 10px;
     cursor: pointer;
+    border-radius: 4px;
   }
   
-  .close-btn:hover {
-    background-color: #d32f2f;
-  }
-
   @media (max-width: 600px) {
-    .dashboard-buttons {
+    .charts-section {
       flex-direction: column;
+      align-items: center;
     }
   
-    .dashboard-buttons button {
-      width: 100%;
+    .today-report-content {
+      max-width: 90%;
     }
   }
   
