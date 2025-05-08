@@ -1,0 +1,100 @@
+.dashboard-container {
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+  }
+  
+  .dashboard-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .dashboard-buttons button {
+    padding: 10px 14px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    flex-grow: 1;
+  }
+  
+  .dashboard-buttons button:hover {
+    background-color: #45a049;
+  }
+  
+  .view-select {
+    margin-bottom: 20px;
+  }
+  
+  .date-navigation {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .summary-section p {
+    margin: 4px 0;
+  }
+  
+  .charts-section {
+    margin-top: 2rem;
+  }
+  
+  .report-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .report-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    overflow-y: auto;
+    max-height: 80%;
+  }
+  
+  .report-content h4 {
+    margin-top: 1rem;
+  }
+  
+  .report-content ul {
+    padding-left: 20px;
+  }
+  
+  .close-btn {
+    margin-top: 20px;
+    background-color: #f44336;
+    border: none;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .close-btn:hover {
+    background-color: #d32f2f;
+  }
+
+  @media (max-width: 600px) {
+    .dashboard-buttons {
+      flex-direction: column;
+    }
+  
+    .dashboard-buttons button {
+      width: 100%;
+    }
+  }
+  
