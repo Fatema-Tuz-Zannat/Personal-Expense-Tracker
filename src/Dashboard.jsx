@@ -184,8 +184,8 @@ const Dashboard = () => {
             <li key={item.id}>{item.title}: TK {item.amount}</li>
           ))}
         </ul>
-        <p>Monthly Budget: TK {budgetAmount}</p>
-        <p>Remaining: TK {budgetAmount - totalExpensesThisMonth}</p>
+        <p>Monthly Budget: TK {budget}</p>
+        <p>Remaining: TK {budget - totalExpenses}</p>
         <button onClick={() => setShowTodayReport(false)}>Close</button>
         </div>
         </div>
