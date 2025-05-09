@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [todayExpenses, setTodayExpenses] = useState([]);
   const [showTodayReport, setShowTodayReport] = useState(false);
   const [expenseData, setExpenseData] = useState([]);
+  const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
 
   const navigate = useNavigate();
 
@@ -25,6 +26,7 @@ const Dashboard = () => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await fetchFinancialData(user.uid, viewType, selectedDate);
+        await fetchCurrentMonthBudget(user.uid);
       } else {
         navigate("/login");
       }
@@ -109,13 +111,31 @@ const Dashboard = () => {
     setExpenseData(filteredExpenses);
   };
 
+  const fetchCurrentMonthBudget = async (uid) => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonthName = today.toLocaleString("default", { month: "long" });
+
+    const budgetSnapshot = await getDocs(query(collection(db, "budgets"), where("userId", "==", uid)));
+
+    let currentMonthBudgetAmount = 0;
+    budgetSnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.type === "monthly" && data.month === currentMonthName && data.year === currentYear) {
+        currentMonthBudgetAmount = data.amount;
+      }
+    });
+
+    setCurrentMonthBudget(currentMonthBudgetAmount);
+  };
+
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/login");
   };
 
   const remaining = totalIncome - totalExpenses;
-  const budgetRemaining = budget - totalExpenses;
+  const budgetRemaining = currentMonthBudget - totalExpenses;
 
   return (
     <div className="dashboard-container">
@@ -167,27 +187,35 @@ const Dashboard = () => {
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
       </div>
+      <div className="calendar-container">
+      <h3>Calendar</h3>
+        <Calendar value={new Date()} tileClassName={({ date, view }) => {
+           if (date.toDateString() === new Date().toDateString()) {
+           return 'highlight-today';
+           }
+         }} />
+      </div>
 
       {showTodayReport && (
         <div className="modal-overlay">
-        <div className="modal-content">
-        <h3>Today's Report</h3>
-        <h4>Income</h4>
-        <ul>
-          {todayIncome.map((item) => (
-            <li key={item.id}>{item.title}: TK {item.amount}</li>
-          ))}
-        </ul>
-        <h4>Expenses</h4>
-        <ul>
-          {todayExpenses.map((item) => (
-            <li key={item.id}>{item.title}: TK {item.amount}</li>
-          ))}
-        </ul>
-        <p>Monthly Budget: TK {budget}</p>
-        <p>Remaining Budget: TK {budgetRemaining}</p>
-        <button onClick={() => setShowTodayReport(false)}>Close</button>
-        </div>
+          <div className="modal-content">
+            <h3>Today's Report</h3>
+            <h4>Income</h4>
+            <ul>
+              {todayIncome.map((item, index) => (
+                <li key={index}>{item.title}: TK {item.amount}</li>
+              ))}
+            </ul>
+            <h4>Expenses</h4>
+            <ul>
+              {todayExpenses.map((item, index) => (
+                <li key={index}>{item.title}: TK {item.amount}</li>
+              ))}
+            </ul>
+            <p>Monthly Budget: TK {currentMonthBudget}</p>
+            <p>Remaining Budget: TK {budgetRemaining}</p>
+            <button onClick={() => setShowTodayReport(false)}>Close</button>
+          </div>
         </div>
       )}
     </div>

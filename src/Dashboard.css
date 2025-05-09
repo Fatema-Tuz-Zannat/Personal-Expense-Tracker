@@ -162,4 +162,17 @@ body {
       justify-content: space-between;
     }
   }
+  .calendar-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .react-calendar__tile.highlight-today {
+    background: #4caf50 !important;
+    color: white !important;
+    font-weight: bold;
+  }
+  
   
