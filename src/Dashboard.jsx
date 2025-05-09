@@ -7,6 +7,8 @@ import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart";
 import "./Dashboard.css";
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
