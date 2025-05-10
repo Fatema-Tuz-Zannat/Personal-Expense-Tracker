@@ -16,28 +16,25 @@ const DailyReport = ({ incomeData, expenseData }) => {
 
   useEffect(() => {
     if (!selectedDate) return;
-
+  
+    const selectedDateStr = new Date(selectedDate).toISOString().split('T')[0]; 
+  
     const filteredIncomeList = incomeData.filter((income) => {
-      const incomeDate = new Date(income.date);
-      return (
-        incomeDate.getDate() === selectedDate.getDate() &&
-        incomeDate.getMonth() === selectedDate.getMonth() &&
-        incomeDate.getFullYear() === selectedDate.getFullYear()
-      );
+      const incomeDateObj =
+        income.date?.seconds ? new Date(income.date.seconds * 1000) : new Date(income.date);
+      const incomeDateStr = incomeDateObj.toISOString().split('T')[0];
+      return incomeDateStr === selectedDateStr;
     });
-
+  
     const filteredExpenseList = expenseData.filter((expense) => {
-      const expenseDate = new Date(expense.date);
-      return (
-        expenseDate.getDate() === selectedDate.getDate() &&
-        expenseDate.getMonth() === selectedDate.getMonth() &&
-        expenseDate.getFullYear() === selectedDate.getFullYear()
-      );
+      const expenseDateObj = new Date(expense.date); 
+      const expenseDateStr = expenseDateObj.toISOString().split('T')[0];
+      return expenseDateStr === selectedDateStr;
     });
-
+  
     setFilteredIncome(filteredIncomeList);
     setFilteredExpenses(filteredExpenseList);
-  }, [selectedDate, incomeData, expenseData]);
+  }, [selectedDate, incomeData, expenseData]);  
 
   const totalIncome = filteredIncome.reduce((sum, entry) => sum + Number(entry.amount), 0);
   const totalExpenses = filteredExpenses.reduce((sum, entry) => sum + Number(entry.amount), 0);

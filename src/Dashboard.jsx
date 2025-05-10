@@ -219,27 +219,9 @@ const Dashboard = () => {
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
       </div>
-      
-      <div className="calendar-container">
-        <h3>Calendar</h3>
-        <Calendar
-          value={calendarDate}
-          onChange={(date) => {
-          setCalendarDate(date);
-          onAuthStateChanged(auth, (user) => {
-            if (user) {
-              fetchCalendarDayData(user.uid, date);
-            }
-            });
-          }}
-          tileClassName={({ date }) =>
-          date.toDateString() === new Date().toDateString() ? 'highlight-today' : null
-          }
-        />
-      </div>
 
       <DailyReport date={calendarDate} incomeData={calendarIncome} expenseData={calendarExpenses}/>
-      
+
       {showTodayReport && (
         <div className="modal-overlay">
           <div className="modal-content">
