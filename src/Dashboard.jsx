@@ -7,6 +7,7 @@ import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart";
 import "./Dashboard.css";
+import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import DailyReport from './components/DailyReport';
 
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const [showTodayReport, setShowTodayReport] = useState(false);
   const [expenseData, setExpenseData] = useState([]);
   const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
+  const [calendarDate, setCalendarDate] = useState(new Date());
   const [calendarIncome, setCalendarIncome] = useState([]);
   const [calendarExpenses, setCalendarExpenses] = useState([]);
   const navigate = useNavigate();
@@ -113,6 +115,33 @@ const Dashboard = () => {
     setTodayExpenses(todayExpenseList);
     setExpenseData(filteredExpenses);
   };
+  const fetchCalendarDayData = async (uid, date) => {
+    const incomeSnapshot = await getDocs(query(collection(db, "income"), where("userId", "==", uid)));
+    const expenseSnapshot = await getDocs(query(collection(db, "expenses"), where("userId", "==", uid)));
+  
+    const targetDay = date.toDateString();
+    const incomeList = [];
+    const expenseList = [];
+  
+    incomeSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const docDate = data.date?.toDate?.();
+      if (docDate && docDate.toDateString() === targetDay) {
+        incomeList.push({ title: data.title, amount: data.amount });
+      }
+    });
+  
+    expenseSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const docDate = data.date ? new Date(data.date) : null;
+      if (docDate && docDate.toDateString() === targetDay) {
+        expenseList.push({ title: data.title, amount: data.amount });
+      }
+    });
+  
+    setCalendarIncome(incomeList);
+    setCalendarExpenses(expenseList);
+  };
     
   const fetchCurrentMonthBudget = async (uid) => {
     const today = new Date();
@@ -190,9 +219,26 @@ const Dashboard = () => {
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
       </div>
+      
+      <div className="calendar-container">
+        <h3>Calendar</h3>
+        <Calendar
+          value={calendarDate}
+          onChange={(date) => {
+          setCalendarDate(date);
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              fetchCalendarDayData(user.uid, date);
+            }
+            });
+          }}
+          tileClassName={({ date }) =>
+          date.toDateString() === new Date().toDateString() ? 'highlight-today' : null
+          }
+        />
+      </div>
 
       <DailyReport date={calendarDate} incomeData={calendarIncome} expenseData={calendarExpenses}/>
-
       {showTodayReport && (
         <div className="modal-overlay">
           <div className="modal-content">
