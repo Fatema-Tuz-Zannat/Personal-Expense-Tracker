@@ -7,7 +7,6 @@ import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart";
 import "./Dashboard.css";
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import DailyReport from './components/DailyReport';
 
@@ -206,14 +205,6 @@ const Dashboard = () => {
         <CategorizedExpenseBarChart expenseData={expenseData} />
       </div>
       
-      <div className="calendar-container">
-      <h3>Calendar</h3>
-        <Calendar value={new Date()} tileClassName={({ date, view }) => {
-           if (date.toDateString() === new Date().toDateString()) {
-           return 'highlight-today';
-           }
-         }} />
-      </div>
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
 
