@@ -63,7 +63,7 @@ const DailyReport = ({ incomeData, expenseData }) => {
             {filteredExpenses.length > 0 ? (
               <ul>
                 {filteredExpenses.map((item, index) => (
-                  <li key={index}>{item.title}: TK {item.amount}</li>
+                  <li key={index}>{item.category}: TK {item.amount}</li>
                 ))}
               </ul>
             ) : (
