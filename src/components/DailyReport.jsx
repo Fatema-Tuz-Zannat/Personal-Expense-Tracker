@@ -16,25 +16,23 @@ const DailyReport = ({ incomeData, expenseData }) => {
 
   useEffect(() => {
     if (!selectedDate) return;
+  
     const selectedDateStr = new Date(selectedDate).toISOString().split('T')[0];
   
     const filteredIncomeList = incomeData.filter((income) => {
-      let incomeDateStr = '';
-      if (income.date?.seconds) {
-        incomeDateStr = new Date(income.date.seconds * 1000).toISOString().split('T')[0];
-      } else if (typeof income.date === 'string' || income.date instanceof Date) {
-        incomeDateStr = new Date(income.date).toISOString().split('T')[0];
-      }
+      const incomeDateObj =
+        income.date?.seconds ? new Date(income.date.seconds * 1000) : new Date(income.date);
+      const incomeDateStr = incomeDateObj.toISOString().split('T')[0];
       return incomeDateStr === selectedDateStr;
     });
-
+  
     const filteredExpenseList = expenseData.filter((expense) => {
-      let expenseDateStr = '';
-      if (typeof expense.date === 'string') {
-        expenseDateStr = new Date(expense.date).toISOString().split('T')[0];
-      } else if (expense.date instanceof Date) {
-        expenseDateStr = expense.date.toISOString().split('T')[0];
-      }
+      const expenseDateObj = typeof expense.date === 'string'
+        ? new Date(expense.date)
+        : expense.date?.seconds
+          ? new Date(expense.date.seconds * 1000)
+          : new Date(expense.date);
+      const expenseDateStr = expenseDateObj.toISOString().split('T')[0];
       return expenseDateStr === selectedDateStr;
     });
   
@@ -42,7 +40,6 @@ const DailyReport = ({ incomeData, expenseData }) => {
     setFilteredExpenses(filteredExpenseList);
   }, [selectedDate, incomeData, expenseData]);
   
-
   const totalIncome = filteredIncome.reduce((sum, entry) => sum + Number(entry.amount), 0);
   const totalExpenses = filteredExpenses.reduce((sum, entry) => sum + Number(entry.amount), 0);
 
