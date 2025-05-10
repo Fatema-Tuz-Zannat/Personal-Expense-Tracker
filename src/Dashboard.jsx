@@ -22,9 +22,8 @@ const Dashboard = () => {
   const [showTodayReport, setShowTodayReport] = useState(false);
   const [expenseData, setExpenseData] = useState([]);
   const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
-  const [calendarDate, setCalendarDate] = useState(new Date());
-  const [calendarIncome, setCalendarIncome] = useState([]);
-  const [calendarExpenses, setCalendarExpenses] = useState([]);
+  const [incomeData, setIncomeData] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,7 +106,21 @@ const Dashboard = () => {
         budgetAmount = data.amount;
       }
     });
+    const filteredIncomes = [];
 
+    incomeSnapshot.forEach((doc) => {
+      const data = doc.data();
+      const date = data.date?.toDate?.();
+      if (viewType === "total" || (date && date >= startDate && date <= endDate)) {
+        incomeTotal += Number(data.amount || 0);
+        filteredIncomes.push({ ...data, date }); // Store full income with converted date
+      }
+      if (date && date.toDateString() === today) {
+        todayIncomeList.push({ title: data.title, amount: data.amount });
+      }
+    });
+    
+    setIncomeData(filteredIncomes);    
     setTotalIncome(incomeTotal);
     setTotalExpenses(expenseTotal);
     setBudget(budgetAmount);
@@ -115,34 +128,7 @@ const Dashboard = () => {
     setTodayExpenses(todayExpenseList);
     setExpenseData(filteredExpenses);
   };
-  const fetchCalendarDayData = async (uid, date) => {
-    const incomeSnapshot = await getDocs(query(collection(db, "income"), where("userId", "==", uid)));
-    const expenseSnapshot = await getDocs(query(collection(db, "expenses"), where("userId", "==", uid)));
-  
-    const targetDay = date.toDateString();
-    const incomeList = [];
-    const expenseList = [];
-  
-    incomeSnapshot.forEach((doc) => {
-      const data = doc.data();
-      const docDate = data.date?.toDate?.();
-      if (docDate && docDate.toDateString() === targetDay) {
-        incomeList.push({ title: data.title, amount: data.amount });
-      }
-    });
-  
-    expenseSnapshot.forEach((doc) => {
-      const data = doc.data();
-      const docDate = data.date ? new Date(data.date) : null;
-      if (docDate && docDate.toDateString() === targetDay) {
-        expenseList.push({ title: data.title, amount: data.amount });
-      }
-    });
-  
-    setCalendarIncome(incomeList);
-    setCalendarExpenses(expenseList);
-  };
-    
+
   const fetchCurrentMonthBudget = async (uid) => {
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -221,24 +207,16 @@ const Dashboard = () => {
       </div>
       
       <div className="calendar-container">
-        <h3>Calendar</h3>
-        <Calendar
-          value={calendarDate}
-          onChange={(date) => {
-          setCalendarDate(date);
-          onAuthStateChanged(auth, (user) => {
-            if (user) {
-              fetchCalendarDayData(user.uid, date);
-            }
-            });
-          }}
-          tileClassName={({ date }) =>
-          date.toDateString() === new Date().toDateString() ? 'highlight-today' : null
-          }
-        />
+      <h3>Calendar</h3>
+        <Calendar value={new Date()} tileClassName={({ date, view }) => {
+           if (date.toDateString() === new Date().toDateString()) {
+           return 'highlight-today';
+           }
+         }} />
       </div>
 
-      <DailyReport date={calendarDate} incomeData={calendarIncome} expenseData={calendarExpenses}/>
+      <DailyReport incomeData={incomeData} expenseData={expenseData} />
+
       {showTodayReport && (
         <div className="modal-overlay">
           <div className="modal-content">

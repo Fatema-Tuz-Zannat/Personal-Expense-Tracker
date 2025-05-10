@@ -16,78 +16,61 @@ const DailyReport = ({ incomeData, expenseData }) => {
 
   useEffect(() => {
     if (!selectedDate) return;
-  
-    const selectedDateStr = new Date(selectedDate).toISOString().split('T')[0];
-  
+
     const filteredIncomeList = incomeData.filter((income) => {
-      const incomeDateObj =
-        income.date?.seconds ? new Date(income.date.seconds * 1000) : new Date(income.date);
-      const incomeDateStr = incomeDateObj.toISOString().split('T')[0];
-      return incomeDateStr === selectedDateStr;
+      const incomeDate = new Date(income.date);
+      return (
+        incomeDate.getDate() === selectedDate.getDate() &&
+        incomeDate.getMonth() === selectedDate.getMonth() &&
+        incomeDate.getFullYear() === selectedDate.getFullYear()
+      );
     });
-  
+
     const filteredExpenseList = expenseData.filter((expense) => {
-      const expenseDateObj = typeof expense.date === 'string'
-        ? new Date(expense.date)
-        : expense.date?.seconds
-          ? new Date(expense.date.seconds * 1000)
-          : new Date(expense.date);
-      const expenseDateStr = expenseDateObj.toISOString().split('T')[0];
-      return expenseDateStr === selectedDateStr;
+      const expenseDate = new Date(expense.date);
+      return (
+        expenseDate.getDate() === selectedDate.getDate() &&
+        expenseDate.getMonth() === selectedDate.getMonth() &&
+        expenseDate.getFullYear() === selectedDate.getFullYear()
+      );
     });
-  
+
     setFilteredIncome(filteredIncomeList);
     setFilteredExpenses(filteredExpenseList);
   }, [selectedDate, incomeData, expenseData]);
-  
-  const totalIncome = filteredIncome.reduce((sum, entry) => sum + Number(entry.amount), 0);
-  const totalExpenses = filteredExpenses.reduce((sum, entry) => sum + Number(entry.amount), 0);
 
   return (
     <div className="daily-report">
-      <h3>Select a Date</h3>
-      <Calendar
-        onChange={handleDateChange}
-        tileClassName={({ date }) => {
-          if (date.toDateString() === new Date().toDateString()) return 'highlight-today';
-        }}
-      />
+      <h3>Select a Date to View Daily Report</h3>
+      <Calendar onClickDay={handleDateChange} />
 
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
-            <button className="close-btn" onClick={() => setShowPopup(false)}>×</button>
-            <h3>Report for {selectedDate.toDateString()}</h3>
+            <h3>Daily Report - {selectedDate.toDateString()}</h3>
+            <h4>Income</h4>
+            {filteredIncome.length > 0 ? (
+              <ul>
+                {filteredIncome.map((item, index) => (
+                  <li key={index}>{item.title}: TK {item.amount}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No income recorded on this date.</p>
+            )}
 
-            <div className="daily-section">
-              <h4>Income (Total: TK {totalIncome})</h4>
-              {filteredIncome.length > 0 ? (
-                <ul>
-                  {filteredIncome.map((income) => (
-                    <li key={income.id}>
-                      {income.title}: TK {income.amount}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No income records</p>
-              )}
-            </div>
+            <h4>Expenses</h4>
+            {filteredExpenses.length > 0 ? (
+              <ul>
+                {filteredExpenses.map((item, index) => (
+                  <li key={index}>{item.title}: TK {item.amount}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No expenses recorded on this date.</p>
+            )}
 
-            <div className="daily-section">
-              <h4>Expenses (Total: TK {totalExpenses})</h4>
-              {filteredExpenses.length > 0 ? (
-                <ul>
-                  {filteredExpenses.map((expense) => (
-                    <li key={expense.id}>
-                      {expense.title}: TK {expense.amount}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No expense records</p>
-              )}
-            </div>
+            <button onClick={() => setShowPopup(false)}>Close</button>
           </div>
         </div>
       )}
