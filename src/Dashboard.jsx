@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import BudgetProgressBar from "./components/BudgetProgressBar";
 import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart";
+import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart"; // ✅ NEW IMPORT
 import "./Dashboard.css";
 import 'react-calendar/dist/Calendar.css';
 import DailyReport from './components/DailyReport';
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [expenseData, setExpenseData] = useState([]);
   const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
+  const [monthlyTrends, setMonthlyTrends] = useState([]); // ✅ NEW STATE
 
   const navigate = useNavigate();
 
@@ -65,12 +67,14 @@ const Dashboard = () => {
 
     let incomeTotal = 0;
     let todayIncomeList = [];
+    const filteredIncomes = [];
 
     incomeSnapshot.forEach((doc) => {
       const data = doc.data();
       const date = data.date?.toDate?.();
       if (viewType === "total" || (date && date >= startDate && date <= endDate)) {
         incomeTotal += Number(data.amount || 0);
+        filteredIncomes.push({ ...data, date }); // Store full income with converted date
       }
       if (date && date.toDateString() === today) {
         todayIncomeList.push({ title: data.title, amount: data.amount });
@@ -105,21 +109,46 @@ const Dashboard = () => {
         budgetAmount = data.amount;
       }
     });
-    const filteredIncomes = [];
 
-    incomeSnapshot.forEach((doc) => {
-      const data = doc.data();
-      const date = data.date?.toDate?.();
-      if (viewType === "total" || (date && date >= startDate && date <= endDate)) {
-        incomeTotal += Number(data.amount || 0);
-        filteredIncomes.push({ ...data, date }); // Store full income with converted date
-      }
-      if (date && date.toDateString() === today) {
-        todayIncomeList.push({ title: data.title, amount: data.amount });
-      }
-    });
-    
-    setIncomeData(filteredIncomes);    
+    // ✅ NEW: Generate monthly trends for line graph
+    if (viewType === "yearly" || viewType === "total") {
+      const trends = Array.from({ length: 12 }, (_, i) => {
+        const monthStart = new Date(year, i, 1);
+        const monthEnd = new Date(year, i + 1, 0, 23, 59, 59);
+        const monthNameShort = monthStart.toLocaleString("default", { month: "short" });
+
+        const incomeSum = filteredIncomes
+          .filter((item) => item.date >= monthStart && item.date <= monthEnd)
+          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+        const expenseSum = filteredExpenses
+          .filter((item) => {
+            const d = item.date ? new Date(item.date) : null;
+            return d && d >= monthStart && d <= monthEnd;
+          })
+          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+        const budgetEntry = budgetSnapshot.docs.find((doc) => {
+          const data = doc.data();
+          return (
+            data.type === "monthly" &&
+            data.month === monthStart.toLocaleString("default", { month: "long" }) &&
+            data.year === year
+          );
+        });
+
+        return {
+          month: monthNameShort,
+          income: incomeSum,
+          expenses: expenseSum,
+          budget: budgetEntry ? budgetEntry.data().amount : 0,
+        };
+      });
+
+      setMonthlyTrends(trends);
+    }
+
+    setIncomeData(filteredIncomes);
     setTotalIncome(incomeTotal);
     setTotalExpenses(expenseTotal);
     setBudget(budgetAmount);
@@ -203,8 +232,10 @@ const Dashboard = () => {
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
+        {(viewType === "yearly" || viewType === "total") && (
+          <MonthlyTrendsLineChart monthlyData={monthlyTrends} /> // ✅ NEW CHART RENDER
+        )}
       </div>
-      
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
 
