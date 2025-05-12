@@ -225,8 +225,8 @@ const Dashboard = () => {
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
         <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
-        {(viewType === "yearly" || viewType === "total") && (
-          <MonthlyTrendsLineChart monthlyData={monthlyTrends} />
+        {(viewType === "yearly" || viewType === "total") && monthlyTrends.length > 0 && (
+        <MonthlyTrendsChart data={monthlyTrends} />
         )}
       </div>
 
