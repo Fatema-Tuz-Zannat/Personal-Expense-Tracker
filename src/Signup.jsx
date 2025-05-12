@@ -30,7 +30,6 @@ const Signup = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
 
-      // Store user profile in Firestore
       await setDoc(doc(db, "users", uid), {
         uid,
         firstName,
