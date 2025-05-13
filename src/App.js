@@ -37,7 +37,10 @@ function App() {
           path="/budgets"
           element={user ? <SetBudgetPage /> : <Navigate to="/login" />}
         />
-        <Route path="/profile" element={<UserProfile />} />
+        <Route
+          path="/profile"
+          element={user ? <UserProfile /> : <Navigate to="/login" />}
+        />
       </Routes>
     </Router>
   );
