@@ -8,6 +8,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import IncomeTracker from './IncomeTracker'; 
 import SetBudgetPage from './SetBudgetPage';
 import AddExpenseForm from "./AddExpenseForm";
+import UserProfile from './UserProfile';
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -36,6 +37,7 @@ function App() {
           path="/budgets"
           element={user ? <SetBudgetPage /> : <Navigate to="/login" />}
         />
+        <Route path="/profile" element={<UserProfile />} />
       </Routes>
     </Router>
   );

@@ -186,6 +186,7 @@ const Dashboard = () => {
         <button onClick={() => navigate("/budgets")}>Set Budget</button>
         <button onClick={handleLogout}>Logout</button>
         <button onClick={() => setShowTodayReport(true)}>Today's Report</button>
+        <button onClick={() => navigate("/profile")}>Profile</button>
       </div>
 
       <div className="summary-controls">
