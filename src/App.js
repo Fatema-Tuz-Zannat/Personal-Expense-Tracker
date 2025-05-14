@@ -9,6 +9,7 @@ import IncomeTracker from './IncomeTracker';
 import SetBudgetPage from './SetBudgetPage';
 import AddExpenseForm from "./AddExpenseForm";
 import UserProfile from './UserProfile';
+import AdminDashboard from './AdminDashboard'; 
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -40,6 +41,10 @@ function App() {
         <Route
           path="/profile"
           element={user ? <UserProfile /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/admin"
+          element={user ? <AdminDashboard /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
