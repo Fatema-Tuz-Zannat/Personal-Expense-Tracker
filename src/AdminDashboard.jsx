@@ -16,6 +16,8 @@ const AdminDashboard = () => {
       const usersSnapshot = await getDocs(collection(db, 'users'));
       const userList = [];
 
+      const selectedMonthStr = formatMonth(selectedMonth); 
+
       for (const userDoc of usersSnapshot.docs) {
         const user = userDoc.data();
         const uid = user.uid;
@@ -23,9 +25,9 @@ const AdminDashboard = () => {
         const incomeSnap = await getDocs(collection(db, 'users', uid, 'income'));
         const incomeTotal = incomeSnap.docs.reduce((sum, doc) => {
           const data = doc.data();
-          if (data.date?.toDate) {
-            const incomeDate = data.date.toDate();
-            if (formatMonth(incomeDate) === formatMonth(selectedMonth)) {
+          if (data.date && data.date.toDate) {
+            const incomeMonth = formatMonth(data.date.toDate());
+            if (incomeMonth === selectedMonthStr) {
               return sum + (data.amount || 0);
             }
           }
@@ -35,14 +37,10 @@ const AdminDashboard = () => {
         const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
         const expenseTotal = expenseSnap.docs.reduce((sum, doc) => {
           const data = doc.data();
-          if (data.date) {
-            try {
-              const expenseDate = new Date(data.date);
-              if (formatMonth(expenseDate) === formatMonth(selectedMonth)) {
-                return sum + (data.amount || 0);
-              }
-            } catch (err) {
-              console.warn('Invalid expense date format:', data.date);
+          if (data.date && typeof data.date === 'string') {
+            const expenseMonth = data.date.slice(0, 7);
+            if (expenseMonth === selectedMonthStr) {
+              return sum + (data.amount || 0);
             }
           }
           return sum;
@@ -55,7 +53,6 @@ const AdminDashboard = () => {
         });
       }
 
-      console.log('User list with totals:', userList);
       setUsers(userList);
     };
 
