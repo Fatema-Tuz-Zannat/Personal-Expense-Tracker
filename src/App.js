@@ -11,6 +11,8 @@ import AddExpenseForm from "./AddExpenseForm";
 import UserProfile from './UserProfile';
 import AdminDashboard from './AdminDashboard';
 
+const ADMIN_EMAIL = 'adminemail@gmail.com';
+
 function App() {
   const [user, loading] = useAuthState(auth);
 
@@ -21,28 +23,31 @@ function App() {
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+
         <Route
           path="/"
           element={
-          !user ? (
-          <Navigate to="/login" />
-          ) : user.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1' ? (
-         <Navigate to="/admin" />
-          ) : (
-         <Dashboard />
-         )
-         }
+            !user ? (
+              <Navigate to="/login" />
+            ) : user.email === ADMIN_EMAIL ? (
+              <Navigate to="/admin" />
+            ) : (
+              <Dashboard />
+            )
+          }
         />
+
         <Route
           path="/admin"
           element={
-          user && user.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1' ? (
-         <AdminDashboard />
-          ) : (
-          <Navigate to="/" />
-          )
+            user && user.email === ADMIN_EMAIL ? (
+              <AdminDashboard />
+            ) : (
+              <Navigate to="/" />
+            )
           }
         />
+
         <Route
           path="/income"
           element={user ? <IncomeTracker /> : <Navigate to="/login" />}
@@ -51,7 +56,6 @@ function App() {
           path="/expenses"
           element={user ? <ExpenseTracker /> : <Navigate to="/login" />}
         />
-        <Route path="/add-expense" element={<AddExpenseForm />} />
         <Route
           path="/budgets"
           element={user ? <SetBudgetPage /> : <Navigate to="/login" />}
@@ -60,9 +64,11 @@ function App() {
           path="/profile"
           element={user ? <UserProfile /> : <Navigate to="/login" />}
         />
+        <Route path="/add-expense" element={<AddExpenseForm />} />
       </Routes>
     </Router>
   );
 }
+
 
 export default App;

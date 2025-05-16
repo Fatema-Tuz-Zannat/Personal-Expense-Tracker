@@ -16,11 +16,12 @@ const Login = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
+      const email = userCredential.user.email;
 
-      if (uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1') {
-        navigate('/admin');
+      if (email === 'adminemail@gmail.com') {
+      navigate('/admin');
       } else {
-        navigate('/'); 
+      navigate('/');
       }
 
     } catch (error) {
