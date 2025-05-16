@@ -26,10 +26,24 @@ function App() {
         <Route
           path="/"
           element={
-          user? user.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1'
-          ? <Navigate to="/admin" />
-          : <Dashboard />
-          : <Navigate to="/login" />}
+          !user ? (
+          <Navigate to="/login" />
+          ) : user.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1' ? (
+         <Navigate to="/admin" />
+          ) : (
+         <Dashboard />
+         )
+         }
+        />
+        <Route
+          path="/admin"
+          element={
+          user && user.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1' ? (
+         <AdminDashboard />
+          ) : (
+          <Navigate to="/" />
+          )
+          }
         />
         <Route
           path="/income"
@@ -47,10 +61,6 @@ function App() {
         <Route
           path="/profile"
           element={user ? <UserProfile /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/admin"
-          element={isAdmin ? <AdminDashboard /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
