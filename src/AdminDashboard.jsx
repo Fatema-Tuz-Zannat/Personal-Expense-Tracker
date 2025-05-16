@@ -11,55 +11,54 @@ const AdminDashboard = () => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   };
 
-  const fetchData = async () => {
-    const usersSnapshot = await getDocs(collection(db, 'users'));
-    const userList = [];
+  useEffect(() => {
+    const fetchData = async () => {
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const userList = [];
 
-    for (const userDoc of usersSnapshot.docs) {
-      const user = userDoc.data();
-      const uid = user.uid;
+      for (const userDoc of usersSnapshot.docs) {
+        const user = userDoc.data();
+        const uid = user.uid;
 
-      const incomeSnap = await getDocs(collection(db, 'users', uid, 'income'));
-      const incomeTotal = incomeSnap.docs.reduce((sum, doc) => {
-        const data = doc.data();
-        if (data.date?.toDate) {
-          const incomeDate = data.date.toDate();
-          const incomeMonth = formatMonth(incomeDate);
-          if (incomeMonth === formatMonth(selectedMonth)) {
-            return sum + (data.amount || 0);
-          }
-        }
-        return sum;
-      }, 0);
-
-      const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
-      const expenseTotal = expenseSnap.docs.reduce((sum, doc) => {
-        const data = doc.data();
-        if (data.date) {
-          try {
-            const expenseDate = new Date(data.date);
-            const expenseMonth = formatMonth(expenseDate);
-            if (expenseMonth === formatMonth(selectedMonth)) {
+        const incomeSnap = await getDocs(collection(db, 'users', uid, 'income'));
+        const incomeTotal = incomeSnap.docs.reduce((sum, doc) => {
+          const data = doc.data();
+          if (data.date?.toDate) {
+            const incomeDate = data.date.toDate();
+            if (formatMonth(incomeDate) === formatMonth(selectedMonth)) {
               return sum + (data.amount || 0);
             }
-          } catch (err) {
-            console.warn('Invalid expense date format:', data.date);
           }
-        }
-        return sum;
-      }, 0);
+          return sum;
+        }, 0);
 
-      userList.push({
-        ...user,
-        incomeTotal,
-        expenseTotal,
-      });
-    }
+        const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
+        const expenseTotal = expenseSnap.docs.reduce((sum, doc) => {
+          const data = doc.data();
+          if (data.date) {
+            try {
+              const expenseDate = new Date(data.date);
+              if (formatMonth(expenseDate) === formatMonth(selectedMonth)) {
+                return sum + (data.amount || 0);
+              }
+            } catch (err) {
+              console.warn('Invalid expense date format:', data.date);
+            }
+          }
+          return sum;
+        }, 0);
 
-    setUsers(userList);
-  };
+        userList.push({
+          ...user,
+          incomeTotal,
+          expenseTotal,
+        });
+      }
 
-  useEffect(() => {
+      console.log('User list with totals:', userList);
+      setUsers(userList);
+    };
+
     fetchData();
   }, [selectedMonth]);
 
