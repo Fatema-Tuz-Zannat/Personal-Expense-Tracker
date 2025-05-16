@@ -10,7 +10,7 @@ import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart";
 import "./Dashboard.css";
 import 'react-calendar/dist/Calendar.css';
 import DailyReport from './components/DailyReport';
-import Predictor from "./components/Predictor";
+{/*import Predictor from "./components/Predictor";*/}
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
@@ -234,10 +234,10 @@ const Dashboard = () => {
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
 
-    <div>
+    {/*<div>
       <h2>Expense Forecast</h2>
       <Predictor userId={auth.currentUser?.uid} />
-    </div>
+    </div>*/}
 
       {showTodayReport && (
         <div className="modal-overlay">
