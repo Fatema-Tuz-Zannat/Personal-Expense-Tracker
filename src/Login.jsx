@@ -18,9 +18,9 @@ const Login = () => {
       const uid = userCredential.user.uid;
 
       if (uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1') {
-        navigate('/admin'); // ✅ Admin goes to admin dashboard
+        navigate('/admin');
       } else {
-        navigate('/'); // ✅ Normal user goes to dashboard
+        navigate('/'); 
       }
 
     } catch (error) {
