@@ -25,7 +25,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route
           path="/"
-          element={user ? <Dashboard /> : <Navigate to="/login" />}
+          element={
+          user? user.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1'
+          ? <Navigate to="/admin" />
+          : <Dashboard />
+          : <Navigate to="/login" />}
         />
         <Route
           path="/income"
@@ -46,7 +50,7 @@ function App() {
         />
         <Route
           path="/admin"
-          element={isAdmin ? <AdminDashboard /> : <Navigate to="/" />}
+          element={isAdmin ? <AdminDashboard /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
