@@ -10,39 +10,38 @@ const Login = () => {
   const navigate = useNavigate(); 
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
+  e.preventDefault();
+  setErrorMessage('');
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-      const email = userCredential.user.email;
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userEmail = userCredential.user.email;
 
-      if (email === 'adminemail@gmail.com') {
+    if (userEmail === 'adminadmin@gmail.com') {
       navigate('/admin');
-      } else {
+    } else {
       navigate('/');
-      }
-
-    } catch (error) {
-      let msg = 'Login failed. Please try again.';
-
-      switch (error.code) {
-        case 'auth/invalid-credential':
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-          msg = 'Invalid email or password.';
-          break;
-        case 'auth/too-many-requests':
-          msg = 'Too many attempts. Please try again later.';
-          break;
-        default:
-          msg = error.message;
-      }
-
-      setErrorMessage(msg);
     }
-  };
+
+  } catch (error) {
+    let msg = 'Login failed. Please try again.';
+
+    switch (error.code) {
+      case 'auth/invalid-credential':
+      case 'auth/user-not-found':
+      case 'auth/wrong-password':
+        msg = 'Invalid email or password.';
+        break;
+      case 'auth/too-many-requests':
+        msg = 'Too many attempts. Please try again later.';
+        break;
+      default:
+        msg = error.message;
+    }
+
+    setErrorMessage(msg);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
