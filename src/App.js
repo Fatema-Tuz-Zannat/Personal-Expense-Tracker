@@ -16,8 +16,6 @@ function App() {
 
   if (loading) return <div>Loading...</div>;
 
-  const isAdmin = user?.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1';
-
   return (
     <Router>
       <Routes>
