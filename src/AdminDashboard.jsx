@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [monthlyData, setMonthlyData] = useState({});
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const navigate = useNavigate();
 
   const formatMonthYear = (date) =>
@@ -29,6 +29,7 @@ const AdminDashboard = () => {
       const usersSnapshot = await getDocs(collection(db, 'users'));
       const userData = [];
       const monthData = {};
+      const selectedMonth = formatMonthYear(currentMonth);
 
       for (const docSnap of usersSnapshot.docs) {
         const user = docSnap.data();
@@ -37,30 +38,33 @@ const AdminDashboard = () => {
 
         let incomeTotal = 0;
         let expenseTotal = 0;
-        const selectedMonth = formatMonthYear(currentMonth);
 
+        // Fetch incomes for this user
         const incomeSnap = await getDocs(collection(db, 'users', uid, 'incomes'));
         incomeSnap.forEach((doc) => {
           const data = doc.data();
           const timestamp = data.date;
+
           if (timestamp?.toDate) {
             const incomeDate = timestamp.toDate();
             const incomeMonth = `${incomeDate.getFullYear()}-${String(incomeDate.getMonth() + 1).padStart(2, '0')}`;
             if (incomeMonth === selectedMonth) {
-              incomeTotal += data.amount || 0;
+              incomeTotal += Number(data.amount) || 0;
             }
           }
         });
 
+        // Fetch expenses for this user
         const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
         expenseSnap.forEach((doc) => {
           const data = doc.data();
-          const dateString = data.date; 
-          if (typeof dateString === 'string') {
-            const [year, month] = dateString.split('-');
+          const dateStr = data.date; // Expected format: 'YYYY-MM-DD'
+
+          if (typeof dateStr === 'string') {
+            const [year, month] = dateStr.split('-');
             const expenseMonth = `${year}-${month}`;
             if (expenseMonth === selectedMonth) {
-              expenseTotal += data.amount || 0;
+              expenseTotal += Number(data.amount) || 0;
             }
           }
         });
@@ -90,7 +94,6 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">All Users:</h3>
       <div className="overflow-auto">
         <table className="w-full table-auto border-collapse border border-gray-300">
           <thead className="bg-gray-100">
@@ -98,13 +101,15 @@ const AdminDashboard = () => {
               <th className="border p-2">UID</th>
               <th className="border p-2">Name</th>
               <th className="border p-2">Email</th>
-              <th className="border p-2 flex items-center justify-center gap-2">
-                <button onClick={() => changeMonth(-1)}>&lt;</button>
-                Month: {formatMonthYear(currentMonth)}
-                <button onClick={() => changeMonth(1)}>&gt;</button>
+              <th className="border p-2 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <button onClick={() => changeMonth(-1)} className="px-2">&lt;</button>
+                  {formatMonthYear(currentMonth)}
+                  <button onClick={() => changeMonth(1)} className="px-2">&gt;</button>
+                </div>
               </th>
-              <th className="border p-2">Monthly Income (TK)</th>
-              <th className="border p-2">Monthly Expense (TK)</th>
+              <th className="border p-2 text-center">Income (TK)</th>
+              <th className="border p-2 text-center">Expense (TK)</th>
             </tr>
           </thead>
           <tbody>
