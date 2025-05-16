@@ -11,12 +11,12 @@ import AddExpenseForm from "./AddExpenseForm";
 import UserProfile from './UserProfile';
 import AdminDashboard from './AdminDashboard';
 
-const isAdmin = user?.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1';
-
 function App() {
   const [user, loading] = useAuthState(auth);
 
   if (loading) return <div>Loading...</div>;
+
+  const isAdmin = user?.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1';
 
   return (
     <Router>
