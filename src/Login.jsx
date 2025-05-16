@@ -14,8 +14,15 @@ const Login = () => {
     setErrorMessage('');
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/'); // ✅ redirect to dashboard after login
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      if (uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1') {
+        navigate('/admin'); // ✅ Admin goes to admin dashboard
+      } else {
+        navigate('/'); // ✅ Normal user goes to dashboard
+      }
+
     } catch (error) {
       let msg = 'Login failed. Please try again.';
 

@@ -9,7 +9,9 @@ import IncomeTracker from './IncomeTracker';
 import SetBudgetPage from './SetBudgetPage';
 import AddExpenseForm from "./AddExpenseForm";
 import UserProfile from './UserProfile';
-import AdminDashboard from './AdminDashboard'; 
+import AdminDashboard from './AdminDashboard';
+
+const isAdmin = user?.uid === 'k9eyYYPkI5O0tOsBN3wnswTgpij1';
 
 function App() {
   const [user, loading] = useAuthState(auth);
@@ -44,7 +46,7 @@ function App() {
         />
         <Route
           path="/admin"
-          element={user ? <AdminDashboard /> : <Navigate to="/login" />}
+          element={isAdmin ? <AdminDashboard /> : <Navigate to="/" />}
         />
       </Routes>
     </Router>
