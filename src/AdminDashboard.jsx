@@ -24,14 +24,12 @@ const AdminDashboard = () => {
         const uid = user.uid;
 
         const incomeSnap = await getDocs(collection(db, 'users', uid, 'incomes'));
-        incomeSnap.forEach(doc => {
-          totalIncome += doc.data().amount || 0;
-        });
+        const incomeTotal = incomeSnap.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+        totalIncome += incomeTotal;
 
         const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
-        expenseSnap.forEach(doc => {
-          totalExpenses += doc.data().amount || 0;
-        });
+        const expenseTotal = expenseSnap.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+        totalExpenses += expenseTotal;
       }
 
       setUsers(userData);
