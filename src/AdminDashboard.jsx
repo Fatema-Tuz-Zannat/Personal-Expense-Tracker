@@ -12,49 +12,47 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const usersSnapshot = await getDocs(collection(db, 'users'));
-      const userList = [];
+  const fetchData = async () => {
+    const usersSnapshot = await getDocs(collection(db, 'users'));
+    const userList = [];
 
-      const selectedMonthStr = formatMonth(selectedMonth); 
+    for (const userDoc of usersSnapshot.docs) {
+      const user = userDoc.data();
+      const uid = user.uid;
 
-      for (const userDoc of usersSnapshot.docs) {
-        const user = userDoc.data();
-        const uid = user.uid;
+      const incomeSnap = await getDocs(collection(db, 'users', uid, 'income'));
+      const incomeTotal = incomeSnap.docs.reduce((sum, doc) => {
+        const data = doc.data();
+        const dateObj = data.date?.toDate?.();
+        if (dateObj && formatMonth(dateObj) === formatMonth(selectedMonth)) {
+          return sum + (data.amount || 0);
+        }
+        return sum;
+      }, 0);
 
-        const incomeSnap = await getDocs(collection(db, 'users', uid, 'income'));
-        const incomeTotal = incomeSnap.docs.reduce((sum, doc) => {
-          const data = doc.data();
-          if (data.date && data.date.toDate) {
-            const incomeMonth = formatMonth(data.date.toDate());
-            if (incomeMonth === selectedMonthStr) {
-              return sum + (data.amount || 0);
-            }
+      const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
+      const expenseTotal = expenseSnap.docs.reduce((sum, doc) => {
+        const data = doc.data();
+        try {
+          const dateObj = new Date(data.date); 
+          if (!isNaN(dateObj) && formatMonth(dateObj) === formatMonth(selectedMonth)) {
+            return sum + (data.amount || 0);
           }
-          return sum;
-        }, 0);
+        } catch (e) {
+          console.warn('Invalid date:', data.date);
+        }
+        return sum;
+      }, 0);
 
-        const expenseSnap = await getDocs(collection(db, 'users', uid, 'expenses'));
-        const expenseTotal = expenseSnap.docs.reduce((sum, doc) => {
-          const data = doc.data();
-          if (data.date && typeof data.date === 'string') {
-            const expenseMonth = data.date.slice(0, 7);
-            if (expenseMonth === selectedMonthStr) {
-              return sum + (data.amount || 0);
-            }
-          }
-          return sum;
-        }, 0);
+      userList.push({
+        ...user,
+        incomeTotal,
+        expenseTotal,
+      });
+    }
 
-        userList.push({
-          ...user,
-          incomeTotal,
-          expenseTotal,
-        });
-      }
-
-      setUsers(userList);
-    };
+    setUsers(userList);
+  };
 
     fetchData();
   }, [selectedMonth]);
