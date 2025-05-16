@@ -233,6 +233,11 @@ const Dashboard = () => {
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
 
+    <div>
+      <h2>Expense Forecast</h2>
+      <Predictor userId={currentUser.uid} />
+    </div>
+
       {showTodayReport && (
         <div className="modal-overlay">
           <div className="modal-content">
