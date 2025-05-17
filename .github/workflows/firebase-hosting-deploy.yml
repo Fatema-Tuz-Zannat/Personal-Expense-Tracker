@@ -18,8 +18,11 @@ jobs:
         with:
           node-version: '18'  # or whatever version you're using
 
+      - name: 🧹 Clear npm cache (optional but helpful)
+        run: npm cache clean --force
+
       - name: 📦 Install dependencies ✅
-        run: npm install
+        run: npm ci
 
       - name: 🏗️ Build the project ✅
         run: npm run build
