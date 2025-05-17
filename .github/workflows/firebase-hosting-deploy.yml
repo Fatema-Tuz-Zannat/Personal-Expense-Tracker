@@ -1,28 +1,33 @@
-name: Deploy to Firebase Hosting on push
+name: Deploy to Firebase Hosting on merge
 
 on:
   push:
     branches:
-      - main 
+      - main  # or your default branch
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm ci
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # or whatever version you're using
 
-      - name: Build
+      - name: 📦 Install dependencies ✅
+        run: npm install
+
+      - name: 🏗️ Build the project ✅
         run: npm run build
 
-      - name: Deploy to Firebase Hosting
+      - name: 🔥 Deploy to Firebase Hosting ✅
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PERSONAL_EXPENSE_TRACKER_1C190 }}"
           channelId: live
-          projectId: personal-expense-tracker-1c190
+          projectId: personal-expense-tracker-1c190  
