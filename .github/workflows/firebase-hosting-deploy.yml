@@ -1,4 +1,3 @@
-
 name: Deploy to Firebase Hosting on merge
 
 on:
@@ -9,6 +8,8 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: development
 
     steps:
       - name: Checkout code
@@ -19,8 +20,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies (with devDependencies)
+        run: npm install --legacy-peer-deps
 
       - name: Build the project
         run: npm run build
