@@ -13,8 +13,6 @@ import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AddIncomeForm from './AddIncomeForm';
 
-// ... previous imports remain the same
-
 const IncomeTracker = () => {
   const [incomes, setIncomes] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -42,20 +40,16 @@ const IncomeTracker = () => {
         where('userId', '==', currentUser.uid)
       );
       const querySnapshot = await getDocs(q);
-      const allIncomes = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const incomesData = querySnapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          date: new Date(doc.data().date.seconds * 1000),
+        }))
+        .filter(income => income.date.getFullYear() === selectedYear)
+        .sort((a, b) => b.date - a.date);
 
-      const filtered = allIncomes.filter((income) => {
-        const incomeDate = income.date?.seconds
-          ? new Date(income.date.seconds * 1000)
-          : new Date(income.date);
-        return incomeDate.getFullYear() === selectedYear;
-      });
-
-      const sorted = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-      setIncomes(sorted);
+      setIncomes(incomesData);
     };
 
     fetchIncomes();
@@ -65,14 +59,15 @@ const IncomeTracker = () => {
     const incomeWithUser = {
       ...income,
       userId: currentUser.uid,
+      date: income.date instanceof Date ? income.date : new Date(income.date),
     };
     const docRef = await addDoc(collection(db, 'income'), incomeWithUser);
-    const addedIncome = { ...incomeWithUser, id: docRef.id };
-
-    const incomeYear = new Date(income.date).getFullYear();
-    if (incomeYear === selectedYear) {
-      setIncomes(prev => [addedIncome, ...prev].sort((a, b) => new Date(b.date) - new Date(a.date)));
-    }
+    setIncomes(prev =>
+      [
+        { ...incomeWithUser, id: docRef.id },
+        ...prev,
+      ].sort((a, b) => b.date - a.date)
+    );
   };
 
   const handleDelete = async (id) => {
@@ -85,18 +80,18 @@ const IncomeTracker = () => {
   };
 
   const handleUpdate = async (id, updatedIncome) => {
-    await updateDoc(doc(db, 'income', id), updatedIncome);
+    const updatedWithDate = {
+      ...updatedIncome,
+      date: updatedIncome.date instanceof Date ? updatedIncome.date : new Date(updatedIncome.date),
+    };
+    await updateDoc(doc(db, 'income', id), updatedWithDate);
     setIncomes(prev =>
       prev
-        .map(inc =>
-          inc.id === id ? { ...inc, ...updatedIncome } : inc
-        )
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map(inc => (inc.id === id ? { ...inc, ...updatedWithDate } : inc))
+        .sort((a, b) => b.date - a.date)
     );
     setEditingId(null);
   };
-
-  const yearlyTotal = incomes.reduce((sum, income) => sum + income.amount, 0);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -104,92 +99,143 @@ const IncomeTracker = () => {
 
       <AddIncomeForm onAddIncome={handleAddIncome} />
 
-      <div className="flex justify-center items-center gap-4 mt-8 mb-4">
-        <button
-          onClick={() => setSelectedYear(prev => prev - 1)}
-          className="text-xl font-bold px-2 hover:text-blue-600"
-        >
-          &lt;
-        </button>
-        <span className="text-lg font-semibold">{selectedYear}</span>
-        <button
-          onClick={() => setSelectedYear(prev => prev + 1)}
-          className="text-xl font-bold px-2 hover:text-blue-600"
-        >
-          &gt;
-        </button>
-      </div>
+      <div className="mt-8 max-w-4xl mx-auto bg-white shadow-md rounded-md p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">Incomes - {selectedYear}</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedYear(prev => prev - 1)}
+              className="px-3 py-1 border rounded hover:bg-gray-200"
+            >
+              &lt;
+            </button>
+            <span className="font-medium">{selectedYear}</span>
+            <button
+              onClick={() => setSelectedYear(prev => prev + 1)}
+              className="px-3 py-1 border rounded hover:bg-gray-200"
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
 
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-md p-4">
-        <h2 className="text-xl font-semibold mb-4">Incomes</h2>
         {incomes.length === 0 ? (
-          <p className="text-gray-500 text-center">No incomes added for {selectedYear}.</p>
+          <p className="text-gray-500 text-center">No incomes for {selectedYear}.</p>
         ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="min-w-full table-auto border">
-                <thead>
-                  <tr className="bg-gray-200 text-left">
-                    <th className="px-4 py-2">Title</th>
-                    <th className="px-4 py-2">Date</th>
-                    <th className="px-4 py-2">Amount (TK)</th>
-                    <th className="px-4 py-2 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {incomes.map((income) => (
-                    <tr key={income.id} className="border-t">
-                      {editingId === income.id ? (
-                        <td colSpan="4">
-                          <EditIncomeForm
-                            income={income}
-                            onSave={(updatedIncome) =>
-                              handleUpdate(income.id, updatedIncome)
-                            }
-                            onCancel={() => setEditingId(null)}
-                          />
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border px-4 py-2 text-left">Title</th>
+                  <th className="border px-4 py-2 text-left">Date</th>
+                  <th className="border px-4 py-2 text-right">Amount (TK)</th>
+                  <th className="border px-4 py-2 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {incomes.map((income) => (
+                  <tr key={income.id} className="border-t">
+                    {editingId === income.id ? (
+                      <td colSpan="4">
+                        <EditIncomeForm
+                          income={income}
+                          onSave={(updatedIncome) => handleUpdate(income.id, updatedIncome)}
+                          onCancel={() => setEditingId(null)}
+                        />
+                      </td>
+                    ) : (
+                      <>
+                        <td className="px-4 py-2">{income.title}</td>
+                        <td className="px-4 py-2">
+                          {income.date.toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
                         </td>
-                      ) : (
-                        <>
-                          <td className="px-4 py-2">{income.title}</td>
-                          <td className="px-4 py-2">
-                            {new Date(
-                              income.date?.seconds
-                                ? income.date.seconds * 1000
-                                : income.date
-                            ).toDateString()}
-                          </td>
-                          <td className="px-4 py-2 font-semibold">TK{income.amount.toFixed(2)}</td>
-                          <td className="px-4 py-2 text-center space-x-2">
-                            <button
-                              onClick={() => handleEdit(income.id)}
-                              className="text-blue-500 hover:underline"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(income.id)}
-                              className="text-red-500 hover:underline"
-                            >
-                              Delete
-                            </button>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="text-right font-bold mt-4">
-              Total for {selectedYear}: TK{yearlyTotal.toFixed(2)}
-            </div>
-          </>
+                        <td className="px-4 py-2 text-right">{income.amount.toFixed(2)}</td>
+                        <td className="px-4 py-2 text-right space-x-2">
+                          <button
+                            onClick={() => handleEdit(income.id)}
+                            className="text-blue-500 hover:underline"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(income.id)}
+                            className="text-red-500 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
+const EditIncomeForm = ({ income, onSave, onCancel }) => {
+  const [title, setTitle] = useState(income.title);
+  const [amount, setAmount] = useState(income.amount);
+  const [date, setDate] = useState(
+    income.date instanceof Date
+      ? income.date.toISOString().split('T')[0]
+      : new Date(income.date.seconds * 1000).toISOString().split('T')[0]
+  );
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({
+      title,
+      amount: parseFloat(amount),
+      date: new Date(date),
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2 p-2">
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <input
+        type="number"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="w-full border rounded p-1"
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="text-sm text-gray-600 hover:underline"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="text-sm text-green-600 font-semibold hover:underline"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  );
+};
 
 export default IncomeTracker;
