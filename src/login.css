@@ -7,7 +7,7 @@ body, html {
 }
 
 .login-page {
-  background-image: url('/backgrounds/loginbackground.png'); 
+  background-image: url('./backgrounds/loginbackground.png'); 
   background-size: cover;
   background-position: center;
   min-height: 100vh;
