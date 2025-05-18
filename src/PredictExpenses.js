@@ -33,39 +33,45 @@ const PredictExpenses = ({ onClose }) => {
   };
 
   const trainAndPredict = async (dataObj) => {
-    const predictions = {};
+  const predictions = {};
 
-    for (const category of Object.keys(dataObj)) {
-      const monthlyData = Object.entries(dataObj[category])
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([_, value]) => value);
+  for (const category of Object.keys(dataObj)) {
+    const monthlyData = Object.entries(dataObj[category])
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([_, value]) => value);
 
-      if (monthlyData.length < 2) continue;
+    if (monthlyData.length < 2) continue;
 
-      const allSame = monthlyData.every(val => val === monthlyData[0]);
-      if (allSame) {
-        predictions[category] = monthlyData[0];
-        continue;
-      }
-
-      const xs = tf.tensor1d(monthlyData.map((_, i) => i));
-      const ys = tf.tensor1d(monthlyData);
-
-      const model = tf.sequential();
-      model.add(tf.layers.dense({ units: 8, activation: 'relu', inputShape: [1] }));
-      model.add(tf.layers.dense({ units: 1 }));
-
-      model.compile({ optimizer: tf.train.adam(0.01), loss: 'meanSquaredError' });
-
-      await model.fit(xs, ys, { epochs: 200, verbose: 0 });
-
-      const input = tf.tensor2d([[monthlyData.length]]);
-      const prediction = model.predict(input).dataSync()[0];
-      predictions[category] = Math.max(0, Math.round(prediction));
+    const allSame = monthlyData.every(val => Math.abs(val - monthlyData[0]) < 10); // tolerance = 10
+    if (allSame) {
+      predictions[category] = Math.round(monthlyData[monthlyData.length - 1]);
+      continue;
     }
 
-    return predictions;
-  };
+    const xsRaw = monthlyData.map((_, i) => i);
+    const xsTensor = tf.tensor2d(xsRaw, [xsRaw.length, 1]);
+    const ysTensor = tf.tensor2d(monthlyData, [monthlyData.length, 1]);
+
+    const model = tf.sequential();
+    model.add(tf.layers.dense({ units: 16, activation: 'relu', inputShape: [1] }));
+    model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
+    model.add(tf.layers.dense({ units: 1 }));
+
+    model.compile({ optimizer: tf.train.adam(0.01), loss: 'meanSquaredError' });
+
+    await model.fit(xsTensor, ysTensor, { epochs: 300, verbose: 0 });
+
+    const input = tf.tensor2d([[xsRaw.length]]);
+    const predictionTensor = model.predict(input);
+    const prediction = (await predictionTensor.data())[0];
+
+    predictions[category] = Math.max(0, Math.round(prediction));
+
+    tf.dispose([xsTensor, ysTensor, input, predictionTensor]);
+  }
+
+  return predictions;
+};
 
   const handlePredict = async () => {
     const categorizedData = await fetchMonthlyCategoryExpenses();
