@@ -1,20 +1,14 @@
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  height: 100%;
-  background: #f5f5f5;
-}
-
 .login-page {
   background-image: url('./backgrounds/loginbackground.png'); 
-  background-size: cover;
-  background-position: center;
+  background-size: contain; 
+  background-repeat: no-repeat;
+  background-position: right center; 
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start; 
   align-items: center;
   padding: 1rem;
+  background-color: #f5f5f5;
 }
 
 .login-form-container {
@@ -24,11 +18,12 @@ body, html {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 400px;
+  margin-left: 5%;
 }
 
 .logo {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .logo img {
@@ -36,12 +31,12 @@ body, html {
   object-fit: contain;
 }
 
-.login-form-container h2 {
+.logo-subtext {
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
   color: #333;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 input[type="email"],
@@ -52,9 +47,11 @@ input[type="password"] {
   border: 1px solid #ccc;
   border-radius: 10px;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
-button[type="submit"] {
+button[type="submit"],
+.signup-button {
   width: 100%;
   padding: 0.75rem;
   background-color: #008000;
@@ -64,42 +61,46 @@ button[type="submit"] {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-top: 0.5rem;
 }
 
-button[type="submit"]:hover {
+button[type="submit"]:hover,
+.signup-button:hover {
   background-color: #006400;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.875rem;
-  margin-top: -0.5rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
 }
 
 .signup-link {
   text-align: center;
-  font-size: 0.875rem;
   margin-top: 1rem;
 }
 
-.signup-link a {
-  color: #007bff;
-  text-decoration: none;
+.top-left-logo {
+  position: absolute;
+  top: 10px;
+  left: 20px;
 }
 
-.signup-link a:hover {
-  text-decoration: underline;
+.top-left-logo img {
+  height: 50px;
 }
 
 @media (max-width: 500px) {
   .login-form-container {
     padding: 1.5rem;
     border-radius: 15px;
+    margin-left: 0;
   }
 
   .logo img {
     height: 50px;
+  }
+
+  .top-left-logo img {
+    height: 40px;
+  }
+
+  .login-page {
+    background-position: center;
+    background-size: cover;
   }
 }

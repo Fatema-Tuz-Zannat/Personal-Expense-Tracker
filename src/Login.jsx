@@ -45,43 +45,50 @@ const Login = () => {
     }
   };
 
-  return (
-    <div
-      className="login-page"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-      }}
-    >
-      <div className="login-form-container">
-        <div className="logo">
-          <img src={logo} alt="App Logo" />
-        </div>
-        <form onSubmit={handleLogin}>
-          <h2>Login</h2>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Login</button>
-          {errorMessage && <div className="error-message">{errorMessage}</div>}
-          <div className="signup-link">
-            Don’t have an account?{' '}
-            <Link to="/signup">Sign up</Link>
-          </div>
-        </form>
-      </div>
+return (
+  <div
+    className="login-page"
+    style={{
+      backgroundImage: `url(${backgroundImage})`,
+    }}
+  >
+    <div className="top-left-logo">
+      <img src={logo} alt="Logo" />
     </div>
-  );
+
+    <div className="login-form-container">
+      <div className="logo">
+        <img src={logo} alt="App Logo" />
+      </div>
+      <div className="logo-subtext">Personal Expense Tracker</div>
+
+      <form onSubmit={handleLogin}>
+        <h2>Login</h2>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+      </form>
+
+      <Link to="/signup">
+        <button className="signup-button">Sign Up</button>
+      </Link>
+    </div>
+  </div>
+);
+
 };
 
 export default Login;
