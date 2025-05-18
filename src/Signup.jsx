@@ -65,10 +65,7 @@ const Signup = () => {
       </div>
 
       <div className="signup-form-container">
-        <div className="logo">
-          <img src={logo} alt="App Logo" />
-        </div>
-        <div className="logo-subtext">Personal Expense Tracker</div>
+        <div className="logo-subtext">Please Enter:</div>
 
         <form onSubmit={handleSignup}>
           <h2 style={{ textAlign: 'center' }}>Signup</h2>
@@ -106,7 +103,6 @@ const Signup = () => {
           <button type="submit">Signup</button>
 
           <div className="signup-link">
-            Already have an account?{' '}
             <Link to="/login" className="signup-button">Login</Link>
           </div>
         </form>

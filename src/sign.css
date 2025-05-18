@@ -1,7 +1,5 @@
-/* sign.css */
-
 .signup-page {
-  background-image: url('./backgrounds/loginbackground.png');
+  background-image: url('./backgrounds/signupbackground.png');
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
@@ -20,22 +18,13 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 400px;
-  margin-left: 55%;
+  margin-left: 15%;
 }
 
-.logo {
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
-
-.logo img {
-  height: 60px;
-  object-fit: contain;
-}
 
 .logo-subtext {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #035a1a;
   margin-bottom: 1rem;
   font-weight: 700;
@@ -53,7 +42,7 @@ input[type="password"] {
   box-sizing: border-box;
 }
 
-button[type="submit"] {
+.signup-button[type="submit"] {
   width: 100%;
   padding: 0.75rem;
   background-color: #06b74a;
@@ -66,7 +55,7 @@ button[type="submit"] {
   margin-top: 0.5rem;
 }
 
-.signup-button {
+button {
   width: 100%;
   padding: 0.75rem;
   background-color: #008077;
@@ -79,12 +68,12 @@ button[type="submit"] {
   margin-top: 0.5rem;
 }
 
-button[type="submit"]:hover {
-  background-color: #035464;
+.signup-button[type="submit"]:hover {
+  background-color: #03643c;
 }
 
-.signup-button:hover {
-  background-color: #04397e;
+button:hover {
+  background-color: #066f99;
 }
 
 .signup-link {
@@ -102,8 +91,8 @@ button[type="submit"]:hover {
 
 .top-left-logo {
   position: absolute;
-  top: 25px;
-  left: 30px;
+  top: 40px;
+  left: 50px;
 }
 
 .top-left-logo img {
