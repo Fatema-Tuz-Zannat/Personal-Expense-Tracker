@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { auth, db } from './firebase';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
 import * as tf from '@tensorflow/tfjs';
 import { Bar } from 'react-chartjs-2';
 
 const PredictExpenses = ({ onClose }) => {
   const [predictionData, setPredictionData] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const fetchMonthlyCategoryExpenses = async () => {
+    const auth = getAuth();
+    const db = getFirestore();
     const user = auth.currentUser;
     if (!user) return {};
 
@@ -46,19 +42,25 @@ const PredictExpenses = ({ onClose }) => {
 
       if (monthlyData.length < 2) continue;
 
+      const allSame = monthlyData.every(val => val === monthlyData[0]);
+      if (allSame) {
+        predictions[category] = monthlyData[0];
+        continue;
+      }
+
       const xs = tf.tensor1d(monthlyData.map((_, i) => i));
       const ys = tf.tensor1d(monthlyData);
 
       const model = tf.sequential();
-      model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
-      model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
+      model.add(tf.layers.dense({ units: 8, activation: 'relu', inputShape: [1] }));
+      model.add(tf.layers.dense({ units: 1 }));
 
-      await model.fit(xs, ys, { epochs: 200 });
+      model.compile({ optimizer: tf.train.adam(0.01), loss: 'meanSquaredError' });
 
-      const nextIndex = monthlyData.length;
-      const input = tf.tensor1d([nextIndex]);
+      await model.fit(xs, ys, { epochs: 200, verbose: 0 });
+
+      const input = tf.tensor2d([[monthlyData.length]]);
       const prediction = model.predict(input).dataSync()[0];
-
       predictions[category] = Math.max(0, Math.round(prediction));
     }
 
@@ -66,30 +68,20 @@ const PredictExpenses = ({ onClose }) => {
   };
 
   const handlePredict = async () => {
-    setLoading(true);
     const categorizedData = await fetchMonthlyCategoryExpenses();
     const predicted = await trainAndPredict(categorizedData);
     const total = Object.values(predicted).reduce((sum, val) => sum + val, 0);
     setPredictionData({ ...predicted, Total: total });
-    setLoading(false);
   };
 
   return (
-    <div>
-      <button
-        className="bg-green-600 text-white py-2 px-4 rounded mt-4"
-        onClick={handlePredict}
-      >
-        Predict for Next Month
-      </button>
-
-      {loading && <p className="mt-4">Predicting, please wait...</p>}
+    <>
+      <button className="predict-button" onClick={handlePredict}>Predict for Next Month</button>
 
       {predictionData && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-lg w-full">
-            <button onClick={onClose} className="absolute top-2 right-2 text-xl">✖</button>
-            <h3 className="text-lg font-bold mb-4">Predicted Expenses for Next Month</h3>
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Predicted Expenses for Next Month</h3>
             <Bar
               data={{
                 labels: Object.keys(predictionData),
@@ -108,10 +100,11 @@ const PredictExpenses = ({ onClose }) => {
                 },
               }}
             />
+            <button onClick={onClose} className="absolute top-2 right-2">✖</button>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

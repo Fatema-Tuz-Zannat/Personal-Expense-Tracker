@@ -10,23 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      - name: 📦 Install dependencies with legacy peer deps
+      - name: Install dependencies with legacy peer deps
         run: npm install --legacy-peer-deps
         env:
           NODE_ENV: development
 
-      - name: 🏗️ Build the project
+      - name: Build the project
         run: npm run build
 
-      - name: 🔥 Deploy to Firebase Hosting
+      - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
