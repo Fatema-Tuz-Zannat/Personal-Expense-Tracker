@@ -10,7 +10,7 @@ const UserProfile = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(true);
-  const [showPrediction, setShowPrediction] = useState(false); // 👈 toggle prediction chart
+ const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -92,17 +92,15 @@ const UserProfile = () => {
           Save
         </button>
 
-        <button
-          onClick={() => setShowPrediction(true)}
-          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+       <button
+        onClick={() => setShowModal(true)}
+        className="bg-purple-600 text-white py-2 px-4 rounded mt-4 ml-2"
         >
-          Predict for Next Month
-        </button>
-      </div>
+        Predict for Next Month
+       </button>
 
-      {showPrediction && (
-        <PredictExpenses onClose={() => setShowPrediction(false)} />
-      )}
+      </div>
+      {showModal && <PredictExpenses onClose={() => setShowModal(false)} />}
     </div>
   );
 };
