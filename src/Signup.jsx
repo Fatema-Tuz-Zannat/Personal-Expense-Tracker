@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
-import styles from './Signup.module.css';
+import './Sign.css';
 import backgroundImage from './backgrounds/signupbackground.png';
 import logo from './backgrounds/logo.png';
 
@@ -54,8 +54,6 @@ const Signup = () => {
   };
 
   return (
-  <div className={styles.signupPage}>
-  
     <div
       className="signup-page"
       style={{
@@ -70,6 +68,7 @@ const Signup = () => {
         <div className="logo-subtext">Please Enter:</div>
 
         <form onSubmit={handleSignup}>
+
           {errorMessage && <div className="error-message">{errorMessage}</div>}
 
           <input
@@ -108,7 +107,6 @@ const Signup = () => {
         </form>
       </div>
     </div>
-  </div>
   );
 };
 

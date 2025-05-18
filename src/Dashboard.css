@@ -1,186 +1,174 @@
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 0;
-    color: #333;
-  }
-  
-  .dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  }
-  
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    color: #2c3e50;
-  }
-  
-  .top-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .top-buttons button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .top-buttons button:hover {
-    background-color: #45a049;
-  }
-  
-  .summary-controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    align-items: center;
-  }
-  
-  .summary-controls select {
-    padding: 0.4rem 0.8rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .date-navigation button {
-    background: #2980b9;
-    color: white;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    margin: 0 5px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  
-  .date-navigation button:hover {
-    background: #3498db;
-  }
-  
-  .summary {
-    background: #f9f9f9;
-    border-radius: 8px;
-    padding: 1.2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .summary p {
-    font-size: 1.1rem;
-    margin: 0.5rem 0;
-  }
-  
-  .charts-section {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-  
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .modal-content {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: left;
-  }
-  
-  .modal-content h3 {
-    margin-top: 0;
-    color: #2c3e50;
-  }
-  
-  .modal-content ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .modal-content li {
-    padding: 0.3rem 0;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .modal-content button {
-    margin-top: 1rem;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .modal-content button:hover {
-    background: #c0392b;
-  }
-  .chart-container {
-  margin: 2rem 0;
-  background-color: #fff;
+/* Dashboard.css */
+
+/* General Page Styling */
+.dashboard-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fc;
+  padding-top: 140px; /* space for fixed navbar */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Fixed Navigation Bar */
+.top-buttons {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #2ecc71;
   padding: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.top-buttons button {
+  background-color: #ffffff;
+  color: #2ecc71;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.top-buttons button:hover {
+  background-color: #27ae60;
+  color: white;
+}
+
+/* Dashboard Heading */
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  color: #2c3e50;
+}
+
+/* Summary Controls */
+.summary-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.summary-controls select,
+.summary-controls button {
+  padding: 0.5rem 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.summary {
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  margin: 0 auto 2rem auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  text-align: center;
+}
+
+.summary p {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+
+.summary h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #34495e;
+}
+
+/* Charts Section */
+.charts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3,
+.modal-content h4 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.modal-content button {
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .top-buttons {
+    flex-direction: column;
+    align-items: center;
   }
 
-  
-  @media (min-width: 768px) {
-    .charts-section {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-  
-    .charts-section > * {
-      flex: 1 1 30%;
-    }
-  
-    .summary-controls {
-      justify-content: space-between;
-    }
-  }
-  .calendar-container {
-    margin-top: 2rem;
-    display: flex;
+  .summary-controls {
     flex-direction: column;
-    align-items: center;
   }
-  
-  .react-calendar__tile.highlight-today {
-    background: #4caf50 !important;
-    color: white !important;
-    font-weight: bold;
+
+  .charts-section {
+    padding: 0 1rem;
   }
-  
-  
+}
+
+@media screen and (max-width: 480px) {
+  .top-buttons button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .summary p {
+    font-size: 0.9rem;
+  }
+
+  .summary h2 {
+    font-size: 1.2rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+}
