@@ -190,14 +190,27 @@ const EditIncomeForm = ({ income, onSave, onCancel }) => {
       : new Date(income.date.seconds * 1000).toISOString().split('T')[0]
   );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave({
-      title,
-      amount: parseFloat(amount),
-      date: new Date(date),
-    });
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  if (!title.trim() || !date || amount === '') {
+    alert('All fields are required.');
+    return;
+  }
+
+  const amountValue = parseFloat(amount);
+  if (isNaN(amountValue) || amountValue <= 0) {
+    alert('Amount must be a positive number.');
+    return;
+  }
+
+  onSave({
+    title: title.trim(),
+    amount: amountValue,
+    date: new Date(date),
+  });
+};
+
 
   return (
     <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2 p-2">
