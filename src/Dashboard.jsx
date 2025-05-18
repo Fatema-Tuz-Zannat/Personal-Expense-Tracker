@@ -10,6 +10,7 @@ import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart";
 import "./Dashboard.css";
 import 'react-calendar/dist/Calendar.css';
 import DailyReport from './components/DailyReport';
+import { FaMoneyBillWave, FaChartPie, FaWallet } from 'react-icons/fa';import { FaMoneyBillWave, FaChartPie, FaWallet } from 'react-icons/fa';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
@@ -181,7 +182,7 @@ const Dashboard = () => {
       <h1>Welcome to Your Dashboard</h1>
 
       <div className="top-buttons">
-        <button onClick={() => navigate("/income")}>View Income</button>
+        <button onClick={() => navigate("/income")}><FontAwesomeIcon icon="fa-solid fa-hand-holding-dollar" />View Income</button>
         <button onClick={() => navigate("/expenses")}>View Expenses</button>
         <button onClick={() => navigate("/budgets")}>Set Budget</button>
         <button onClick={handleLogout}>Logout</button>

@@ -42,10 +42,10 @@ input[type="password"] {
   box-sizing: border-box;
 }
 
-.signup-button[type="submit"] {
+button[type="submit"] {
   width: 100%;
   padding: 0.75rem;
-  background-color: #06b74a;
+  background-color: #01bd49;
   color: white;
   border: none;
   border-radius: 10px;
@@ -55,10 +55,10 @@ input[type="password"] {
   margin-top: 0.5rem;
 }
 
-button {
+.signup-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #008077;
+  background-color: #038e85;
   color: white;
   border: none;
   border-radius: 10px;
@@ -68,12 +68,12 @@ button {
   margin-top: 0.5rem;
 }
 
-.signup-button[type="submit"]:hover {
-  background-color: #027a48;
+button[type="submit"]:hover {
+  background-color: #019b44;
 }
 
-button:hover {
-  background-color: #066f99;
+.signup-button:hover {
+  background-color: #068f99;
 }
 
 .signup-link {
