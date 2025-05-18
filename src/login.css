@@ -18,7 +18,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 400px;
-  margin-left: 10%;
+  margin-left: 40%;
 }
 
 .logo {
@@ -35,7 +35,7 @@
 
 .logo-subtext {
   text-align: center;
-  font-size: 5rem;
+  font-size: 2rem;
   color: #035a1a;
   margin-bottom: 1rem;
   font-weight: 700;
