@@ -7,7 +7,6 @@ import './PredictExpenses.css';
 
 const PredictExpenses = ({ onClose }) => {
   const [predictionData, setPredictionData] = useState(null);
-  const [showModal, setShowModal] = useState(false);
 
   const fetchMonthlyCategoryExpenses = async () => {
     const auth = getAuth();
@@ -65,7 +64,6 @@ const PredictExpenses = ({ onClose }) => {
     const categorizedData = await fetchMonthlyCategoryExpenses();
     const predicted = trainAndPredict(categorizedData);
 
-    // Delay to wait for model training
     setTimeout(() => {
       const total = Object.values(predicted).reduce((sum, val) => sum + val, 0);
       setPredictionData({ ...predicted, Total: total });
