@@ -66,7 +66,6 @@ const PredictExpenses = ({ onClose }) => {
     
     try {
       for (const category of Object.keys(dataObj)) {
-      
         const monthlyData = Object.entries(dataObj[category])
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([month, value]) => ({ month, value }));
@@ -141,11 +140,12 @@ const PredictExpenses = ({ onClose }) => {
           
           const monthFeatures = monthlyData.map(item => {
             const monthNum = parseInt(item.month.split('-')[1]);
+ 
             return monthNum / 12;
           });
           
           const xs = tf.tensor2d(monthlyData.map((_, i) => [
-            i / (monthlyData.length - 1), 
+            i / (monthlyData.length - 1),
             monthFeatures[i] 
           ]));
           
@@ -156,7 +156,7 @@ const PredictExpenses = ({ onClose }) => {
             units: 12, 
             activation: 'relu', 
             inputShape: [2],
-            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 })
+            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 }) 
           }));
           model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
           model.add(tf.layers.dense({ units: 1 }));
@@ -189,10 +189,9 @@ const PredictExpenses = ({ onClose }) => {
               break; 
             }
           }
-          
           const nextMonthIndex = monthlyData.length / (monthlyData.length); 
           const lastMonthDate = monthlyData[monthlyData.length - 1].month;
-          const [lastYear, lastMonth] = lastMonthDate.split('-').map(Number);
+          const [, lastMonth] = lastMonthDate.split('-').map(Number);
           const nextMonth = lastMonth === 12 ? 1 : lastMonth + 1;
           const nextMonthNormalized = nextMonth / 12;
           
@@ -205,6 +204,7 @@ const PredictExpenses = ({ onClose }) => {
           ys.dispose();
           input.dispose();
         }
+        
         predictions[category] = Math.max(0, Math.round(prediction));
         
         const recent3Avg = values.slice(-3).reduce((sum, val) => sum + val, 0) / 3;
