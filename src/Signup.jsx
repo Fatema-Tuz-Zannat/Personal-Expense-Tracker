@@ -3,6 +3,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Link, useNavigate } from 'react-router-dom';
+import './sign.css';
+import backgroundImage from './backgrounds/loginbackground.png';
+import logo from './backgrounds/logo.png';
 
 const Signup = () => {
   const [firstName, setFirstName] = useState('');
@@ -51,51 +54,64 @@ const Signup = () => {
   };
 
   return (
-    <form onSubmit={handleSignup} className="flex flex-col space-y-4">
-      <h2 className="text-2xl font-bold mb-4">Signup</h2>
+    <div
+      className="signup-page"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+      }}
+    >
+      <div className="top-left-logo">
+        <img src={logo} alt="Logo" />
+      </div>
 
-      {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+      <div className="signup-form-container">
+        <div className="logo">
+          <img src={logo} alt="App Logo" />
+        </div>
+        <div className="logo-subtext">Personal Expense Tracker</div>
 
-      <input
-        type="text"
-        placeholder="First Name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        required
-        className="border p-2 rounded"
-      />
-      <input
-        type="text"
-        placeholder="Last Name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        required
-        className="border p-2 rounded"
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="border p-2 rounded"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        className="border p-2 rounded"
-      />
-      <button type="submit" className="bg-green-600 text-white py-2 rounded">
-        Signup
-      </button>
+        <form onSubmit={handleSignup}>
+          <h2 style={{ textAlign: 'center' }}>Signup</h2>
 
-      <p className="mt-2">
-        Already have an account? <Link to="/login" className="text-blue-600">Login</Link>
-      </p>
-    </form>
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
+
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Signup</button>
+
+          <div className="signup-link">
+            Already have an account?{' '}
+            <Link to="/login" className="signup-button">Login</Link>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
