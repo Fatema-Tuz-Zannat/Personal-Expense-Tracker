@@ -1,6 +1,6 @@
 .login-page {
   background-image: url('./backgrounds/loginbackground.png'); 
-  background-size: 100%; 
+  background-size: 90%; 
   background-repeat: no-repeat;
   background-position: center; 
   min-height: 100vh;
@@ -18,14 +18,14 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   width: 100%;
   max-width: 400px;
-  margin-left: 40%;
+  margin-left: 55%;
 }
 
 .logo {
   text-align: center;
   margin-bottom: 0.5rem;
-  top : 10px;
-  left : 10px;
+  top : -10px;
+  left : -10px;
 }
 
 .logo img {
@@ -55,7 +55,7 @@ input[type="password"] {
 button[type="submit"]{
     width: 100%;
   padding: 0.75rem;
-  background-color: #059b3f;
+  background-color: #06b74a;
   color: white;
   border: none;
   border-radius: 10px;
@@ -67,7 +67,7 @@ button[type="submit"]{
 .signup-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #004680;
+  background-color: #008077;
   color: white;
   border: none;
   border-radius: 10px;
@@ -78,7 +78,7 @@ button[type="submit"]{
 }
 
 button[type="submit"]:hover{
-  background-color: #076403;
+  background-color: #035464;
 }
 .signup-button:hover {
   background-color: #04397e;
