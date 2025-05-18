@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import PredictExpenses from './PredictExpenses';
 
 const UserProfile = () => {
   const user = auth.currentUser;
@@ -9,6 +10,8 @@ const UserProfile = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showPrediction, setShowPrediction] = useState(false); // 👈 toggle prediction chart
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,12 +84,25 @@ const UserProfile = () => {
         disabled
       />
 
-      <button
-        onClick={handleSave}
-        className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-      >
-        Save
-      </button>
+      <div className="flex gap-4 flex-wrap mt-4">
+        <button
+          onClick={handleSave}
+          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Save
+        </button>
+
+        <button
+          onClick={() => setShowPrediction(true)}
+          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+        >
+          Predict for Next Month
+        </button>
+      </div>
+
+      {showPrediction && (
+        <PredictExpenses onClose={() => setShowPrediction(false)} />
+      )}
     </div>
   );
 };
