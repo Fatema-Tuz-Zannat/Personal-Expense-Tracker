@@ -9,6 +9,7 @@ import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart"
 import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart"; 
 import "./Dashboard.css";
 import 'react-calendar/dist/Calendar.css';
+import DailyReport from './components/DailyReport';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
