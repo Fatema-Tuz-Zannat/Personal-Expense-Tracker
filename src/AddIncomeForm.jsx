@@ -4,18 +4,28 @@ const AddIncomeForm = ({ onAddIncome }) => {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!title || !amount || !date) {
-      alert('Please fill in all fields.');
+      setError('Please fill in all fields.');
+      setMessage('');
+      return;
+    }
+
+    const parsedAmount = parseFloat(amount);
+    if (!Number.isInteger(parsedAmount) || parsedAmount <= 0) {
+      setError('Amount must be a positive whole number.');
+      setMessage('');
       return;
     }
 
     const incomeData = {
       title,
-      amount: parseFloat(amount),
+      amount: parsedAmount,
       date: new Date(date),
     };
 
@@ -24,11 +34,23 @@ const AddIncomeForm = ({ onAddIncome }) => {
     setTitle('');
     setAmount('');
     setDate('');
+    setError('');
+    setMessage('Income added successfully!');
+
+    setTimeout(() => {
+      setMessage('');
+    }, 3000);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 bg-white shadow-md rounded-md space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto p-4 bg-white shadow-md rounded-md space-y-4"
+    >
       <h2 className="text-xl font-bold text-center">Add New Income</h2>
+
+      {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+      {message && <p className="text-green-600 text-sm text-center">{message}</p>}
 
       <input
         type="text"
@@ -53,7 +75,10 @@ const AddIncomeForm = ({ onAddIncome }) => {
         className="w-full border rounded p-2"
       />
 
-      <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+      <button
+        type="submit"
+        className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+      >
         Add Income
       </button>
     </form>
