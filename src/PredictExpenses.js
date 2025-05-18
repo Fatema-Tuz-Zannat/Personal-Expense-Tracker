@@ -66,37 +66,156 @@ const PredictExpenses = ({ onClose }) => {
     
     try {
       for (const category of Object.keys(dataObj)) {
-
+      
         const monthlyData = Object.entries(dataObj[category])
           .sort(([a], [b]) => a.localeCompare(b))
-          .map(([_, value]) => value);
+          .map(([month, value]) => ({ month, value }));
 
         if (monthlyData.length < 2) {
-          const lastValue = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1] : 0;
+          const lastValue = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1].value : 0;
           predictions[category] = lastValue;
           continue;
         }
 
-        const allSame = monthlyData.every(val => val === monthlyData[0]);
+        const values = monthlyData.map(item => item.value);
+        
+        const allSame = values.every(val => val === values[0]);
         if (allSame) {
-          predictions[category] = monthlyData[0];
+          predictions[category] = values[0];
           continue;
         }
 
-        const xs = tf.tensor1d(monthlyData.map((_, i) => i));
-        const ys = tf.tensor1d(monthlyData);
-
-        const model = tf.sequential();
-        model.add(tf.layers.dense({ units: 8, activation: 'relu', inputShape: [1] }));
-        model.add(tf.layers.dense({ units: 1 }));
-
-        model.compile({ optimizer: tf.train.adam(0.01), loss: 'meanSquaredError' });
-
-        await model.fit(xs, ys, { epochs: 100, verbose: 0 });
+        if (category === 'Rent' || category === 'Utilities') {
+          predictions[category] = values[values.length - 1];
+          continue;
+        }
         
-        const input = tf.tensor2d([[monthlyData.length]]);
-        const prediction = model.predict(input).dataSync()[0];
+        if (values.length >= 12 && 
+            (category === 'Food' || category === 'Entertainment' || 
+             category === 'Shopping' || category === 'Transportation')) {
+          
+          const recent3MonthsAvg = values.slice(-3).reduce((sum, val) => sum + val, 0) / 3;
+          
+          const sameMonthLastYear = values[values.length - 12] || recent3MonthsAvg;
+          
+          predictions[category] = Math.round(recent3MonthsAvg * 0.6 + sameMonthLastYear * 0.4);
+          continue;
+        }
+        
+        let trend = 0;
+        if (values.length >= 3) {
+          const changes = [];
+          for (let i = values.length - 3; i < values.length; i++) {
+            if (i > 0) {
+              changes.push(values[i] - values[i-1]);
+            }
+          }
+          trend = changes.reduce((sum, val) => sum + val, 0) / changes.length;
+        }
+        
+        const weights = [];
+        let totalWeight = 0;
+        
+        for (let i = 0; i < values.length; i++) {
+          const weight = Math.max(0.1, (i + 1) / values.length);
+          weights.push(weight);
+          totalWeight += weight;
+        }
+        
+        let weightedSum = 0;
+        for (let i = 0; i < values.length; i++) {
+          weightedSum += values[i] * weights[i];
+        }
+        
+        const weightedAvg = weightedSum / totalWeight;
+        
+        let prediction = weightedAvg + trend;
+        
+        if (category === 'Healthcare' || category === 'Education' || category === 'Other') {
+          const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+          const stdDev = Math.sqrt(
+            values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length
+          ) || 1; 
+          
+          const normalizedValues = values.map(val => (val - mean) / stdDev);
+          
+          const monthFeatures = monthlyData.map(item => {
+            const monthNum = parseInt(item.month.split('-')[1]);
+            return monthNum / 12;
+          });
+          
+          const xs = tf.tensor2d(monthlyData.map((_, i) => [
+            i / (monthlyData.length - 1), 
+            monthFeatures[i] 
+          ]));
+          
+          const ys = tf.tensor1d(normalizedValues);
+          
+          const model = tf.sequential();
+          model.add(tf.layers.dense({ 
+            units: 12, 
+            activation: 'relu', 
+            inputShape: [2],
+            kernelRegularizer: tf.regularizers.l2({ l2: 0.01 })
+          }));
+          model.add(tf.layers.dense({ units: 8, activation: 'relu' }));
+          model.add(tf.layers.dense({ units: 1 }));
+          
+          model.compile({ 
+            optimizer: tf.train.rmsprop(0.001), 
+            loss: 'meanSquaredError' 
+          });
+          
+          let bestLoss = Infinity;
+          let patience = 15;
+          let counter = 0;
+          
+          for (let epoch = 0; epoch < 150; epoch++) {
+            const history = await model.fit(xs, ys, { 
+              epochs: 1, 
+              verbose: 0 
+            });
+            
+            const loss = history.history.loss[0];
+            
+            if (loss < bestLoss) {
+              bestLoss = loss;
+              counter = 0;
+            } else {
+              counter++;
+            }
+            
+            if (counter >= patience) {
+              break; 
+            }
+          }
+          
+          const nextMonthIndex = monthlyData.length / (monthlyData.length); 
+          const lastMonthDate = monthlyData[monthlyData.length - 1].month;
+          const [lastYear, lastMonth] = lastMonthDate.split('-').map(Number);
+          const nextMonth = lastMonth === 12 ? 1 : lastMonth + 1;
+          const nextMonthNormalized = nextMonth / 12;
+          
+          const input = tf.tensor2d([[nextMonthIndex, nextMonthNormalized]]);
+          
+          const normalizedPrediction = model.predict(input).dataSync()[0];
+          prediction = normalizedPrediction * stdDev + mean;
+          
+          xs.dispose();
+          ys.dispose();
+          input.dispose();
+        }
         predictions[category] = Math.max(0, Math.round(prediction));
+        
+        const recent3Avg = values.slice(-3).reduce((sum, val) => sum + val, 0) / 3;
+        if (predictions[category] > recent3Avg * 2) {
+          predictions[category] = Math.round(recent3Avg * 1.5);
+        }
+        
+        if (['Food', 'Transportation'].includes(category) && 
+            predictions[category] < recent3Avg * 0.5) {
+          predictions[category] = Math.round(recent3Avg * 0.75);
+        }
       }
 
       const total = Object.values(predictions).reduce((sum, val) => sum + val, 0);
