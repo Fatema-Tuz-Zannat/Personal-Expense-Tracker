@@ -41,14 +41,17 @@
 .welcome {
   position: relative;
   background: #013b16;
-  top: 200px;
+  top: 100px;
   justify-content: center;
   align-items: center;
-  font-size: 35px;
+  font-size: 30px;
   font-weight: 900;
   color: #000;
   gap: 5px;
   text-align: center;
+}
+.wel {
+  flex: 1 1 45%;
 }
 .dashboard-nav {
   position: fixed;
