@@ -216,11 +216,7 @@
     opacity: 1;
   }
 }
-@media (max-width: 768px) {
-  .wel {
-    text-align: center;
-  }
-}
+
 .user-profile-slide {
   position: fixed;
   top: 100px; 
@@ -243,4 +239,22 @@
 
 .user-profile-content {
   padding: 20px;
+}
+@media (max-width: 768px) {
+.welcome {
+  top: 150px;
+  font-size: 10px;
+  font-weight: 100;
+  gap: 5px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+
+.summary-controls {
+  justify-content: center;
+}
+.user-profile-slide {
+  position: fixed;
+  top: 200px; 
+}
 }

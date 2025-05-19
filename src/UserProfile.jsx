@@ -112,14 +112,7 @@ const UserProfile = ({ onClose }) => {
       >
       ✖
       </button>
-      {showModal && (
-      <div className="modal-overlay">
-      <div className="modal-content">
-      <PredictExpenses onClose={() => setShowModal(false)} />
-    </div>
-  </div>
-)}
-
+      {showModal && <PredictExpenses onClose={() => setShowModal(false)} />}
     </div>
     
   );
