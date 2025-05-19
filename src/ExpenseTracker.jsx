@@ -191,9 +191,27 @@ function ExpenseTracker() {
         </select>
       </div>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <button onClick={() => navigate("/add-expense")}>+ Add Expense</button>
-      </div>
+<div style={{ marginBottom: "1rem" }}>
+  <button
+    onClick={() => navigate("/add-expense")}
+    style={{
+      backgroundColor: "#2e7d32",        // dark green
+      color: "white",
+      padding: "10px 20px",
+      border: "none",
+      borderRadius: "6px",
+      fontWeight: "bold",
+      cursor: "pointer",
+      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+      transition: "background-color 0.3s",
+    }}
+    onMouseOver={(e) => (e.target.style.backgroundColor = "#1b5e20")}
+    onMouseOut={(e) => (e.target.style.backgroundColor = "#2e7d32")}
+  >
+    + Add Expense
+  </button>
+</div>
+
 
      <table
   border="0"
@@ -201,7 +219,7 @@ function ExpenseTracker() {
   style={{
     borderCollapse: "collapse",
     width: "100%",
-    border: "2px solid white",
+    border: "6px solid white",
   }}
 >
   <thead>
@@ -210,9 +228,9 @@ function ExpenseTracker() {
         <th
           key={header}
           style={{
-            border: "2px solid white",
+            border: "6px solid white",
             color: "white",
-            backgroundColor: "#333", // Optional: Dark background for contrast
+            backgroundColor: "#333", 
           }}
         >
           {header}
@@ -225,21 +243,21 @@ function ExpenseTracker() {
       <tr key={expense.id}>
         {editingExpense === expense.id ? (
           <>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white" }}>
               <input
                 type="date"
                 value={editedDate}
                 onChange={(e) => setEditedDate(e.target.value)}
               />
             </td>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white" }}>
               <input
                 type="number"
                 value={editedAmount}
                 onChange={(e) => setEditedAmount(e.target.value)}
               />
             </td>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white" }}>
               <select
                 value={editedCategory}
                 onChange={(e) => setEditedCategory(e.target.value)}
@@ -255,14 +273,14 @@ function ExpenseTracker() {
                 <option value="Other">Other</option>
               </select>
             </td>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white" }}>
               <input
                 type="text"
                 value={editedDescription}
                 onChange={(e) => setEditedDescription(e.target.value)}
               />
             </td>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white" }}>
               <select
                 value={editedPaymentMethod}
                 onChange={(e) => setEditedPaymentMethod(e.target.value)}
@@ -275,25 +293,25 @@ function ExpenseTracker() {
                 <option value="Other">Other</option>
               </select>
             </td>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white" }}>
               <button onClick={() => handleSave(expense.id)}>Save</button>
               <button onClick={handleCancel}>Cancel</button>
             </td>
           </>
         ) : (
           <>
-            <td style={{ border: "2px solid white", color: "white" }}>
+            <td style={{ border: "6px solid white", color: "black" }}>
               {new Date(expense.date).toLocaleDateString("en-GB", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
               })}
             </td>
-            <td style={{ border: "2px solid white", color: "white" }}>TK {expense.amount}</td>
-            <td style={{ border: "2px solid white", color: "white" }}>{expense.category || "Other"}</td>
-            <td style={{ border: "2px solid white", color: "white" }}>{expense.description || "-"}</td>
-            <td style={{ border: "2px solid white", color: "white" }}>{expense.paymentMethod || "-"}</td>
-            <td style={{ border: "2px solid white" }}>
+            <td style={{ border: "6px solid white", color: "black" }}>TK {expense.amount}</td>
+            <td style={{ border: "6px solid white", color: "black" }}>{expense.category || "Other"}</td>
+            <td style={{ border: "6px solid white", color: "black" }}>{expense.description || "-"}</td>
+            <td style={{ border: "6px solid white", color: "black" }}>{expense.paymentMethod || "-"}</td>
+            <td style={{ border: "6px solid white" }}>
               <button onClick={() => handleEdit(expense)}>Edit</button>
               <button onClick={() => handleDelete(expense.id)}>Delete</button>
             </td>

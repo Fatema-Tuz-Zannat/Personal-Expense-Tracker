@@ -98,9 +98,6 @@
   text-align: center;
   border-radius: 10px;
 }
-.summary p {
-  margin: 4px 0;
-}
 
 .summary-controls {
   display: flex;
