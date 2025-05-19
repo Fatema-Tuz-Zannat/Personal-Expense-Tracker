@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './DailyReport.css';
+import ch from './backgrounds/check.png';
 
 const DailyReport = ({ incomeData, expenseData }) => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -42,11 +43,14 @@ const DailyReport = ({ incomeData, expenseData }) => {
   return (
     <div className="daily-report">
       <h3>Select a Date to View Daily Report</h3>
+      <div className="calendar-container">
       <Calendar onClickDay={handleDateChange} />
+      </div>
 
       {showPopup && (
         <div className="popup-overlay">
           <div className="popup-content">
+            <img src={ch} alt="Decoration" className="popup-image" />
             <h3>Daily Report - {selectedDate.toDateString()}</h3>
             <h4>Income</h4>
             {filteredIncome.length > 0 ? (
