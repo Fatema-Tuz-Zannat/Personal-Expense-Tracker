@@ -178,16 +178,23 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h1>Welcome to Your Dashboard</h1>
-
-      <div className="top-buttons">
-        <button onClick={() => navigate("/income")}>View Income</button>
-        <button onClick={() => navigate("/expenses")}>View Expenses</button>
-        <button onClick={() => navigate("/budgets")}>Set Budget</button>
-        <button onClick={handleLogout}>Logout</button>
-        <button onClick={() => setShowTodayReport(true)}>Today's Report</button>
-        <button onClick={() => navigate("/profile")}>Profile</button>
+      <div className="dashboard-header">
+      <div className="logo-title">
+      <img src="/logo.png" alt="PET Logo" className="logo-img" /> {/* replace with your actual logo path */}
+      <h1 className="dashboard-title">PET<span className="highlight">: Dashboard</span></h1>
       </div>
+      </div>
+
+      <div className="dashboard-nav">
+      <button onClick={() => navigate("/income")}>Income</button>
+      <button onClick={() => navigate("/expenses")}>Expense</button>
+      <button onClick={() => navigate("/budgets")}>Budget</button>
+      <button onClick={() => setShowTodayReport(true)}>Today's Report</button>
+      <button onClick={() => navigate("/profile")}>Profile</button>
+      <button onClick={handleLogout}>Logout</button>
+      </div>
+
+      <h1>Welcome to Your Dashboard</h1>
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
