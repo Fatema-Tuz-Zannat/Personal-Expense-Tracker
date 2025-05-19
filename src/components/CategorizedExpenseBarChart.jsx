@@ -7,8 +7,8 @@ import {
   BarElement,
   Tooltip,
   Legend,
-  ResponsiveContainer
 } from "chart.js";
+import { ResponsiveContainer } from "recharts";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 const CategorizedExpenseBarChart = ({ expenseData }) => {
   const categoryTotals = {};
