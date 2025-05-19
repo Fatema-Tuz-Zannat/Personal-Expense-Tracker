@@ -186,15 +186,15 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-nav">
-      <button onClick={() => navigate("/income")}><img src="./backgrounds/income.png" alt="In" className="icon" />Income</button>
-      <button onClick={() => navigate("/expenses")}><img src="./backgrounds/expense.png" alt="Ex" className="icon" />Expense</button>
-      <button onClick={() => navigate("/budgets")}><img src="./backgrounds/budget.png" alt="Bgt" className="icon" />Budget</button>
-      <button onClick={() => setShowTodayReport(true)}><img src="./backgrounds/report.png" alt="Rpt" className="icon" />Today's Report</button>
-      <button onClick={() => navigate("/profile")}><img src="./backgrounds/user.png" alt="User" className="icon" />Profile</button>
+      <button onClick={() => navigate("/income")}><img src="/backgrounds/income.png" alt="In" className="icon" />Income</button>
+      <button onClick={() => navigate("/expenses")}><img src="/backgrounds/expense.png" alt="Ex" className="icon" />Expense</button>
+      <button onClick={() => navigate("/budgets")}><img src="/backgrounds/budget.png" alt="Bgt" className="icon" />Budget</button>
+      <button onClick={() => setShowTodayReport(true)}><img src="/backgrounds/report.png" alt="Rpt" className="icon" />Today's Report</button>
+      <button onClick={() => navigate("/profile")}><img src="/backgrounds/user.png" alt="User" className="icon" />Profile</button>
       <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src="./backgrounds/welcome.png" alt="Hi" className="logo-img" />
+      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src="/backgrounds/welcome.png" alt="Hi" className="logo-img" />
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
