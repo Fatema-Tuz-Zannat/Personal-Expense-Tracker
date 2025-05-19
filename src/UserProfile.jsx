@@ -94,7 +94,7 @@ const UserProfile = ({ onClose }) => {
   <input
     type="text"
     className="border p-2 rounded w-full"
-    value={lastNametName}
+    value={lastName}
     readOnly={!isEditingLast}
     onChange={(e) => setLastName(e.target.value)}
   />
