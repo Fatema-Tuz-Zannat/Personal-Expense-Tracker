@@ -241,11 +241,18 @@ const Dashboard = () => {
       <div className="charts-section">
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
         <div className="pie_bar">
-        <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
-        <CategorizedExpenseBarChart expenseData={expenseData} />
-        {(viewType === "yearly" || viewType === "total") && monthlyTrends.length > 0 && (
-        <MonthlyTrendsLineChart data={monthlyTrends} />
-        )}</div>
+          <div className="chart-box">
+          <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
+          </div>
+          <div className="chart-box">
+          <CategorizedExpenseBarChart expenseData={expenseData} />
+          </div>
+          {(viewType === "yearly" || viewType === "total") && monthlyTrends.length > 0 && (
+          <div className="chart-box-full">
+          <MonthlyTrendsLineChart data={monthlyTrends} />
+          </div>
+          )}
+        </div>
       </div>
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
