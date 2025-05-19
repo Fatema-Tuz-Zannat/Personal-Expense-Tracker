@@ -97,6 +97,7 @@ const IncomeTracker = () => {
     <DashboardHeaderNav
       title="Income Tracker"
     />
+    <div className="pt-16"> 
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
         <div className="flex justify-between items-center mb-6">
@@ -217,6 +218,7 @@ const IncomeTracker = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
     </div>
   );
