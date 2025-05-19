@@ -168,7 +168,6 @@ const Dashboard = () => {
   };
 
   const remaining = totalIncome - totalExpenses;
-  const budgetRemaining = currentMonthBudget - totalExpenses;
 
   return (
     <div className="dashboard-container">
