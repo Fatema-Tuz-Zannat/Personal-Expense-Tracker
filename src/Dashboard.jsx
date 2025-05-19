@@ -29,6 +29,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+  const headerHeight = document.querySelector('.dashboard-header').offsetHeight;
+  const navHeight = document.querySelector('.dashboard-nav').offsetHeight;
+  const totalOffset = headerHeight + navHeight;
+
+  document.querySelector('.whole').style.paddingTop = `${totalOffset}px`;
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await fetchFinancialData(user.uid, viewType, selectedDate);
