@@ -54,9 +54,6 @@
   flex-wrap: wrap;
 }
 
-.wel {
-  flex: 1 1 45%;
-}
 .dashboard-nav {
   position: fixed;
   top: 80px;
