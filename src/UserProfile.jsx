@@ -12,7 +12,10 @@ const UserProfile = ({ onClose }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(true);
- const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isEditingFirst, setIsEditingFirst] = useState(false);
+  const [isEditingLast, setIsEditingLast] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -67,28 +70,41 @@ const UserProfile = ({ onClose }) => {
       <h2 className="text-2xl font-bold mb-4">User Profile</h2>
 
       <label className="block mb-2 font-medium">First Name</label>
-      <input
-        type="text"
-        className="border p-2 rounded w-full mb-4"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
+<div className="relative mb-4">
+  <input
+    type="text"
+    className="border p-2 rounded w-full pr-10"
+    value={firstName}
+    readOnly={!isEditingFirst}
+    onChange={(e) => setFirstName(e.target.value)}
+  />
+  <button
+    type="button"
+    onClick={() => setIsEditingFirst(!isEditingFirst)}
+    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+  >
+    ✏️
+  </button>
+</div>
 
-      <label className="block mb-2 font-medium">Last Name</label>
-      <input
-        type="text"
-        className="border p-2 rounded w-full mb-4"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-      />
+<label className="block mb-2 font-medium">Last Name</label>
+<div className="relative mb-4">
+  <input
+    type="text"
+    className="border p-2 rounded w-full pr-10"
+    value={lastName}
+    readOnly={!isEditingLast}
+    onChange={(e) => setLastName(e.target.value)}
+  />
+  <button
+    type="button"
+    onClick={() => setIsEditingLast(!isEditingLast)}
+    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+  >
+    ✏️
+  </button>
+</div>
 
-      <label className="block mb-2 font-medium">Email (cannot be changed)</label>
-      <input
-        type="email"
-        className="border p-2 rounded w-full mb-6 bg-gray-100"
-        value={email}
-        disabled
-      />
 
       <div className="flex gap-4 flex-wrap mt-4">
         <button
@@ -105,16 +121,15 @@ const UserProfile = ({ onClose }) => {
         Predict for Next Month
        </button>
        <button onClick={handleLogout}>Logout</button>
-
-      </div>
       <button
       onClick={onClose}
       className="absolute top-2 right-2 text-gray-600 hover:text-black" 
       >
       ✖
       </button>
+      </div>
       {showModal && <PredictExpenses onClose={() => setShowModal(false)} />}
-    </div>
+      </div>
     }
 </div>
   );
