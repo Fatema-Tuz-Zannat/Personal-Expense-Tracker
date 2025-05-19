@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import PredictExpenses from './PredictExpenses';
 import { signOut } from 'firebase/auth';
+import "./user.css";
 
 const UserProfile = ({ onClose }) => {
   const user = auth.currentUser;
@@ -111,7 +112,14 @@ const UserProfile = ({ onClose }) => {
       >
       ✖
       </button>
-      {showModal && <PredictExpenses onClose={() => setShowModal(false)} />}
+      {showModal && (
+      <div className="modal-overlay">
+      <div className="modal-content">
+      <PredictExpenses onClose={() => setShowModal(false)} />
+    </div>
+  </div>
+)}
+
     </div>
     
   );

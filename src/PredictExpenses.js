@@ -320,12 +320,8 @@ const PredictExpenses = ({ onClose }) => {
       )}
       
       <div className="mt-4 flex justify-end">
-        <button 
-          onClick={onClose} 
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-        >
-          Close
-        </button>
+      <button onClick={onClose} style={{ position: 'absolute', top: 10, right: 10 }}>X</button>
+
       </div>
     </div>
   );
