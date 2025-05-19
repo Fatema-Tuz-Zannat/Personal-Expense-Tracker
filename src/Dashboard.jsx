@@ -201,7 +201,7 @@ const Dashboard = () => {
       <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src={welcome} alt="Hi" className="logo-img" />
+      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src={welcome} alt="Hi" className="hi-img" />
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
