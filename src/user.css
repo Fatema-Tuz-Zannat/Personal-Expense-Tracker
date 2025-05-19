@@ -20,3 +20,8 @@
   overflow: auto;
   border-radius: 10px;
 }
+.user-profile-container {
+  max-height: 90vh; 
+  overflow-y: auto;
+  padding-right: 10px;
+}

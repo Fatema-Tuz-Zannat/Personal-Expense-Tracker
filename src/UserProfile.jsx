@@ -62,7 +62,8 @@ const UserProfile = ({ onClose }) => {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-6 border rounded shadow bg-white">
+<div className="user-profile-container">
+  {    <div className="max-w-md mx-auto mt-8 p-6 border rounded shadow bg-white">
       <h2 className="text-2xl font-bold mb-4">User Profile</h2>
 
       <label className="block mb-2 font-medium">First Name</label>
@@ -114,7 +115,8 @@ const UserProfile = ({ onClose }) => {
       </button>
       {showModal && <PredictExpenses onClose={() => setShowModal(false)} />}
     </div>
-    
+    }
+</div>
   );
 };
 
