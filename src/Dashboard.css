@@ -38,6 +38,10 @@
   background: #03c3b9;
   color: white;
 }
+.whole{
+  justify-content: center;
+  align-items: center;
+}
 .welcome {
   display: flex; 
   position: relative;
@@ -192,7 +196,7 @@
   background-color: #0e5a2f;
 }
 
-.modal-content {
+.modal-content-image{
   position: absolute;
   top: 20px;
   right: 20px;
@@ -212,12 +216,32 @@
 }
 @media (max-width: 768px) {
   .wel {
-    flex: 1 1 100%;
     text-align: center;
   }
 
   .hi-img {
-    margin-top: 10px;
     height: 40px;
   }
+}
+.user-profile-slide {
+  position: fixed;
+  top: 70px; 
+  right: 0;
+  width: 300px;
+  height: auto;
+  max-height: 90%;
+  background-color: #f5f5dc;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+  border-radius: 10px 0 0 10px;
+  transform: translateY(-100%);
+  transition: transform 0.4s ease-in-out;
+  z-index: 1001;
+}
+
+.user-profile-slide.open {
+  transform: translateY(0);
+}
+
+.user-profile-content {
+  padding: 20px;
 }

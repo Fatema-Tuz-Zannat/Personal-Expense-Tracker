@@ -33,6 +33,7 @@ const Dashboard = () => {
   const [incomeData, setIncomeData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
   const navigate = useNavigate();
+  const [showUserProfile, setShowUserProfile] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -176,11 +177,6 @@ const Dashboard = () => {
     setCurrentMonthBudget(currentMonthBudgetAmount);
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/login");
-  };
-
   const remaining = totalIncome - totalExpenses;
   const budgetRemaining = currentMonthBudget - totalExpenses;
 
@@ -198,9 +194,15 @@ const Dashboard = () => {
       <button onClick={() => navigate("/expenses")}><img src={expense} alt="Ex" className="icon" />Expense</button>
       <button onClick={() => navigate("/budgets")}><img src={bgt} alt="Bgt" className="icon" />Budget</button>
       <button onClick={() => setShowTodayReport(true)}><img src={report} alt="Rpt" className="icon" />Today's Report</button>
-      <button onClick={() => navigate("/profile")}><img src={user} alt="User" className="icon" />Profile</button>
-      <button onClick={handleLogout}>Logout</button>
+      <button onClick={() => setShowUserProfile(prev => !prev)}>
+      <img src={user} alt="User" className="icon" />Profile
+      </button>
+      </div >
+      <div className={`user-profile-slide ${showUserProfile ? 'open' : ''}`}>
+      <UserProfile onClose={() => setShowUserProfile(false)} />
       </div>
+
+      <div className="whole" >
       <div className="welcome">
       <div className="wel"> <h2>Welcome to Your Dashboard </h2></div>
       <div className="wel"><img src={welcome} alt="Hi" className="hi-img" /></div>
@@ -230,7 +232,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-
+      </div>
       <div className="summary">
         <h2>Financial Summary</h2>
         <p><strong>Total Income:</strong> TK {totalIncome}</p>

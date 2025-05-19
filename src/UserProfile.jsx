@@ -3,8 +3,7 @@ import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import PredictExpenses from './PredictExpenses';
-
-const UserProfile = () => {
+const UserProfile = ({ onClose }) => {
   const user = auth.currentUser;
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -33,7 +32,10 @@ const UserProfile = () => {
 
     fetchUserData();
   }, [user]);
-
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
   const handleSave = async () => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
@@ -98,10 +100,18 @@ const UserProfile = () => {
         >
         Predict for Next Month
        </button>
+       <button onClick={handleLogout}>Logout</button>
 
       </div>
+      <button
+      onClick={onClose}
+      className="absolute top-2 right-2 text-gray-600 hover:text-black" 
+      >
+      ✖
+      </button>
       {showModal && <PredictExpenses onClose={() => setShowModal(false)} />}
     </div>
+    
   );
 };
 
