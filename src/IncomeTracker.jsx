@@ -21,6 +21,7 @@ const IncomeTracker = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showAddForm, setShowAddForm] = useState(false);
 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user || null);
@@ -91,12 +92,8 @@ const IncomeTracker = () => {
 
   return (
       <div className="min-h-screen bg-gray-100">
-    {/* Navigation Bar */}
     <DashboardHeaderNav
       title="Income Tracker"
-      onShowReport={() => setShowTodayReport(true)}
-      onToggleProfile={() => setShowUserProfile((prev) => !prev)}
-      showUserProfile={showUserProfile}
     />
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">

@@ -10,6 +10,7 @@ import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart";
 import DailyReport from './components/DailyReport';
 import DashboardHeaderNav from './DashboardHeaderNav'; 
 import ch from './backgrounds/check.png';
+import welcome from './backgrounds/welcome.png';
 import './Dashboard.css';
 
 const Dashboard = () => {

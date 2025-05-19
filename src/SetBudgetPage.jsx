@@ -53,6 +53,11 @@ const SetBudgetPage = () => {
       alert("Please select valid budget type and date.");
       return;
     }
+    if (parseInt(year) <= 1990) {
+    alert("Year must be greater than 1990.");
+    return;
+    }
+
 
     const budgetData = {
       userId: currentUser.uid,
