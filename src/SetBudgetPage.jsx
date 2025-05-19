@@ -146,14 +146,12 @@ const SetBudgetPage = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      {/* Navigation Bar */}
-      <div style={{
-        background: "#007bff", padding: "10px 20px", color: "#fff", marginBottom: "20px",
-        fontSize: "20px", fontWeight: "bold"
-      }}>
-        Budget Manager
-      </div>
-
+    <div>
+    <DashboardHeaderNav
+      title="Budget Manager"
+    />
+    </div>
+    <div style={{ paddingTop: "150px"}}>
       <form onSubmit={handleSubmit} style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "20px", borderRadius: "5px" }}>
         <h3>{editingId ? "Edit Budget" : "Set Budget"}</h3>
         <div style={{ marginBottom: "10px" }}>
@@ -179,7 +177,7 @@ const SetBudgetPage = () => {
               <select
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
-                style={{ marginLeft: "10px" }}
+                style={{ marginLeft: "0px" }}
               >
                 <option value="">Select Month</option>
                 {months.map((m) => (
@@ -193,7 +191,7 @@ const SetBudgetPage = () => {
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                style={{ marginLeft: "10px" }}
+                style={{ marginLeft: "0px" }}
               />
             </div>
           </>
@@ -218,17 +216,30 @@ const SetBudgetPage = () => {
             style={{ marginLeft: "10px" }}
           />
         </div>
-        <button type="submit" style={{ backgroundColor: "#007bff", color: "#fff", padding: "6px 12px", border: "none", borderRadius: "4px" }}>
+        <button type="submit" style={{ backgroundColor: "#006400", color: "#fff", padding: "6px 12px", border: "none", borderRadius: "4px" }}>
           {editingId ? "Update Budget" : "Add Budget"}
         </button>
       </form>
 
-      {/* Filters and Navigation */}
       <div style={{ marginBottom: "10px", display: "flex", gap: "20px", alignItems: "center" }}>
         <div>
-          <button onClick={() => setDisplayYear(displayYear - 1)}>&lt;</button>
+          <button onClick={() => setDisplayYear(displayYear - 1)} style={{
+        backgroundColor: "#065f46",
+        color: "white",
+        padding: "4px 10px",
+        borderRadius: "4px",
+        border: "none",
+        cursor: "pointer"
+      }} >&lt;</button>
           <strong style={{ margin: "0 10px" }}>{displayYear}</strong>
-          <button onClick={() => setDisplayYear(displayYear + 1)}>&gt;</button>
+          <button onClick={() => setDisplayYear(displayYear + 1)} style={{
+        backgroundColor: "#065f46",
+        color: "white",
+        padding: "4px 10px",
+        borderRadius: "4px",
+        border: "none",
+        cursor: "pointer"
+      }}>&gt;</button>
         </div>
         <div>
           <label>Filter Type:</label>
@@ -249,15 +260,14 @@ const SetBudgetPage = () => {
         </div>
       </div>
 
-      {/* Budgets Table */}
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
-          <tr style={{ backgroundColor: "#f0f0f0" }}>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Type</th>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Amount (TK)</th>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Month</th>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Year</th>
-            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Actions</th>
+          <tr style={{ backgroundColor: "#006400" }}>
+            <th style={{ border: "6px solid white", padding: "8px" }}>Type</th>
+            <th style={{ border: "6px solid white", padding: "8px" }}>Amount (TK)</th>
+            <th style={{ border: "6px solid white", padding: "8px" }}>Month</th>
+            <th style={{ border: "6px solid white", padding: "8px" }}>Year</th>
+            <th style={{ border: "6px solid white", padding: "8px" }}>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -268,11 +278,11 @@ const SetBudgetPage = () => {
           ) : (
             filteredBudgets.map((b) => (
               <tr key={b.id}>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{b.type}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>TK {b.amount}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{b.month || "-"}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{b.year}</td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                <td style={{ border: "6px solid white", padding: "8px" }}>{b.type}</td>
+                <td style={{ border: "6px solid white", padding: "8px" }}>TK {b.amount}</td>
+                <td style={{ border: "6px solid white", padding: "8px" }}>{b.month || "-"}</td>
+                <td style={{ border: "6px solid white", padding: "8px" }}>{b.year}</td>
+                <td style={{ border: "6px solid white", padding: "8px" }}>
                   <button onClick={() => handleEdit(b)} style={{ marginRight: "5px" }}>Edit</button>
                   <button onClick={() => handleDelete(b.id)}>Delete</button>
                 </td>
@@ -281,6 +291,7 @@ const SetBudgetPage = () => {
           )}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };
