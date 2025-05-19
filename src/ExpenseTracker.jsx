@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
+import DashboardHeaderNav from './DashboardHeaderNav'; 
 
 function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
@@ -117,34 +118,59 @@ function ExpenseTracker() {
 
   return (
     <div>
-      <h2>Expenses</h2>
+    <DashboardHeaderNav
+      title="Expense Tracker"
+    />
 
-      <div style={{ marginBottom: "1rem" }}>
-        <label>View: </label>
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-        >
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-          <option value="all">All</option>
-        </select>
+<div style={{ marginBottom: "1rem", paddingTop: "100px" }}>
+  <label>View: </label>
+  <select
+    value={filterType}
+    onChange={(e) => setFilterType(e.target.value)}
+    style={{ marginRight: "10px" }} 
+  >
+    <option value="monthly">Monthly</option>
+    <option value="yearly">Yearly</option>
+    <option value="all">All</option>
+  </select>
 
-        {filterType !== "all" && (
-          <>
-            <button onClick={handlePrev}>◀</button>
-            <span style={{ margin: "0 10px" }}>
-              {filterType === "monthly"
-                ? selectedDate.toLocaleString("default", {
-                    month: "long",
-                    year: "numeric",
-                  })
-                : selectedDate.getFullYear()}
-            </span>
-            <button onClick={handleNext}>▶</button>
-          </>
-        )}
-      </div>
+  {filterType !== "all" && (
+    <>
+      <button
+        onClick={handlePrev}
+        style={{
+          backgroundColor: "green",
+          color: "white",
+          border: "none",
+          padding: "5px 10px",
+          marginRight: "10px",
+        }}
+      >
+        ◀
+      </button>
+      <span style={{ margin: "0 10px" }}>
+        {filterType === "monthly"
+          ? selectedDate.toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })
+          : selectedDate.getFullYear()}
+      </span>
+      <button
+        onClick={handleNext}
+        style={{
+          backgroundColor: "green",
+          color: "white",
+          border: "none",
+          padding: "5px 10px",
+        }}
+      >
+        ▶
+      </button>
+    </>
+  )}
+</div>
+
 
       <div style={{ marginBottom: "1rem" }}>
         <label>Filter by Category: </label>
@@ -169,7 +195,7 @@ function ExpenseTracker() {
         <button onClick={() => navigate("/add-expense")}>+ Add Expense</button>
       </div>
 
-      <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
+      <table border="4" color="white" cellPadding="8" style={{ borderCollapse: "collapse" }}>
   <thead>
     <tr>
       <th>Date</th>
