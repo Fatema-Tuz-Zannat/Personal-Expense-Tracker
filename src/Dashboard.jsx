@@ -18,6 +18,7 @@ import report from './backgrounds/report.png';
 import welcome from './backgrounds/welcome.png';
 import bgt from './backgrounds/budget.png';
 import ch from './backgrounds/check.png';
+import UserProfile from './UserProfile';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);

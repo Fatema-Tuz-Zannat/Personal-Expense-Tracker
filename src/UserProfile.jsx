@@ -3,6 +3,8 @@ import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import PredictExpenses from './PredictExpenses';
+import { signOut } from 'firebase/auth';
+
 const UserProfile = ({ onClose }) => {
   const user = auth.currentUser;
   const [firstName, setFirstName] = useState('');
