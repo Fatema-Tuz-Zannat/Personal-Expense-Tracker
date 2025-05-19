@@ -16,7 +16,7 @@ import expense from './backgrounds/expense.png';
 import income from './backgrounds/income.png';
 import report from './backgrounds/report.png';
 import welcome from './backgrounds/welcome.png';
-import budget from './backgrounds/budget.png';
+import bgt from './backgrounds/budget.png';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
@@ -195,7 +195,7 @@ const Dashboard = () => {
       <div className="dashboard-nav">
       <button onClick={() => navigate("/income")}><img src={income} alt="In" className="icon" />Income</button>
       <button onClick={() => navigate("/expenses")}><img src={expense} alt="Ex" className="icon" />Expense</button>
-      <button onClick={() => navigate("/budgets")}><img src={budget} alt="Bgt" className="icon" />Budget</button>
+      <button onClick={() => navigate("/budgets")}><img src={bgt} alt="Bgt" className="icon" />Budget</button>
       <button onClick={() => setShowTodayReport(true)}><img src={report} alt="Rpt" className="icon" />Today's Report</button>
       <button onClick={() => navigate("/profile")}><img src={user} alt="User" className="icon" />Profile</button>
       <button onClick={handleLogout}>Logout</button>
