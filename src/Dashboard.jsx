@@ -180,7 +180,7 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-header">
       <div className="logo-title">
-      <img src="./backgrounds/logo.png" alt="PET Logo" className="logo-img" />
+      <img src="/backgrounds/logo.png" alt="PET Logo" className="logo-img" />
       <h1 className="dashboard-title">Dashboard</h1>
       </div>
       </div>
