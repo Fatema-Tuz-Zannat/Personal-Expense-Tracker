@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './DailyReport.css';
-import ch from './backgrounds/check.png';
+import ch from '../backgrounds/check.png';
 
 const DailyReport = ({ incomeData, expenseData }) => {
   const [selectedDate, setSelectedDate] = useState(null);
