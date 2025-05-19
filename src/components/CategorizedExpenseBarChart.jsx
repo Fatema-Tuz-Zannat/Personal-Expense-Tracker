@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
-
+import { ResponsiveContainer } from "recharts";
 const CategorizedExpenseBarChart = ({ expenseData }) => {
   const categoryTotals = {};
 
