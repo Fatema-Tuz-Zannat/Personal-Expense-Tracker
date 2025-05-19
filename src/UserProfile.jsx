@@ -78,13 +78,13 @@ const UserProfile = ({ onClose }) => {
     readOnly={!isEditingFirst}
     onChange={(e) => setFirstName(e.target.value)}
   />
-  <button
+    <button
     type="button"
     onClick={() => setIsEditingFirst(!isEditingFirst)}
-    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
   >
-    ✏️
+  b
   </button>
+
 </div>
 
 <label className="block mb-2 font-medium">Last Name</label>
@@ -106,7 +106,7 @@ const UserProfile = ({ onClose }) => {
 </div>
 
 
-      <div className="flex gap-4 flex-wrap mt-4">
+      <div className="bottom-button">
         <button
           onClick={handleSave}
           className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"

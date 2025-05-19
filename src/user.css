@@ -26,12 +26,12 @@
   border-radius: 10px;
 }
 
-.flex gap-4 flex-wrap mt-4-button{
+.bottom-button- button{
     background: rgb(5, 111, 70);
     color: #fff;
     padding: 10px;
 }
-.flex gap-4 flex-wrap mt-4-button:hover{
+.bottom-button- button:hover{
     background: rgb(2, 210, 130);
     color: #fff;
 }
