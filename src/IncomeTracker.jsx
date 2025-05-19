@@ -12,7 +12,7 @@ import {
 import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AddIncomeForm from './AddIncomeForm';
-
+import DashboardHeaderNav from './DashboardHeaderNav'; 
 
 const IncomeTracker = () => {
   const [incomes, setIncomes] = useState([]);
@@ -23,13 +23,8 @@ const IncomeTracker = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-      }
+      setCurrentUser(user || null);
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -43,12 +38,12 @@ const IncomeTracker = () => {
       );
       const querySnapshot = await getDocs(q);
       const incomesData = querySnapshot.docs
-        .map(doc => ({
+        .map((doc) => ({
           id: doc.id,
           ...doc.data(),
           date: new Date(doc.data().date.seconds * 1000),
         }))
-        .filter(income => income.date.getFullYear() === selectedYear)
+        .filter((income) => income.date.getFullYear() === selectedYear)
         .sort((a, b) => b.date - a.date);
 
       setIncomes(incomesData);
@@ -61,141 +56,158 @@ const IncomeTracker = () => {
     const incomeWithUser = {
       ...income,
       userId: currentUser.uid,
-      date: income.date instanceof Date ? income.date : new Date(income.date),
+      date: new Date(income.date),
     };
     const docRef = await addDoc(collection(db, 'income'), incomeWithUser);
-    setIncomes(prev =>
-      [
-        { ...incomeWithUser, id: docRef.id },
-        ...prev,
-      ].sort((a, b) => b.date - a.date)
+    setIncomes((prev) =>
+      [{ ...incomeWithUser, id: docRef.id }, ...prev].sort(
+        (a, b) => b.date - a.date
+      )
     );
   };
 
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, 'income', id));
-    setIncomes(prev => prev.filter(income => income.id !== id));
+    setIncomes((prev) => prev.filter((income) => income.id !== id));
   };
 
-  const handleEdit = (id) => {
-    setEditingId(id);
-  };
+  const handleEdit = (id) => setEditingId(id);
 
   const handleUpdate = async (id, updatedIncome) => {
     const updatedWithDate = {
       ...updatedIncome,
-      date: updatedIncome.date instanceof Date ? updatedIncome.date : new Date(updatedIncome.date),
+      date: new Date(updatedIncome.date),
     };
     await updateDoc(doc(db, 'income', id), updatedWithDate);
-    setIncomes(prev =>
+    setIncomes((prev) =>
       prev
-        .map(inc => (inc.id === id ? { ...inc, ...updatedWithDate } : inc))
+        .map((inc) =>
+          inc.id === id ? { ...inc, ...updatedWithDate } : inc
+        )
         .sort((a, b) => b.date - a.date)
     );
     setEditingId(null);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-
-
-      <div className="text-center mb-6">
-  <button
-    onClick={() => setShowAddForm(true)}
-    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold shadow"
-  >
-    + Add Income
-  </button>
-</div>
-
-{showAddForm && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <AddIncomeForm
-        onAddIncome={(income) => {
-          handleAddIncome(income);
-          setShowAddForm(false);
-        }}
-      />
-      <button
-        onClick={() => setShowAddForm(false)}
-        className="mt-4 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded w-full"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
-
-
-      <div className="mt-8 max-w-4xl mx-auto bg-white shadow-md rounded-md p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Incomes - {selectedYear}</h2>
-          <div className="flex items-center gap-2">
+      <div className="min-h-screen bg-gray-100">
+    {/* Navigation Bar */}
+    <DashboardHeaderNav
+      title="Income Tracker"
+      onShowReport={() => setShowTodayReport(true)}
+      onToggleProfile={() => setShowUserProfile((prev) => !prev)}
+      showUserProfile={showUserProfile}
+    />
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
+        <div className="flex justify-between items-center mb-6">
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded shadow font-semibold"
+          >
+            + Add
+          </button>
+          <h2 className="text-2xl font-semibold text-center flex-1">
+            Income - {selectedYear}
+          </h2>
+          <div className="flex items-center space-x-2">
             <button
-              onClick={() => setSelectedYear(prev => prev - 1)}
-              className="px-3 py-1 border rounded hover:bg-gray-200"
+              onClick={() => setSelectedYear((prev) => prev - 1)}
+              className="bg-green-800 text-white px-2 py-1 rounded"
             >
-              &lt;
+              ◀
             </button>
-            <span className="font-medium">{selectedYear}</span>
+            <span className="text-lg font-semibold">{selectedYear}</span>
             <button
-              onClick={() => setSelectedYear(prev => prev + 1)}
-              className="px-3 py-1 border rounded hover:bg-gray-200"
+              onClick={() => setSelectedYear((prev) => prev + 1)}
+              className="bg-green-800 text-white px-2 py-1 rounded"
             >
-              &gt;
+              ▶
             </button>
           </div>
         </div>
 
+        {showAddForm && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <AddIncomeForm
+                onAddIncome={(income) => {
+                  handleAddIncome(income);
+                  setShowAddForm(false);
+                }}
+              />
+              <button
+                onClick={() => setShowAddForm(false)}
+                className="mt-4 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded w-full"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
         {incomes.length === 0 ? (
-          <p className="text-gray-500 text-center">No incomes for {selectedYear}.</p>
+          <p className="text-gray-500 text-center">
+            No incomes for {selectedYear}.
+          </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border">
-              <thead className="bg-gray-100">
+            <table className="min-w-full border-separate border-spacing-y-3">
+              <thead>
                 <tr>
-                  <th className="border px-4 py-2 text-left">Title</th>
-                  <th className="border px-4 py-2 text-left">Date</th>
-                  <th className="border px-4 py-2 text-right">Amount (TK)</th>
-                  <th className="border px-4 py-2 text-right">Actions</th>
+                  <th className="bg-green-200 px-4 py-2 text-left rounded-l-xl">
+                    Source
+                  </th>
+                  <th className="bg-green-200 px-4 py-2 text-left">Date</th>
+                  <th className="bg-green-200 px-4 py-2 text-left">Amount</th>
+                  <th className="bg-green-200 px-4 py-2 text-left rounded-r-xl">
+                    Action
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {incomes.map((income) => (
-                  <tr key={income.id} className="border-t">
+                  <tr key={income.id}>
                     {editingId === income.id ? (
                       <td colSpan="4">
                         <EditIncomeForm
                           income={income}
-                          onSave={(updatedIncome) => handleUpdate(income.id, updatedIncome)}
+                          onSave={(updatedIncome) =>
+                            handleUpdate(income.id, updatedIncome)
+                          }
                           onCancel={() => setEditingId(null)}
                         />
                       </td>
                     ) : (
                       <>
-                        <td className="px-4 py-2">{income.title}</td>
-                        <td className="px-4 py-2">
+                        <td className="bg-lime-100 px-4 py-2 rounded-l-xl">
+                          Salary
+                        </td>
+                        <td className="bg-teal-100 px-4 py-2">
                           {income.date.toLocaleDateString(undefined, {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric',
                           })}
                         </td>
-                        <td className="px-4 py-2 text-right">{income.amount.toFixed(2)}</td>
-                        <td className="px-4 py-2 text-right space-x-2">
-                          <button
-                            onClick={() => handleEdit(income.id)}
-                            className="text-blue-500 hover:underline"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(income.id)}
-                            className="text-red-500 hover:underline"
-                          >
-                            Delete
-                          </button>
+                        <td className="bg-teal-100 px-4 py-2">
+                          {income.amount.toFixed(2)}
+                        </td>
+                        <td className="bg-teal-100 px-4 py-2 rounded-r-xl">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEdit(income.id)}
+                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(income.id)}
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </>
                     )}
@@ -206,6 +218,7 @@ const IncomeTracker = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };
@@ -219,60 +232,52 @@ const EditIncomeForm = ({ income, onSave, onCancel }) => {
       : new Date(income.date.seconds * 1000).toISOString().split('T')[0]
   );
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const amountValue = parseFloat(amount);
+    if (!title.trim() || !date || isNaN(amountValue) || amountValue <= 0) {
+      alert('Please enter valid income details.');
+      return;
+    }
 
-  if (!title.trim() || !date || amount === '') {
-    alert('All fields are required.');
-    return;
-  }
-
-  const amountValue = parseFloat(amount);
-  if (isNaN(amountValue) || amountValue <= 0) {
-    alert('Amount must be a positive number.');
-    return;
-  }
-
-  onSave({
-    title: title.trim(),
-    amount: amountValue,
-    date: new Date(date),
-  });
-};
-
+    onSave({
+      title: title.trim(),
+      amount: amountValue,
+      date: new Date(date),
+    });
+  };
 
   return (
-  
     <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2 p-2">
       <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full border rounded p-1"
+        className="border rounded px-3 py-2"
       />
       <input
         type="number"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        className="w-full border rounded p-1"
+        className="border rounded px-3 py-2"
       />
       <input
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
-        className="w-full border rounded p-1"
+        className="border rounded px-3 py-2"
       />
-      <div className="flex justify-end gap-2 mt-2">
+      <div className="flex justify-end space-x-2 mt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="text-sm text-gray-600 hover:underline"
+          className="text-gray-600 hover:underline"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="text-sm text-green-600 font-semibold hover:underline"
+          className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
         >
           Save
         </button>
