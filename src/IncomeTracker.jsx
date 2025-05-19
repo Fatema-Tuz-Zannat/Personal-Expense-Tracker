@@ -172,25 +172,37 @@ const IncomeTracker = () => {
         )}
 
 {incomes.length === 0 ? (
-  <p className="text-gray-500 text-center">
+  <p style={{ textAlign: "center", color: "#6B7280" }}>
     No incomes for {selectedYear}.
   </p>
 ) : (
-  <div className="overflow-x-auto">
-    <table className="min-w-full border-separate border-spacing-y-2">
+  <div style={{ overflowX: "auto" }}>
+    <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 12px" }}>
       <thead>
         <tr>
-          <th className="bg-green-200 px-4 py-2 text-left rounded-l-xl">Title</th>
-          <th className="bg-green-200 px-4 py-2 text-left">Date</th>
-          <th className="bg-green-200 px-4 py-2 text-left">Amount</th>
-          <th className="bg-green-200 px-4 py-2 text-left rounded-r-xl">Action</th>
+          <th style={{
+            backgroundColor: "#BBF7D0",
+            padding: "12px 16px",
+            textAlign: "left",
+            borderTopLeftRadius: "12px",
+            borderBottomLeftRadius: "12px"
+          }}>Source</th>
+          <th style={{ backgroundColor: "#BBF7D0", padding: "12px 16px", textAlign: "left" }}>Date</th>
+          <th style={{ backgroundColor: "#BBF7D0", padding: "12px 16px", textAlign: "left" }}>Amount</th>
+          <th style={{
+            backgroundColor: "#BBF7D0",
+            padding: "12px 16px",
+            textAlign: "left",
+            borderTopRightRadius: "12px",
+            borderBottomRightRadius: "12px"
+          }}>Action</th>
         </tr>
       </thead>
       <tbody>
         {incomes.map((income) => (
           <tr key={income.id}>
             {editingId === income.id ? (
-              <td colSpan="4" className="bg-white p-4 rounded-xl">
+              <td colSpan="4" style={{ backgroundColor: "#ECFDF5", padding: "16px", borderRadius: "12px" }}>
                 <EditIncomeForm
                   income={income}
                   onSave={(updatedIncome) =>
@@ -201,34 +213,58 @@ const IncomeTracker = () => {
               </td>
             ) : (
               <>
-                <td className="bg-lime-100 px-4 py-2 rounded-l-xl">
-                  {income.title || '—'}
+                <td style={{
+                  backgroundColor: "#ECFDF5",
+                  padding: "12px 16px",
+                  borderTopLeftRadius: "12px",
+                  borderBottomLeftRadius: "12px"
+                }}>
+                  {income.title || "Salary"}
                 </td>
-                <td className="bg-teal-100 px-4 py-2">
+                <td style={{ backgroundColor: "#D1FAE5", padding: "12px 16px" }}>
                   {income.date.toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
                   })}
                 </td>
-                <td className="bg-teal-100 px-4 py-2">
-                  ₹{income.amount.toFixed(2)}
+                <td style={{ backgroundColor: "#D1FAE5", padding: "12px 16px" }}>
+                  TK{income.amount.toFixed(2)}
                 </td>
-                <td className="bg-teal-100 px-4 py-2 rounded-r-xl">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEdit(income.id)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(income.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                <td style={{
+                  backgroundColor: "#D1FAE5",
+                  padding: "12px 16px",
+                  display: "flex",
+                  gap: "8px",
+                  borderTopRightRadius: "12px",
+                  borderBottomRightRadius: "12px"
+                }}>
+                  <button
+                    onClick={() => handleEdit(income.id)}
+                    style={{
+                      backgroundColor: "#3B82F6",
+                      color: "white",
+                      padding: "6px 12px",
+                      borderRadius: "6px",
+                      border: "none",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(income.id)}
+                    style={{
+                      backgroundColor: "#EF4444",
+                      color: "white",
+                      padding: "6px 12px",
+                      borderRadius: "6px",
+                      border: "none",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </>
             )}
