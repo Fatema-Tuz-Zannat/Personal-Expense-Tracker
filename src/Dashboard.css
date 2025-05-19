@@ -1,14 +1,25 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
 .dashboard-header {
   position: fixed;
   width: 100%;
   background-color: white;
   display: flex;
+  align-items: center;
+  padding: 10px 20px; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 1000;
 }
+
 .logo-title {
-  align-items: left;
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
+
 .logo-img {
   height: 50px;
 }
@@ -18,8 +29,9 @@
 }
 .icon {
   align-items: left;
-  height: 10px;
-  width: 10px;
+  padding: 5px;
+  height: 25px;
+  width: 25px;
 }
 
 .dashboard-title {
@@ -44,6 +56,7 @@
   justify-content: center;
   flex-wrap: wrap;
   z-index: 999;
+  margin-left: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -93,13 +106,15 @@
 }
 
 @media (max-width: 600px) {
-  .dashboard-title {
-    font-size: 18px;
+  .logo-title {
+    justify-content: center;
   }
 
+  .dashboard-header {
+    justify-content: center;
+  }
   .logo-img {
     height: 40px;
-    width: 40px;
   }
 
   .dashboard-nav {
