@@ -178,7 +178,7 @@ const SetBudgetPage = () => {
               <select
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
-                style={{ marginLeft: "0px" }}
+                style={{ marginLeft: "0px"}}
               >
                 <option value="">Select Month</option>
                 {months.map((m) => (
