@@ -16,6 +16,11 @@
   height: 50px;
   width: 50px;
 }
+.icon {
+  align-items: left;
+  height: 50px;
+  width: 50px;
+}
 
 .dashboard-title {
   align-items: left;
