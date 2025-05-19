@@ -10,6 +10,13 @@ import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart";
 import "./Dashboard.css";
 import 'react-calendar/dist/Calendar.css';
 import DailyReport from './components/DailyReport';
+import logo from './backgrounds/logo.png';
+import user from './backgrounds/user.png';
+import expense from './backgrounds/expense.png';
+import income from './backgrounds/income.png';
+import report from './backgrounds/report.png';
+import welcome from './backgrounds/welcome.png';
+import budget from './backgrounds/budget.png';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
@@ -180,21 +187,21 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-header">
       <div className="logo-title">
-      <img src="/backgrounds/logo.png" alt="PET Logo" className="logo-img" />
+      <img src={logo} alt="PET Logo" className="logo-img" />
       <h1 className="dashboard-title">Dashboard</h1>
       </div>
       </div>
 
       <div className="dashboard-nav">
-      <button onClick={() => navigate("/income")}><img src="/backgrounds/income.png" alt="In" className="icon" />Income</button>
-      <button onClick={() => navigate("/expenses")}><img src="/backgrounds/expense.png" alt="Ex" className="icon" />Expense</button>
-      <button onClick={() => navigate("/budgets")}><img src="/backgrounds/budget.png" alt="Bgt" className="icon" />Budget</button>
-      <button onClick={() => setShowTodayReport(true)}><img src="/backgrounds/report.png" alt="Rpt" className="icon" />Today's Report</button>
-      <button onClick={() => navigate("/profile")}><img src="/backgrounds/user.png" alt="User" className="icon" />Profile</button>
+      <button onClick={() => navigate("/income")}><img src={income} alt="In" className="icon" />Income</button>
+      <button onClick={() => navigate("/expenses")}><img src={expense} alt="Ex" className="icon" />Expense</button>
+      <button onClick={() => navigate("/budgets")}><img src={budget} alt="Bgt" className="icon" />Budget</button>
+      <button onClick={() => setShowTodayReport(true)}><img src={report} alt="Rpt" className="icon" />Today's Report</button>
+      <button onClick={() => navigate("/profile")}><img src={user} alt="User" className="icon" />Profile</button>
       <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src="/backgrounds/welcome.png" alt="Hi" className="logo-img" />
+      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src={welcome} alt="Hi" className="logo-img" />
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
