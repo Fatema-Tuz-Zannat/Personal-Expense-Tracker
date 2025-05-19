@@ -35,10 +35,20 @@
 }
 
 .dashboard-nav button:hover {
-  background: #7af1a5;
+  background: #21f66f;
   color: white;
 }
-
+.dashboard-welcome {
+  top: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  font-weight: 900;
+  color: #000;
+  gap: 10px;
+  text-align: center;
+}
 .dashboard-nav {
   position: fixed;
   top: 80px;
@@ -67,7 +77,19 @@
   gap: 8px;
   transition: all 0.3s ease;
 }
-.summary-control {
+.summary {
+  background-color: rgb(236, 240, 239);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.summary-controls {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,7 +98,7 @@
   flex-wrap: wrap;
 }
 
-.summary-control button {
+.summary-controls button {
   background-color: #15803d;
   color: white;
   border: none;
@@ -86,11 +108,12 @@
   cursor: pointer;
 }
 
-.summary-control select {
+.summary-controls select {
   padding: 6px 10px;
   font-size: 16px;
   border-radius: 6px;
 }
+
 
 .modal-overlay {
   position: fixed;
