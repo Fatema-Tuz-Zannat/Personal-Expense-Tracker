@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { ResponsiveContainer } from "recharts";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 const CategorizedExpenseBarChart = ({ expenseData }) => {
   const categoryTotals = {};
@@ -31,11 +30,8 @@ const CategorizedExpenseBarChart = ({ expenseData }) => {
 
   return (
     <div style={{ width: "100%", height: 300 }}>
-          <h3>Income vs Expenses</h3>
-          <ResponsiveContainer>
             <h3>Expenses by Category</h3>
             <Bar data={data} />
-          </ResponsiveContainer>
         </div>
   );
 };
