@@ -9,6 +9,7 @@ import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart"
 import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart"; 
 import DailyReport from './components/DailyReport';
 import DashboardHeaderNav from './DashboardHeaderNav'; 
+import ch from './backgrounds/check.png';
 import welcome from './backgrounds/welcome.png';
 import './Dashboard.css';
 
@@ -17,10 +18,15 @@ const Dashboard = () => {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [budget, setBudget] = useState(0);
   const [viewType, setViewType] = useState("monthly");
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [todayIncome, setTodayIncome] = useState([]);
+  const [todayExpenses, setTodayExpenses] = useState([]);
+  const [showTodayReport, setShowTodayReport] = useState(false);
   const [expenseData, setExpenseData] = useState([]);
+  const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -144,6 +150,8 @@ const Dashboard = () => {
     setTotalIncome(incomeTotal);
     setTotalExpenses(expenseTotal);
     setBudget(budgetAmount);
+    setTodayIncome(todayIncomeList);
+    setTodayExpenses(todayExpenseList);
     setExpenseData(filteredExpenses);
     setMonthlyTrends(trends);
   };
@@ -167,11 +175,15 @@ const Dashboard = () => {
   };
 
   const remaining = totalIncome - totalExpenses;
+  const budgetRemaining = currentMonthBudget - totalExpenses;
 
   return (
     <div className="dashboard-container">
       <DashboardHeaderNav
         title="Dashboard"
+        onShowReport={() => setShowTodayReport(true)}
+        onToggleProfile={() => setShowUserProfile(prev => !prev)}
+        showUserProfile={showUserProfile}
       />
       <div className="welcome">
       <div className="wel"> <h2>Welcome to Your Dashboard </h2></div>
@@ -231,6 +243,29 @@ const Dashboard = () => {
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
 
+      {showTodayReport && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <img src={ch} alt="Decoration" className="popup-image" />
+            <h3>Today's Report</h3>
+            <h4>Income</h4>
+            <ul>
+              {todayIncome.map((item, index) => (
+                <li key={index}>{item.title}: TK {item.amount}</li>
+              ))}
+            </ul>
+            <h4>Expenses</h4>
+            <ul>
+              {todayExpenses.map((item, index) => (
+                <li key={index}>{item.category}: TK {item.amount}</li>
+              ))}
+            </ul>
+            <p>Monthly Budget: TK {currentMonthBudget}</p>
+            <p>Remaining Budget: TK {budgetRemaining}</p>
+            <button onClick={() => setShowTodayReport(false)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

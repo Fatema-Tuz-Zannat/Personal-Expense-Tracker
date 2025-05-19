@@ -64,6 +64,10 @@ function App() {
           path="/profile"
           element={user ? <UserProfile /> : <Navigate to="/login" />}
         />
+        <Route
+          path="/dashboard"
+          element={user ? <Dashboard /> : <Navigate to="/login" />}
+        />
         <Route path="/add-expense" element={<AddExpenseForm />} />
       </Routes>
     </Router>
