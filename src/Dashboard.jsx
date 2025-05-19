@@ -19,7 +19,6 @@ const Dashboard = () => {
   const [viewType, setViewType] = useState("monthly");
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [expenseData, setExpenseData] = useState([]);
-  const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
   const navigate = useNavigate();
