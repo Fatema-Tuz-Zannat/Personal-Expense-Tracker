@@ -145,8 +145,6 @@ const Dashboard = () => {
     setTotalIncome(incomeTotal);
     setTotalExpenses(expenseTotal);
     setBudget(budgetAmount);
-    setTodayIncome(todayIncomeList);
-    setTodayExpenses(todayExpenseList);
     setExpenseData(filteredExpenses);
     setMonthlyTrends(trends);
   };
