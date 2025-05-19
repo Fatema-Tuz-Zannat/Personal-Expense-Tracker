@@ -10,7 +10,7 @@ const IncomeExpensePieChart = ({ income, expenses }) => {
   const COLORS = ["#00C49F", "#FF8042"];
 
   return (
-    <div style={{ width: "100%", height: 300 }}>
+    <div style={{ width: "50%", height: 300 }}>
       <h3>Income vs Expenses</h3>
       <ResponsiveContainer>
         <PieChart>

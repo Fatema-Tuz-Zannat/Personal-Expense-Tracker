@@ -180,8 +180,8 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-header">
       <div className="logo-title">
-      <img src="/logo.png" alt="PET Logo" className="logo-img" /> {/* replace with your actual logo path */}
-      <h1 className="dashboard-title">PET<span className="highlight">: Dashboard</span></h1>
+      <img src="./backgrounds/logo.png" alt="PET Logo" className="logo-img" />
+      <h1 className="dashboard-title">Dashboard</h1>
       </div>
       </div>
 
@@ -194,7 +194,7 @@ const Dashboard = () => {
       <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <h1>Welcome to Your Dashboard</h1>
+      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src="./backgrounds/welcome.png" className="logo-img" />
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
@@ -231,11 +231,11 @@ const Dashboard = () => {
 
       <div className="charts-section">
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
-        <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
+        <div className="pie_bar"><IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
         {(viewType === "yearly" || viewType === "total") && monthlyTrends.length > 0 && (
         <MonthlyTrendsLineChart data={monthlyTrends} />
-        )}
+        )}</div>
       </div>
 
       <DailyReport incomeData={incomeData} expenseData={expenseData} />
