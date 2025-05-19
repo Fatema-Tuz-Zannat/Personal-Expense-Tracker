@@ -3,6 +3,31 @@ body {
   padding: 0;
 }
 
+.summary-control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 0;
+  flex-wrap: wrap;
+}
+
+.summary-control button {
+  background-color: #15803d;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.summary-control select {
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 6px;
+}
+
 .dashboard-header {
   position: fixed;
   width: 100%;
@@ -100,37 +125,6 @@ hi-img {
   align-items: center;
   text-align: center;
   border-radius: 10px;
-}
-
-.summary-control {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding: 20px;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-.summary-control button {
-  background-color: #15803d;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  font-size: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.summary-control select {
-  padding: 8px 12px;
-  font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
 }
 
 
