@@ -50,7 +50,8 @@ const AdminDashboard = () => {
       const totalExpenses = userExpenses.reduce((sum, d) => sum + Number(d.data().amount || 0), 0);
 
       return {
-        name: user.name || "Unknown",
+        name: user.firstName || "Unknown",
+        name: user.lastName || "Unknown",
         email: user.email,
         uid: uid,
         totalIncome,
@@ -86,7 +87,8 @@ const AdminDashboard = () => {
       <table className="user-table">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>First Name</th>
+            <th>Last Name</th>
             <th>Email</th>
             <th>UID</th>
             <th>Total Income</th>
@@ -96,7 +98,8 @@ const AdminDashboard = () => {
         <tbody>
           {users.map((u) => (
             <tr key={u.uid}>
-              <td>{u.name}</td>
+              <td>{u.firstName}</td>
+              <td>{u.lastName}</td>
               <td>{u.email}</td>
               <td>{u.uid}</td>
               <td>TK {u.totalIncome}</td>

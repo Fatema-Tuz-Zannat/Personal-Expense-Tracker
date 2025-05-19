@@ -26,7 +26,7 @@ const Dashboard = () => {
   const [currentMonthBudget, setCurrentMonthBudget] = useState(0);
   const [incomeData, setIncomeData] = useState([]);
   const [monthlyTrends, setMonthlyTrends] = useState([]);
-  const [showUserProfile, setShowUserProfile] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -182,8 +182,7 @@ const Dashboard = () => {
       <DashboardHeaderNav
         title="Dashboard"
         onShowReport={() => setShowTodayReport(true)}
-        onToggleProfile={() => setShowUserProfile(prev => !prev)}
-        showUserProfile={showUserProfile}
+
       />
       <div className="welcome">
       <div className="wel"> <h2>Welcome to Your Dashboard </h2></div>
@@ -251,7 +250,7 @@ const Dashboard = () => {
             <h4>Income</h4>
             <ul>
               {todayIncome.map((item, index) => (
-                <li key={index}>{item.title}: TK {item.amount}</li>
+                <li key={index}>{item.category}: TK {item.amount}</li>
               ))}
             </ul>
             <h4>Expenses</h4>

@@ -9,6 +9,7 @@ import bgt from './backgrounds/budget.png';
 import dash from './backgrounds/dash.png';
 import UserProfile from './UserProfile';
 
+const [showUserProfile, setShowUserProfile] = useState(false);
 const DashboardHeaderNav = ({ title = "Dashboard", onShowReport, onToggleProfile, showUserProfile }) => {
   const navigate = useNavigate();
 
@@ -20,7 +21,8 @@ const DashboardHeaderNav = ({ title = "Dashboard", onShowReport, onToggleProfile
           <h1 className="dashboard-title">{title}</h1>
         </div>
       </div>
-
+        onToggleProfile={() => setShowUserProfile(prev => !prev)}
+        showUserProfile={showUserProfile}
       <div className="dashboard-nav">
         <button onClick={() => navigate("/dashboard")}><img src={dash} alt="dash" className="icon" />Dashboard</button>
         <button onClick={() => navigate("/income")}><img src={income} alt="In" className="icon" />Income</button>
