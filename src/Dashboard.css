@@ -99,6 +99,9 @@
 .summary p {
   margin: 4px 0;
 }
+.summary h2{
+  margin: -4px 0;
+}
 
 .summary-controls {
   display: flex;

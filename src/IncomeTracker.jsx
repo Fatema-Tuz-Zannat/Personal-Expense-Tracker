@@ -13,11 +13,13 @@ import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AddIncomeForm from './AddIncomeForm';
 
+
 const IncomeTracker = () => {
   const [incomes, setIncomes] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -95,9 +97,36 @@ const IncomeTracker = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Personal Expense Tracker</h1>
 
-      <AddIncomeForm onAddIncome={handleAddIncome} />
+
+      <div className="text-center mb-6">
+  <button
+    onClick={() => setShowAddForm(true)}
+    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md font-semibold shadow"
+  >
+    + Add Income
+  </button>
+</div>
+
+{showAddForm && (
+  <div className="modal-overlay">
+    <div className="modal-content">
+      <AddIncomeForm
+        onAddIncome={(income) => {
+          handleAddIncome(income);
+          setShowAddForm(false);
+        }}
+      />
+      <button
+        onClick={() => setShowAddForm(false)}
+        className="mt-4 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded w-full"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
 
       <div className="mt-8 max-w-4xl mx-auto bg-white shadow-md rounded-md p-4">
         <div className="flex justify-between items-center mb-4">
@@ -213,6 +242,7 @@ const handleSubmit = (e) => {
 
 
   return (
+  
     <form onSubmit={handleSubmit} className="w-full flex flex-col space-y-2 p-2">
       <input
         type="text"

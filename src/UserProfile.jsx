@@ -100,7 +100,7 @@ const UserProfile = ({ onClose }) => {
   />
   <button
     type="button"
-    onClick={() => setIsEditingFirst(!isEditingLast)}
+    onClick={() => setIsEditingLast(!isEditingLast)}
     className="text-gray-600 hover:text-black focus:outline-none bg-transparent"
     style={{ padding: 0 }}
   >

@@ -44,44 +44,45 @@ const AddIncomeForm = ({ onAddIncome }) => {
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto p-4 bg-white shadow-md rounded-md space-y-4"
-    >
-      <h2 className="text-xl font-bold text-center">Add New Income</h2>
+  onSubmit={handleSubmit}
+  className="w-full space-y-4"
+>
+  <h2 className="text-xl font-bold text-center text-green-700">Add New Income</h2>
 
-      {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-      {message && <p className="text-green-600 text-sm text-center">{message}</p>}
+  {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+  {message && <p className="text-green-600 text-sm text-center">{message}</p>}
 
-      <input
-        type="text"
-        placeholder="Source"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full border rounded p-2"
-      />
+  <input
+    type="text"
+    placeholder="Source"
+    value={title}
+    onChange={(e) => setTitle(e.target.value)}
+    className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+  />
 
-      <input
-        type="number"
-        placeholder="Amount (TK)"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="w-full border rounded p-2"
-      />
+  <input
+    type="number"
+    placeholder="Amount (TK)"
+    value={amount}
+    onChange={(e) => setAmount(e.target.value)}
+    className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+  />
 
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        className="w-full border rounded p-2"
-      />
+  <input
+    type="date"
+    value={date}
+    onChange={(e) => setDate(e.target.value)}
+    className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+  />
 
-      <button
-        type="submit"
-        className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-      >
-        Add Income
-      </button>
-    </form>
+  <button
+    type="submit"
+    className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 font-semibold"
+  >
+    Add Income
+  </button>
+</form>
+
   );
 };
 
