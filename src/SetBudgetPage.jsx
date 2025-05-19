@@ -12,6 +12,8 @@ import {
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+const currentYear = new Date().getFullYear();
+
 const SetBudgetPage = () => {
   const [budgetType, setBudgetType] = useState("");
   const [amount, setAmount] = useState("");
@@ -20,6 +22,9 @@ const SetBudgetPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [budgets, setBudgets] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [displayYear, setDisplayYear] = useState(currentYear);
+  const [filterType, setFilterType] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -48,16 +53,14 @@ const SetBudgetPage = () => {
       alert("Please enter a valid, positive amount.");
       return;
     }
-
     if (!budgetType || (budgetType === "monthly" && (!month || !year)) || (budgetType === "yearly" && !year)) {
       alert("Please select valid budget type and date.");
       return;
     }
     if (parseInt(year) <= 1990) {
-    alert("Year must be greater than 1990.");
-    return;
+      alert("Year must be greater than 1990.");
+      return;
     }
-
 
     const budgetData = {
       userId: currentUser.uid,
@@ -120,12 +123,41 @@ const SetBudgetPage = () => {
     }
   };
 
+  const filteredBudgets = budgets
+    .filter((b) => b.year === displayYear)
+    .filter((b) => (filterType ? b.type === filterType : true))
+    .filter((b) => (filterMonth ? b.month === filterMonth : true))
+    .sort((a, b) => {
+      if (a.type === "yearly" && b.type === "monthly") return -1;
+      if (a.type === "monthly" && b.type === "yearly") return 1;
+      if (a.type === "monthly" && b.type === "monthly") {
+        return (
+          new Date(`${b.month} 1, ${b.year}`) -
+          new Date(`${a.month} 1, ${a.year}`)
+        );
+      }
+      return b.year - a.year;
+    });
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">{editingId ? "Edit Budget" : "Set Budget"}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 rounded shadow">
-        <div>
-          <label className="block mb-1 font-medium">Budget Type</label>
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      {/* Navigation Bar */}
+      <div style={{
+        background: "#007bff", padding: "10px 20px", color: "#fff", marginBottom: "20px",
+        fontSize: "20px", fontWeight: "bold"
+      }}>
+        Budget Manager
+      </div>
+
+      <form onSubmit={handleSubmit} style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "20px", borderRadius: "5px" }}>
+        <h3>{editingId ? "Edit Budget" : "Set Budget"}</h3>
+        <div style={{ marginBottom: "10px" }}>
+          <label>Budget Type:</label>
           <select
             value={budgetType}
             onChange={(e) => {
@@ -133,105 +165,122 @@ const SetBudgetPage = () => {
               setMonth("");
               setYear("");
             }}
-            className="w-full border p-2 rounded"
-            required
+            style={{ marginLeft: "10px" }}
           >
             <option value="">Select Type</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
           </select>
         </div>
-
         {budgetType === "monthly" && (
           <>
-            <div>
-              <label className="block mb-1 font-medium">Month</label>
+            <div style={{ marginBottom: "10px" }}>
+              <label>Month:</label>
               <select
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
-                className="w-full border p-2 rounded"
-                required
+                style={{ marginLeft: "10px" }}
               >
                 <option value="">Select Month</option>
-                {[
-                  "January", "February", "March", "April", "May", "June",
-                  "July", "August", "September", "October", "November", "December"
-                ].map((m) => (
+                {months.map((m) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block mb-1 font-medium">Year</label>
+            <div style={{ marginBottom: "10px" }}>
+              <label>Year:</label>
               <input
                 type="number"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className="w-full border p-2 rounded"
-                required
+                style={{ marginLeft: "10px" }}
               />
             </div>
           </>
         )}
-
         {budgetType === "yearly" && (
-          <div>
-            <label className="block mb-1 font-medium">Year</label>
+          <div style={{ marginBottom: "10px" }}>
+            <label>Year:</label>
             <input
               type="number"
               value={year}
               onChange={(e) => setYear(e.target.value)}
-              className="w-full border p-2 rounded"
-              required
+              style={{ marginLeft: "10px" }}
             />
           </div>
         )}
-
-        <div>
-          <label className="block mb-1 font-medium">Amount (TK)</label>
+        <div style={{ marginBottom: "10px" }}>
+          <label>Amount (TK):</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full border p-2 rounded"
-            required
+            style={{ marginLeft: "10px" }}
           />
         </div>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+        <button type="submit" style={{ backgroundColor: "#007bff", color: "#fff", padding: "6px 12px", border: "none", borderRadius: "4px" }}>
           {editingId ? "Update Budget" : "Add Budget"}
         </button>
       </form>
 
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">Your Budgets</h3>
-        {budgets.length === 0 && <p>No budgets set yet.</p>}
-        {budgets.map((b) => (
-          <div key={b.id} className="border p-3 mb-3 rounded shadow-sm bg-gray-50">
-            <p><strong>Type:</strong> {b.type}</p>
-            <p><strong>Amount:</strong> TK {b.amount}</p>
-            {b.type === "monthly" && <p><strong>Month:</strong> {b.month} {b.year}</p>}
-            {b.type === "yearly" && <p><strong>Year:</strong> {b.year}</p>}
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={() => handleEdit(b)}
-                className="px-3 py-1 text-white bg-green-600 rounded hover:bg-green-700"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(b.id)}
-                className="px-3 py-1 text-white bg-red-600 rounded hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
+      {/* Filters and Navigation */}
+      <div style={{ marginBottom: "10px", display: "flex", gap: "20px", alignItems: "center" }}>
+        <div>
+          <button onClick={() => setDisplayYear(displayYear - 1)}>&lt;</button>
+          <strong style={{ margin: "0 10px" }}>{displayYear}</strong>
+          <button onClick={() => setDisplayYear(displayYear + 1)}>&gt;</button>
+        </div>
+        <div>
+          <label>Filter Type:</label>
+          <select value={filterType} onChange={(e) => setFilterType(e.target.value)} style={{ marginLeft: "10px" }}>
+            <option value="">All</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div>
+          <label>Filter Month:</label>
+          <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} style={{ marginLeft: "10px" }}>
+            <option value="">All</option>
+            {months.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
       </div>
+
+      {/* Budgets Table */}
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr style={{ backgroundColor: "#f0f0f0" }}>
+            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Type</th>
+            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Amount (TK)</th>
+            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Month</th>
+            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Year</th>
+            <th style={{ border: "1px solid #ccc", padding: "8px" }}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredBudgets.length === 0 ? (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center", padding: "10px" }}>No budgets found.</td>
+            </tr>
+          ) : (
+            filteredBudgets.map((b) => (
+              <tr key={b.id}>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{b.type}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>TK {b.amount}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{b.month || "-"}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{b.year}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  <button onClick={() => handleEdit(b)} style={{ marginRight: "5px" }}>Edit</button>
+                  <button onClick={() => handleDelete(b.id)}>Delete</button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
