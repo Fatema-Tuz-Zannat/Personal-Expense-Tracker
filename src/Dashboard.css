@@ -39,6 +39,7 @@
   color: white;
 }
 .whole{
+  top: -20px;
   justify-content: center;
   align-items: center;
 }
