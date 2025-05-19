@@ -184,7 +184,10 @@ const Dashboard = () => {
         onToggleProfile={() => setShowUserProfile(prev => !prev)}
         showUserProfile={showUserProfile}
       />
-
+      <div className="welcome">
+      <div className="wel"> <h2>Welcome to Your Dashboard </h2></div>
+      <div className="wel"><img src={welcome} alt="Hi" className="hi-img" /></div>
+      </div>
       <div className="whole">
         <div className="summary-controls">
           <label htmlFor="viewType">Summary View: </label>

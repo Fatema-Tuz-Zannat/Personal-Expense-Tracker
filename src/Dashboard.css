@@ -106,7 +106,6 @@
 .summary-controls {
   display: flex;
   position: relative;
-  top: 50px;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
