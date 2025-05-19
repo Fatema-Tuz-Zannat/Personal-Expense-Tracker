@@ -29,7 +29,7 @@ const CategorizedExpenseBarChart = ({ expenseData }) => {
   };
 
   return (
-    <div style={{ width: "100%", height: 300 }}>
+    <div style={{ width: "50%", height: 200 }}>
             <h3>Expenses by Category</h3>
             <Bar data={data} />
         </div>
