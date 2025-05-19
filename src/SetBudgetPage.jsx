@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import DashboardHeaderNav from './DashboardHeaderNav'; 
 
 const currentYear = new Date().getFullYear();
 
