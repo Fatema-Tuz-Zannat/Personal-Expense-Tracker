@@ -41,7 +41,7 @@
 .welcome {
   display: flex; 
   position: relative;
-  background: #013b16;
+  background: none;
   top: 100px;
   justify-content: center;
   align-items: center;
@@ -192,6 +192,14 @@
   background-color: #0e5a2f;
 }
 
+.modal-content {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 120px; 
+  height: 150px;
+}
+
 @keyframes slideDownFade {
   from {
     transform: translateY(-20px);
@@ -200,5 +208,16 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .wel {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .hi-img {
+    margin-top: 10px;
+    height: 40px;
   }
 }

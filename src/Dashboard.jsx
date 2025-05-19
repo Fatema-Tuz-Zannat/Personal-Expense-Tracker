@@ -17,6 +17,7 @@ import income from './backgrounds/income.png';
 import report from './backgrounds/report.png';
 import welcome from './backgrounds/welcome.png';
 import bgt from './backgrounds/budget.png';
+import ch from './backgrounds/check.png';
 
 const Dashboard = () => {
   const [totalIncome, setTotalIncome] = useState(0);
@@ -261,6 +262,7 @@ const Dashboard = () => {
       {showTodayReport && (
         <div className="modal-overlay">
           <div className="modal-content">
+            <img src={ch} alt="Decoration" className="popup-image" />
             <h3>Today's Report</h3>
             <h4>Income</h4>
             <ul>
