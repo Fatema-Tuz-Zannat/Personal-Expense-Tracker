@@ -35,10 +35,11 @@
 }
 
 .dashboard-nav button:hover {
-  background: #21f66f;
+  background: #03c3b9;
   color: white;
 }
 .dashboard-welcome {
+  background: #013b16;
   top: 200px;
   display: flex;
   justify-content: center;
@@ -80,7 +81,6 @@
 .summary {
   background-color: rgb(236, 240, 239);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 1000px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -113,7 +113,12 @@
   font-size: 16px;
   border-radius: 6px;
 }
-
+.pie_ber{
+  background: #0ad486;
+  width:100%; 
+  justify-content: center;
+  align-items: center;
+}
 
 .modal-overlay {
   position: fixed;
