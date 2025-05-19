@@ -8,7 +8,7 @@ import IncomeExpensePieChart from "./components/IncomeExpensePieChart";
 import CategorizedExpenseBarChart from "./components/CategorizedExpenseBarChart";
 import MonthlyTrendsLineChart from "./components/MonthlyTrendsLineChart"; 
 import DailyReport from './components/DailyReport';
-import DashboardHeaderNav from './components/DashboardHeaderNav'; 
+import DashboardHeaderNav from './DashboardHeaderNav'; 
 import ch from './backgrounds/check.png';
 import './Dashboard.css';
 
