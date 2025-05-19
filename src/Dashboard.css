@@ -39,6 +39,7 @@
   color: white;
 }
 .whole{
+  position: relative;
   top: -20px;
   justify-content: center;
   align-items: center;
@@ -101,7 +102,7 @@
   margin: 4px 0;
 }
 .summary h2{
-  margin: -4px 0;
+  margin: -2px 0;
 }
 
 .summary-controls {

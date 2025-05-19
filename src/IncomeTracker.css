@@ -1,3 +1,6 @@
+.in{
+    padding-top: 50px;
+}
 .modal-overlay {
   position: fixed;
   top: 0;
