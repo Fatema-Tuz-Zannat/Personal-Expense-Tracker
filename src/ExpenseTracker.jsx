@@ -122,7 +122,7 @@ function ExpenseTracker() {
       title="Expense Tracker"
     />
 
-<div style={{ marginBottom: "1rem", paddingTop: "200px" }}>
+<div style={{ marginBottom: "1rem", paddingTop: "150px" }}>
   <label>View: </label>
   <select
     value={filterType}
@@ -195,7 +195,7 @@ function ExpenseTracker() {
   <button
     onClick={() => navigate("/add-expense")}
     style={{
-      backgroundColor: "#2e7d32",        // dark green
+      backgroundColor: "#2e7d32",     
       color: "white",
       padding: "10px 20px",
       border: "none",

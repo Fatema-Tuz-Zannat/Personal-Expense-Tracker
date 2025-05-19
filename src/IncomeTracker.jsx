@@ -171,77 +171,74 @@ const IncomeTracker = () => {
           </div>
         )}
 
-        {incomes.length === 0 ? (
-          <p className="text-gray-500 text-center">
-            No incomes for {selectedYear}.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full border-separate border-spacing-y-3">
-              <thead>
-                <tr>
-                  <th className="bg-green-200 px-4 py-2 text-left rounded-l-xl">
-                    Source
-                  </th>
-                  <th className="bg-green-200 px-4 py-2 text-left">Date</th>
-                  <th className="bg-green-200 px-4 py-2 text-left">Amount</th>
-                  <th className="bg-green-200 px-4 py-2 text-left rounded-r-xl">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {incomes.map((income) => (
-                  <tr key={income.id}>
-                    {editingId === income.id ? (
-                      <td colSpan="4">
-                        <EditIncomeForm
-                          income={income}
-                          onSave={(updatedIncome) =>
-                            handleUpdate(income.id, updatedIncome)
-                          }
-                          onCancel={() => setEditingId(null)}
-                        />
-                      </td>
-                    ) : (
-                      <>
-                        <td className="bg-lime-100 px-4 py-2 rounded-l-xl">
-                          Salary
-                        </td>
-                        <td className="bg-teal-100 px-4 py-2">
-                          {income.date.toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </td>
-                        <td className="bg-teal-100 px-4 py-2">
-                          {income.amount.toFixed(2)}
-                        </td>
-                        <td className="bg-teal-100 px-4 py-2 rounded-r-xl">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleEdit(income.id)}
-                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(income.id)}
-                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+{incomes.length === 0 ? (
+  <p className="text-gray-500 text-center">
+    No incomes for {selectedYear}.
+  </p>
+) : (
+  <div className="overflow-x-auto">
+    <table className="min-w-full border-separate border-spacing-y-2">
+      <thead>
+        <tr>
+          <th className="bg-green-200 px-4 py-2 text-left rounded-l-xl">Title</th>
+          <th className="bg-green-200 px-4 py-2 text-left">Date</th>
+          <th className="bg-green-200 px-4 py-2 text-left">Amount</th>
+          <th className="bg-green-200 px-4 py-2 text-left rounded-r-xl">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {incomes.map((income) => (
+          <tr key={income.id}>
+            {editingId === income.id ? (
+              <td colSpan="4" className="bg-white p-4 rounded-xl">
+                <EditIncomeForm
+                  income={income}
+                  onSave={(updatedIncome) =>
+                    handleUpdate(income.id, updatedIncome)
+                  }
+                  onCancel={() => setEditingId(null)}
+                />
+              </td>
+            ) : (
+              <>
+                <td className="bg-lime-100 px-4 py-2 rounded-l-xl">
+                  {income.title || '—'}
+                </td>
+                <td className="bg-teal-100 px-4 py-2">
+                  {income.date.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </td>
+                <td className="bg-teal-100 px-4 py-2">
+                  ₹{income.amount.toFixed(2)}
+                </td>
+                <td className="bg-teal-100 px-4 py-2 rounded-r-xl">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(income.id)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(income.id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </>
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
       </div>
     </div>
     </div>
