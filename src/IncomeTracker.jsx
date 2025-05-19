@@ -13,6 +13,8 @@ import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import AddIncomeForm from './AddIncomeForm';
 import DashboardHeaderNav from './DashboardHeaderNav'; 
+import './IncomeTracker.css';
+
 
 const IncomeTracker = () => {
   const [incomes, setIncomes] = useState([]);
