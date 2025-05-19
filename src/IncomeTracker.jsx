@@ -100,32 +100,57 @@ const IncomeTracker = () => {
     <div className="in"> 
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded shadow font-semibold"
-          >
-            + Add
-          </button>
-          <h2 className="text-2xl font-semibold text-center flex-1">
-            Income - {selectedYear}
-          </h2>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setSelectedYear((prev) => prev - 1)}
-              className="bg-green-800 text-white px-2 py-1 rounded"
-            >
-              ◀
-            </button>
-            <span className="text-lg font-semibold">{selectedYear}</span>
-            <button
-              onClick={() => setSelectedYear((prev) => prev + 1)}
-              className="bg-green-800 text-white px-2 py-1 rounded"
-            >
-              ▶
-            </button>
-          </div>
-        </div>
+ <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+  <button
+    onClick={() => setShowAddForm(true)}
+    style={{
+      backgroundColor: "#047857",
+      color: "white",
+      padding: "8px 20px",
+      borderRadius: "6px",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+      fontWeight: "600",
+      border: "none",
+      cursor: "pointer"
+    }}
+  >
+    + Add
+  </button>
+
+  <h2 style={{ fontSize: "1.5rem", fontWeight: "600", textAlign: "center", flex: 1 }}>
+    Income - {selectedYear}
+  </h2>
+
+  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <button
+      onClick={() => setSelectedYear((prev) => prev - 1)}
+      style={{
+        backgroundColor: "#065f46", 
+        color: "white",
+        padding: "4px 10px",
+        borderRadius: "4px",
+        border: "none",
+        cursor: "pointer"
+      }}
+    >
+      ◀
+    </button>
+    <span style={{ fontSize: "1.125rem", fontWeight: "600" }}>{selectedYear}</span>
+    <button
+      onClick={() => setSelectedYear((prev) => prev + 1)}
+      style={{
+        backgroundColor: "#065f46",
+        color: "white",
+        padding: "4px 10px",
+        borderRadius: "4px",
+        border: "none",
+        cursor: "pointer"
+      }}
+    >
+      ▶
+    </button>
+  </div>
+</div>
 
         {showAddForm && (
           <div className="modal-overlay">
