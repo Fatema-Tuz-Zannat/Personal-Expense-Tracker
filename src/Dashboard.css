@@ -38,7 +38,7 @@
   background: #03c3b9;
   color: white;
 }
-.dashboard-welcome {
+.welcome {
   background: #013b16;
   top: 200px;
   display: flex;
@@ -113,8 +113,8 @@
   font-size: 16px;
   border-radius: 6px;
 }
-.pie_ber{
-  background: #0ad486;
+.pie_bar{
+  background-color: #0ad486;
   width:100%; 
   justify-content: center;
   align-items: center;

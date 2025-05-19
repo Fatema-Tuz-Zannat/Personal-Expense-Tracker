@@ -200,8 +200,10 @@ const Dashboard = () => {
       <button onClick={() => navigate("/profile")}><img src={user} alt="User" className="icon" />Profile</button>
       <button onClick={handleLogout}>Logout</button>
       </div>
-
-      <h2 className="dashboard-welcome">Welcome to Your Dashboard <img src={welcome} alt="Hi" className="hi-img" /></h2>
+      <div className="welcome">
+      <h2>Welcome to Your Dashboard </h2>
+      <img src={welcome} alt="Hi" className="hi-img" />
+      </div>
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
@@ -238,7 +240,8 @@ const Dashboard = () => {
 
       <div className="charts-section">
         <BudgetProgressBar totalExpenses={totalExpenses} budget={budget} />
-        <div className="pie_bar"><IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
+        <div className="pie_bar">
+        <IncomeExpensePieChart income={totalIncome} expenses={totalExpenses} />
         <CategorizedExpenseBarChart expenseData={expenseData} />
         {(viewType === "yearly" || viewType === "total") && monthlyTrends.length > 0 && (
         <MonthlyTrendsLineChart data={monthlyTrends} />
