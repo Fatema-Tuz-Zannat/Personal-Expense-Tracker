@@ -201,7 +201,7 @@ const Dashboard = () => {
       <button onClick={handleLogout}>Logout</button>
       </div>
 
-      <h2 className="dashboard-welcome">Welcome to Your Dashboard</h2><img src={welcome} alt="Hi" className="hi-img" />
+      <h2 className="dashboard-welcome">Welcome to Your Dashboard <img src={welcome} alt="Hi" className="hi-img" /></h2><img src={welcome} alt="Hi" className="hi-img" />
 
       <div className="summary-controls">
         <label htmlFor="viewType">Summary View: </label>
@@ -217,13 +217,13 @@ const Dashboard = () => {
 
         {(viewType === "monthly" || viewType === "yearly") && (
           <div className="date-navigation">
-            <button onClick={() => adjustDate(-1)}>{"<"}</button>
+            <button color="green" onClick={() => adjustDate(-1) }>{"<"}</button>
             <span>
               {viewType === "monthly"
                 ? selectedDate.toLocaleString("default", { month: "long", year: "numeric" })
                 : selectedDate.getFullYear()}
             </span>
-            <button onClick={() => adjustDate(1)}>{">"}</button>
+            <button color="green" onClick={() => adjustDate(1)}>{">"}</button>
           </div>
         )}
       </div>
