@@ -20,18 +20,3 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   position: relative;
 }
-button{
-    width: 100%;
-  padding: 0.75rem;
-  background-color: #06b74a;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 0.5rem;
-}
-button:hover{
-  background-color: #035464;
-}
