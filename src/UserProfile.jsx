@@ -70,40 +70,44 @@ const UserProfile = ({ onClose }) => {
       <h2 className="text-2xl font-bold mb-4">User Profile</h2>
 
       <label className="block mb-2 font-medium">First Name</label>
-<div className="relative mb-4">
+<div className="flex items-center mb-4 gap-2">
   <input
     type="text"
-    className="border p-2 rounded w-full pr-10"
+    className="border p-2 rounded w-full"
     value={firstName}
     readOnly={!isEditingFirst}
     onChange={(e) => setFirstName(e.target.value)}
   />
-    <button
+  <button
     type="button"
     onClick={() => setIsEditingFirst(!isEditingFirst)}
+    className="text-gray-600 hover:text-black focus:outline-none bg-transparent"
+    style={{ padding: 0 }}
   >
-  b
+    ✏️
   </button>
-
 </div>
 
+
 <label className="block mb-2 font-medium">Last Name</label>
-<div className="relative mb-4">
+<div className="flex items-center mb-4 gap-2">
   <input
     type="text"
-    className="border p-2 rounded w-full pr-10"
-    value={lastName}
+    className="border p-2 rounded w-full"
+    value={lastNametName}
     readOnly={!isEditingLast}
     onChange={(e) => setLastName(e.target.value)}
   />
   <button
     type="button"
-    onClick={() => setIsEditingLast(!isEditingLast)}
-    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+    onClick={() => setIsEditingFirst(!isEditingLast)}
+    className="text-gray-600 hover:text-black focus:outline-none bg-transparent"
+    style={{ padding: 0 }}
   >
     ✏️
   </button>
 </div>
+
 
 
       <div className="bottom-button">
