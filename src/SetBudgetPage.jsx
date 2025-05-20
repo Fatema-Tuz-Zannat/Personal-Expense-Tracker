@@ -152,6 +152,7 @@ const SetBudgetPage = () => {
       title="Budget Manager"
     />
     </div>
+    <div className = "mobile">
     <div style={{ paddingTop: "150px"}}>
       <form onSubmit={handleSubmit} style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "20px", borderRadius: "5px" }}>
         <h3>{editingId ? "Edit Budget" : "Set Budget"}</h3>
@@ -292,6 +293,7 @@ const SetBudgetPage = () => {
           )}
         </tbody>
       </table>
+      </div>
     </div>
     </div>
   );

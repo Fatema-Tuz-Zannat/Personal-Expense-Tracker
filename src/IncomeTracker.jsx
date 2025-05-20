@@ -97,6 +97,7 @@ const IncomeTracker = () => {
     <DashboardHeaderNav
       title="Income Tracker"
     />
+    <div className="mobile"> 
     <div className="in"> 
       <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
@@ -277,6 +278,7 @@ const IncomeTracker = () => {
 
         </div>
       </div>
+    </div>
     </div>
     </div>
   );

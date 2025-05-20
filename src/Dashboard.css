@@ -149,7 +149,7 @@
 
 .modal-overlay {
   position: fixed;
-  top: 0;
+  top: 30;
   left: 0;
   width: 100%;
   height: 100%;
@@ -222,12 +222,12 @@
 
 .user-profile-slide {
   position: fixed;
-  top: 0;
-  right: -100%; 
+  top: 30px;
+  right: -200%; 
   width: 100%;
+  padding: 30px;
   max-width: 320px; 
-  height: 100vh;
-  background-color: white;
+  background-color: rgb(236, 205, 102);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
   transition: right 0.3s ease-in-out;
   z-index: 9999;
@@ -245,7 +245,7 @@ body.modal-open {
 
 @media (max-width: 450px) {
 .welcome {
-  top: 300px;
+  top: 250px;
   font-size: 10px;
   font-weight: 100;
   gap: 5px;
@@ -254,12 +254,12 @@ body.modal-open {
 }
   .user-profile-slide {
     max-width: 100%;
-    padding: 20px;
+    padding: 30px;
   }
 
 .summary-controls {
   justify-content: center;
-  top: 200px;
+  top: 450px;
 }
 .user-profile-slide {
   position: fixed;

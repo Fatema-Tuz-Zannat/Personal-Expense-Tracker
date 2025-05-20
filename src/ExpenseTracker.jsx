@@ -121,7 +121,7 @@ function ExpenseTracker() {
     <DashboardHeaderNav
       title="Expense Tracker"
     />
-
+<div className = "mobile">
 <div style={{ marginBottom: "1rem", paddingTop: "150px" }}>
   <label>View: </label>
   <select
@@ -321,7 +321,7 @@ function ExpenseTracker() {
     ))}
   </tbody>
 </table>
-
+</div>
 
     </div>
   );
