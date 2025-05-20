@@ -222,7 +222,7 @@
 
 .user-profile-slide {
   position: fixed;
-  top: 30px;
+  top: 200px;
   right: -200%; 
   width: 100%;
   padding: 30px;
@@ -254,12 +254,11 @@ body.modal-open {
 }
   .user-profile-slide {
     max-width: 100%;
-    padding: 30px;
   }
 
 .summary-controls {
   justify-content: center;
-  top: 450px;
+  top: 250px;
 }
 .user-profile-slide {
   position: fixed;
