@@ -76,11 +76,49 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <h1>Admin Dashboard</h1>
       <div className="top-bar">
-        <button onClick={handleLogout}>Logout</button>
-        <div className="month-navigation">
-          <button onClick={() => adjustMonth(-1)}>{"<"}</button>
+        <button
+    onClick= {handleLogout}
+    style={{
+      backgroundColor: "red",
+      color: "white",
+      padding: "8px 20px",
+      borderRadius: "6px",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+      fontWeight: "600",
+      border: "none",
+      cursor: "pointer"
+    }}
+  >
+    LOGOUT
+  </button>
+  <div className="month-navigation">
+    <button
+    onClick= {() => adjustMonth(-1)}
+    style={{
+      backgroundColor: "red",
+      color: "white",
+      padding: "8px 20px",
+      borderRadius: "6px",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+      fontWeight: "600",
+      border: "none",
+      cursor: "pointer"
+    }}
+  >{"<"}</button>
           <span>{currentMonthName}</span>
-          <button onClick={() => adjustMonth(1)}>{">"}</button>
+      <button
+    onClick= {() => adjustMonth(1)}
+    style={{
+      backgroundColor: "red",
+      color: "white",
+      padding: "8px 20px",
+      borderRadius: "6px",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+      fontWeight: "600",
+      border: "none",
+      cursor: "pointer"
+    }}
+  >{"<"}</button>
         </div>
       </div>
 
