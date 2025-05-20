@@ -50,8 +50,8 @@ const AdminDashboard = () => {
       const totalExpenses = userExpenses.reduce((sum, d) => sum + Number(d.data().amount || 0), 0);
 
       return {
-        name: user.firstName || "Unknown",
-        name: user.lastName || "Unknown",
+        firstName: user.firstName || "Unknown",
+        lastName: user.lastName || "Unknown",
         email: user.email,
         uid: uid,
         totalIncome,
