@@ -118,7 +118,7 @@ const AdminDashboard = () => {
       border: "none",
       cursor: "pointer"
     }}
-  >{"<"}</button>
+  >{">"}</button>
         </div>
       </div>
 
