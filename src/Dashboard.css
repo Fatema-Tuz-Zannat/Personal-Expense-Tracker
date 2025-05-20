@@ -229,7 +229,7 @@
   width: 100%;
   padding: 30px;
   max-width: 320px; 
-  background-color: rgb(251, 234, 178);
+  background-color: rgb(207, 251, 178);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
   transition: right 0.3s ease-in-out;
   z-index: 9999;
@@ -260,12 +260,12 @@ body.modal-open {
 
 .summary-controls {
   justify-content: center;
-  top: 0px;
+  top: 20px;
 }
 .user-profile-slide {
   position: fixed;
   top: 250px; 
-  right: -200px;
+  right: -2000px;
 }
 .user-profile-slide.open {
   left: 0; 
