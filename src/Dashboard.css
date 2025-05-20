@@ -263,7 +263,7 @@ body.modal-open {
   top: 0px;
 }
 .user-profile-slide {
-  position: fixed;
+  position: relative;
   top: 250px; 
   left: 0px;
 }
