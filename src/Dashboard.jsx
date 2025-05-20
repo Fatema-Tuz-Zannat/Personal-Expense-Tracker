@@ -250,7 +250,7 @@ const Dashboard = () => {
             <h4>Income</h4>
             <ul>
               {todayIncome.map((item, index) => (
-                <li key={index}>{item.category}: TK {item.amount}</li>
+                <li key={index}>{item.title}: TK {item.amount}</li>
               ))}
             </ul>
             <h4>Expenses</h4>

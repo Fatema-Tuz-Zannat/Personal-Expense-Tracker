@@ -3,6 +3,7 @@ import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import bg from './backgrounds/bg.jpg'; 
 
 const AddExpenseForm = () => {
   const [category, setCategory] = useState('');
@@ -80,15 +81,11 @@ const AddExpenseForm = () => {
         const percentUsed = (totalExpenses / activeBudget.amount) * 100;
         if (percentUsed > 70 && percentUsed <= 100) {
           alert(
-            `Warning: You've used ${percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${
-              activeBudget.type === 'monthly' ? monthName : year
-            }.`
+            `Warning: You've used ${percentUsed.toFixed(2)}% of your ${activeBudget.type} budget for ${activeBudget.type === 'monthly' ? monthName : year}.`
           );
         } else if (percentUsed > 100) {
           alert(
-            `Warning: You've exceeded your ${activeBudget.type} budget for ${
-              activeBudget.type === 'monthly' ? monthName : year
-            } by ${(percentUsed - 100).toFixed(2)}%.`
+            `Warning: You've exceeded your ${activeBudget.type} budget for ${activeBudget.type === 'monthly' ? monthName : year} by ${(percentUsed - 100).toFixed(2)}%.`
           );
         }
       }
@@ -106,17 +103,25 @@ const AddExpenseForm = () => {
   };
 
   const handleCancel = () => {
-    navigate('/expense'); 
+    navigate('/expenses');
+  };
+  const backgroundStyle = {
+    backgroundImage: 'url("https://source.unsplash.com/1600x900/?finance,abstract")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    minHeight: '100vh',
+    padding: '50px 20px',
   };
 
   const formStyle = {
     maxWidth: '500px',
-    margin: '40px auto',
+    margin: '0 auto',
     padding: '25px',
     borderRadius: '12px',
-    boxShadow: '0 0 15px rgba(0,0,0,0.15)',
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    boxShadow: '0 0 15px rgba(0,0,0,0.2)',
     fontFamily: 'Arial, sans-serif',
+    boxSizing: 'border-box',
   };
 
   const labelStyle = {
@@ -133,20 +138,23 @@ const AddExpenseForm = () => {
     borderRadius: '6px',
     border: '1px solid #ccc',
     fontSize: '14px',
+    boxSizing: 'border-box',
   };
 
   const buttonContainerStyle = {
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: '20px',
+    marginTop: '25px',
   };
 
   const buttonStyle = {
-    padding: '10px 20px',
+    flex: 1,
+    padding: '12px',
     fontSize: '14px',
     borderRadius: '6px',
     border: 'none',
     cursor: 'pointer',
+    margin: '0 5px',
   };
 
   const addButtonStyle = {
@@ -162,48 +170,50 @@ const AddExpenseForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={formStyle}>
-      <h2 style={{ textAlign: 'center', color: '#333' }}>Add Expense</h2>
+    <div style={backgroundStyle}>
+      <form onSubmit={handleSubmit} style={formStyle}>
+        <h2 style={{ textAlign: 'center', color: '#333' }}>Add Expense</h2>
+        <img src={bh} alt="bg" />
+        <label style={labelStyle}>Category *</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle} required>
+          <option value="">-- Select Category --</option>
+          <option value="Food">Food</option>
+          <option value="Rent">Rent</option>
+          <option value="Transportation">Transportation</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Education">Education</option>
+          <option value="Other">Other</option>
+        </select>
 
-      <label style={labelStyle}>Category *</label>
-      <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle} required>
-        <option value="">-- Select Category --</option>
-        <option value="Food">Food</option>
-        <option value="Rent">Rent</option>
-        <option value="Transportation">Transportation</option>
-        <option value="Utilities">Utilities</option>
-        <option value="Entertainment">Entertainment</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Healthcare">Healthcare</option>
-        <option value="Education">Education</option>
-        <option value="Other">Other</option>
-      </select>
+        <label style={labelStyle}>Amount (TK) *</label>
+        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} style={inputStyle} required />
 
-      <label style={labelStyle}>Amount (TK) *</label>
-      <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} style={inputStyle} required />
+        <label style={labelStyle}>Date *</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} required />
 
-      <label style={labelStyle}>Date *</label>
-      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} style={inputStyle} required />
+        <label style={labelStyle}>Description (Optional)</label>
+        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} style={inputStyle} />
 
-      <label style={labelStyle}>Description (Optional)</label>
-      <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} style={inputStyle} />
+        <label style={labelStyle}>Payment Method (Optional)</label>
+        <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} style={inputStyle}>
+          <option value="">-- Select Method --</option>
+          <option value="Cash">Cash</option>
+          <option value="Credit Card">Credit Card</option>
+          <option value="Debit Card">Debit Card</option>
+          <option value="Bkash">Bkash</option>
+          <option value="Nagad">Nagad</option>
+          <option value="Other">Other</option>
+        </select>
 
-      <label style={labelStyle}>Payment Method (Optional)</label>
-      <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} style={inputStyle}>
-        <option value="">-- Select Method --</option>
-        <option value="Cash">Cash</option>
-        <option value="Credit Card">Credit Card</option>
-        <option value="Debit Card">Debit Card</option>
-        <option value="Bkash">Bkash</option>
-        <option value="Nagad">Nagad</option>
-        <option value="Other">Other</option>
-      </select>
-
-      <div style={buttonContainerStyle}>
-        <button type="submit" style={addButtonStyle}>Add Expense</button>
-        <button type="button" style={cancelButtonStyle} onClick={handleCancel}>Cancel</button>
-      </div>
-    </form>
+        <div style={buttonContainerStyle}>
+          <button type="submit" style={addButtonStyle}>Add Expense</button>
+          <button type="button" style={cancelButtonStyle} onClick={handleCancel}>Cancel</button>
+        </div>
+      </form>
+    </div>
   );
 };
 
