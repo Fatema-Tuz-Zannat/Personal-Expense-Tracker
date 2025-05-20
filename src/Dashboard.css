@@ -162,6 +162,8 @@
 
 .modal-content {
   background-color: #fff;
+  position: relative;
+  top: 30px;
   padding: 50px;
   border-radius: 12px;
   width: 90%;
@@ -222,7 +224,7 @@
 
 .user-profile-slide {
   position: fixed;
-  top: 100px;
+  top: 130px;
   right: -200%; 
   width: 100%;
   padding: 30px;
@@ -258,10 +260,11 @@ body.modal-open {
 
 .summary-controls {
   justify-content: center;
-  top: 350px;
+  top: 0px;
 }
 .user-profile-slide {
   position: fixed;
-  top: 200px; 
+  top: 250px; 
+  left: 0px;
 }
 }
