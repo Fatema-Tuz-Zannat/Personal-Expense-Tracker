@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-
+import bg from './backgrounds/bg.jpg';
 
 const AddExpenseForm = () => {
   const [category, setCategory] = useState('');
@@ -106,7 +106,7 @@ const AddExpenseForm = () => {
     navigate('/expenses');
   };
   const backgroundStyle = {
-    backgroundImage: 'url("https://source.unsplash.com/1600x900/?finance,abstract")',
+    backgroundImage: `url(${bg})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     minHeight: '100vh',

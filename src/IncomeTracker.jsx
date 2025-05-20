@@ -98,12 +98,12 @@ const IncomeTracker = () => {
       title="Income Tracker"
     />
     <div className="in"> 
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
- <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-  <button
-    onClick={() => setShowAddForm(true)}
-    style={{
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+      <button
+      onClick={() => setShowAddForm(true)}
+      style={{
       backgroundColor: "#047857",
       color: "white",
       padding: "8px 20px",
@@ -275,8 +275,8 @@ const IncomeTracker = () => {
   </div>
 )}
 
+        </div>
       </div>
-    </div>
     </div>
     </div>
   );

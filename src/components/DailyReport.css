@@ -95,4 +95,10 @@
   margin-top: 40px;
 }
 
-  
+@media (max-width: 450px) {
+ .popup-overlay {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+} 
