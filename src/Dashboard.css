@@ -149,7 +149,7 @@
 
 .modal-overlay {
   position: fixed;
-  top: 30;
+  top: 300;
   left: 0;
   width: 100%;
   height: 100%;
@@ -222,7 +222,7 @@
 
 .user-profile-slide {
   position: fixed;
-  top: 200px;
+  top: 100px;
   right: -200%; 
   width: 100%;
   padding: 30px;
@@ -258,7 +258,7 @@ body.modal-open {
 
 .summary-controls {
   justify-content: center;
-  top: 250px;
+  top: 350px;
 }
 .user-profile-slide {
   position: fixed;
