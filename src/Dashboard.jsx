@@ -256,7 +256,7 @@ const Dashboard = () => {
             <h4>Expenses</h4>
             <ul>
               {todayExpenses.map((item, index) => (
-                <li key={index}>{item.category}: TK {item.amount}</li>
+                <li key={index}>{item.paymentMethode}: TK {item.amount}</li>
               ))}
             </ul>
             <p>Monthly Budget: TK {currentMonthBudget}</p>

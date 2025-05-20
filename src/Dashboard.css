@@ -163,7 +163,7 @@
 .modal-content {
   background-color: #fff;
   position: relative;
-  top: 30px;
+  top: 50px;
   padding: 50px;
   border-radius: 12px;
   width: 90%;
@@ -245,7 +245,7 @@ body.modal-open {
   overflow: hidden;
 }
 
-@media (max-width: 450px) {
+@media (max-width: 400px) {
 .welcome {
   top: 250px;
   font-size: 10px;
@@ -260,7 +260,7 @@ body.modal-open {
 
 .summary-controls {
   justify-content: center;
-  top: 20px;
+  top: 35px;
 }
 .user-profile-slide {
   position: fixed;
