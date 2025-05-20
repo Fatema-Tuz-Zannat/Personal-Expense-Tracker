@@ -3,7 +3,7 @@ import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import bg from './backgrounds/bg.jpg'; 
+
 
 const AddExpenseForm = () => {
   const [category, setCategory] = useState('');
@@ -173,7 +173,6 @@ const AddExpenseForm = () => {
     <div style={backgroundStyle}>
       <form onSubmit={handleSubmit} style={formStyle}>
         <h2 style={{ textAlign: 'center', color: '#333' }}>Add Expense</h2>
-        <img src={bg} alt="bg" />
         <label style={labelStyle}>Category *</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle} required>
           <option value="">-- Select Category --</option>
