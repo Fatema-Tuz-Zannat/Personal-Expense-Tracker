@@ -7,10 +7,9 @@ import { auth } from './firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import IncomeTracker from './IncomeTracker'; 
 import SetBudgetPage from './SetBudgetPage';
-import AddExpenseForm from "./AddExpenseFormModal";
+import AddExpenseForm from "./AddExpenseForm";
 import UserProfile from './UserProfile';
 import AdminDashboard from './AdminDashboard';
-import AddExpenseFormModal from './AddExpenseFormModal';
 
 const ADMIN_EMAIL = 'adminemail@gmail.com';
 
@@ -69,7 +68,7 @@ function App() {
           path="/dashboard"
           element={user ? <Dashboard /> : <Navigate to="/login" />}
         />
-        <Route path="/add-expense" element={<AddExpenseFormModal />} />
+        <Route path="/add-expense" element={<AddExpenseForm />} />
       </Routes>
     </Router>
   );

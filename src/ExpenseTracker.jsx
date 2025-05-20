@@ -10,7 +10,6 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "./firebase";
 import { useNavigate } from "react-router-dom";
-import AddExpenseFormModal from './AddExpenseFormModal';
 import DashboardHeaderNav from './DashboardHeaderNav'; 
 
 function ExpenseTracker() {
@@ -24,8 +23,6 @@ function ExpenseTracker() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [editedDescription, setEditedDescription] = useState("");
   const [editedPaymentMethod, setEditedPaymentMethod] = useState("");
-  const [showModal, setShowModal] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -124,7 +121,7 @@ function ExpenseTracker() {
     <DashboardHeaderNav
       title="Expense Tracker"
     />
-{showModal && <AddExpenseFormModal onClose={() => setShowModal(false)} />}
+
 <div style={{ marginBottom: "1rem", paddingTop: "150px" }}>
   <label>View: </label>
   <select
@@ -195,25 +192,25 @@ function ExpenseTracker() {
       </div>
 
 <div style={{ marginBottom: "1rem" }}>
-        <button
-          onClick={() => setShowModal(true)}
-          style={{
-            backgroundColor: "#2e7d32",
-            color: "white",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-            transition: "background-color 0.3s",
-          }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#1b5e20")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#2e7d32")}
-        >
-          + Add Expense
-        </button>
-      </div>
+  <button
+    onClick={() => navigate("/add-expense")}
+    style={{
+      backgroundColor: "#2e7d32",     
+      color: "white",
+      padding: "10px 20px",
+      border: "none",
+      borderRadius: "6px",
+      fontWeight: "bold",
+      cursor: "pointer",
+      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+      transition: "background-color 0.3s",
+    }}
+    onMouseOver={(e) => (e.target.style.backgroundColor = "#1b5e20")}
+    onMouseOut={(e) => (e.target.style.backgroundColor = "#2e7d32")}
+  >
+    + Add Expense
+  </button>
+</div>
 
 
      <table
