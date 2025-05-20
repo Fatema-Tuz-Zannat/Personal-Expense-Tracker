@@ -173,7 +173,7 @@ const AddExpenseForm = () => {
     <div style={backgroundStyle}>
       <form onSubmit={handleSubmit} style={formStyle}>
         <h2 style={{ textAlign: 'center', color: '#333' }}>Add Expense</h2>
-        <img src={bh} alt="bg" />
+        <img src={bg} alt="bg" />
         <label style={labelStyle}>Category *</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle} required>
           <option value="">-- Select Category --</option>
